@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,13 +12,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useTheme } from "@/components/common";
+import { useTheme, FormSkeleton } from "@/components/common";
 import { useToast } from "@/hooks/use-toast";
-import { Bell, Lock, Palette, Globe, Shield, Save } from "lucide-react";
+import type { User } from "@shared/schema";
+import { Bell, Lock, Palette, Globe, Shield, Save, User as UserIcon, Mail } from "lucide-react";
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
   const { toast } = useToast();
+  
+  const { data: user, isLoading: isLoadingUser } = useQuery<User>({
+    queryKey: ["/api/auth/me"],
+  });
+
+  const [profile, setProfile] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+  });
   
   const [notifications, setNotifications] = useState({
     email: true,
@@ -26,6 +38,16 @@ export default function SettingsPage() {
     inventoryAlerts: true,
     weeklyReport: false,
   });
+
+  useEffect(() => {
+    if (user) {
+      setProfile({
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        email: user.email || "",
+      });
+    }
+  }, [user]);
 
   const handleSave = () => {
     toast({
@@ -46,6 +68,58 @@ export default function SettingsPage() {
           Save Changes
         </Button>
       </div>
+
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <UserIcon className="w-5 h-5" />
+            <CardTitle>Personal Information</CardTitle>
+          </div>
+          <CardDescription>Your account details</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {isLoadingUser ? (
+            <FormSkeleton />
+          ) : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="firstName">First Name</Label>
+                  <Input
+                    id="firstName"
+                    value={profile.firstName}
+                    onChange={(e) => setProfile({ ...profile, firstName: e.target.value })}
+                    data-testid="input-first-name"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lastName">Last Name</Label>
+                  <Input
+                    id="lastName"
+                    value={profile.lastName}
+                    onChange={(e) => setProfile({ ...profile, lastName: e.target.value })}
+                    data-testid="input-last-name"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="email"
+                    type="email"
+                    value={profile.email}
+                    onChange={(e) => setProfile({ ...profile, email: e.target.value })}
+                    className="pl-9"
+                    data-testid="input-email"
+                  />
+                </div>
+              </div>
+            </>
+          )}
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

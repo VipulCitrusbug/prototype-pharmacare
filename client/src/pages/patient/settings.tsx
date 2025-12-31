@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { FormSkeleton } from "@/components/common";
+import type { User } from "@shared/schema";
 import {
   Bell,
   Home,
@@ -25,7 +28,7 @@ import {
   Sparkles,
   Trash2,
   Truck,
-  User,
+  User as UserIcon,
 } from "lucide-react";
 
 interface Address {
@@ -37,13 +40,6 @@ interface Address {
   zip: string;
   isDefault: boolean;
 }
-
-const mockUserProfile = {
-  firstName: "John",
-  lastName: "Doe",
-  email: "john.doe@email.com",
-  phone: "(555) 123-4567",
-};
 
 const mockAddresses: Address[] = [
   {
@@ -77,10 +73,31 @@ const mockNotificationSettings = {
 
 export default function PatientSettingsPage() {
   const { toast } = useToast();
-  const [profile, setProfile] = useState(mockUserProfile);
+  
+  const { data: user, isLoading: isLoadingUser } = useQuery<User>({
+    queryKey: ["/api/auth/me"],
+  });
+
+  const [profile, setProfile] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+  });
   const [addresses, setAddresses] = useState(mockAddresses);
   const [notifications, setNotifications] = useState(mockNotificationSettings);
   const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      setProfile({
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        email: user.email || "",
+        phone: "",
+      });
+    }
+  }, [user]);
 
   const handleSaveProfile = async () => {
     setIsSaving(true);
@@ -136,64 +153,71 @@ export default function PatientSettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <User className="w-5 h-5 text-clinical" />
+              <UserIcon className="w-5 h-5 text-clinical" />
               Personal Information
             </CardTitle>
             <CardDescription>Update your contact details</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
-                <Input
-                  id="firstName"
-                  value={profile.firstName}
-                  onChange={(e) => setProfile({ ...profile, firstName: e.target.value })}
-                  data-testid="input-first-name"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
-                <Input
-                  id="lastName"
-                  value={profile.lastName}
-                  onChange={(e) => setProfile({ ...profile, lastName: e.target.value })}
-                  data-testid="input-last-name"
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  id="email"
-                  type="email"
-                  value={profile.email}
-                  onChange={(e) => setProfile({ ...profile, email: e.target.value })}
-                  className="pl-9"
-                  data-testid="input-email"
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone</Label>
-              <div className="relative">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  id="phone"
-                  type="tel"
-                  value={profile.phone}
-                  onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-                  className="pl-9"
-                  data-testid="input-phone"
-                />
-              </div>
-            </div>
-            <Button onClick={handleSaveProfile} disabled={isSaving} data-testid="button-save-profile">
-              <Save className="w-4 h-4 mr-2" />
-              {isSaving ? "Saving..." : "Save Changes"}
-            </Button>
+            {isLoadingUser ? (
+              <FormSkeleton />
+            ) : (
+              <>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="firstName">First Name</Label>
+                    <Input
+                      id="firstName"
+                      value={profile.firstName}
+                      onChange={(e) => setProfile({ ...profile, firstName: e.target.value })}
+                      data-testid="input-first-name"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lastName">Last Name</Label>
+                    <Input
+                      id="lastName"
+                      value={profile.lastName}
+                      onChange={(e) => setProfile({ ...profile, lastName: e.target.value })}
+                      data-testid="input-last-name"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      id="email"
+                      type="email"
+                      value={profile.email}
+                      onChange={(e) => setProfile({ ...profile, email: e.target.value })}
+                      className="pl-9"
+                      data-testid="input-email"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Phone</Label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      id="phone"
+                      type="tel"
+                      value={profile.phone}
+                      placeholder="Add phone number"
+                      onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
+                      className="pl-9"
+                      data-testid="input-phone"
+                    />
+                  </div>
+                </div>
+                <Button onClick={handleSaveProfile} disabled={isSaving} data-testid="button-save-profile">
+                  <Save className="w-4 h-4 mr-2" />
+                  {isSaving ? "Saving..." : "Save Changes"}
+                </Button>
+              </>
+            )}
           </CardContent>
         </Card>
 
