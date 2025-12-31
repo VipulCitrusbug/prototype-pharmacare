@@ -1,0 +1,261 @@
+### Patient Role — Website Content Blueprint
+
+---
+
+### Role Overview
+The **Patient** is an end user of the Pharmacy Management System who interacts with the platform primarily to manage prescription refills and track orders. Unlike clinical or administrative roles, the patient experience is intentionally designed to be **simple, guided, and low-effort**, with no exposure to internal pharmacy workflows or operational complexity.
+
+The system proactively supports patients in maintaining medication continuity, helping them avoid running out of medication and reducing the need for manual follow-ups, phone calls, or in-person visits. AI involvement for patients is **narrow, quiet, and non-intrusive**, limited strictly to refill prediction and timely reminders.
+
+The patient **does not receive** medical advice, diagnostic support, dosage guidance, or medication recommendations. All AI-driven interactions function as supportive reminders, not clinical guidance.
+
+---
+
+### Core Responsibilities
+- Maintain an active account with accurate personal and delivery information
+- Monitor prescription and refill status
+- Initiate refill requests when prompted or when needed
+- Choose between delivery and in-store pickup options
+- Respond to system notifications related to refills and order status
+
+---
+
+### AI Support Philosophy
+AI support for patients is built around **convenience, continuity, and control**, not decision-making.
+
+The system:
+- Predicts refill needs using historical prescription patterns
+- Nudges patients at the right time to prevent medication gaps
+- Avoids over-notification and alert fatigue
+- Keeps all actions optional and fully patient-controlled
+
+AI explicitly does **not**:
+- Suggest dosage changes
+- Recommend alternative medications
+- Provide treatment, diagnosis, or health advice
+
+---
+
+### AI Capabilities Available to Patients
+
+#### AI Smart Refill Predictor
+The system uses AI to:
+- Analyze past refill behavior and prescription schedules
+- Predict when a refill is likely to be needed
+- Notify the patient before medication runs out
+- Present refill prompts at appropriate intervals
+
+Refill predictions are surfaced strictly as **suggestions**, never as automated actions.  
+The patient always initiates the refill request.
+
+---
+
+### Outcomes for the Patient
+- Reduced risk of running out of medication
+- Fewer manual reminders and follow-up calls
+- Simple, predictable refill experience
+- Clear visibility into refill timing and order status
+
+---
+
+### Detailed Patient User Flow
+
+#### Account Access & Authentication
+- Patient accesses the system via mobile app or responsive web portal
+- Secure login using credentials
+- Role-based access loads patient-only views
+- Session begins with standard security and privacy controls enabled
+
+---
+
+#### Home / My Medications Overview
+- Patient lands on a home screen showing:
+  - Active prescriptions
+  - Last refill dates
+  - Current order status (if applicable)
+- Prescriptions approaching refill eligibility are visually indicated
+
+**AI Background Process:**  
+AI Smart Refill Predictor continuously evaluates refill history and prescription schedules to identify upcoming refill needs.
+
+---
+
+#### AI Refill Nudge Trigger
+- When a refill window approaches:
+  - Patient receives a notification (in-app, SMS, or email based on preference)
+  - Notification clearly states it is a reminder, not a medical instruction
+
+**Example Message:**  
+“You may be due for a refill soon. Would you like to request it now?”
+
+---
+
+#### Review Refill Prompt
+- Patient opens the refill reminder
+- System displays:
+  - Medication name
+  - Last refill date
+  - Estimated refill eligibility date
+
+**Decision Point:**  
+Patient may:
+- Proceed with refill request
+- Dismiss the reminder
+- Choose to refill later
+
+---
+
+#### Refill Request Submission
+- Patient selects prescription(s) to refill
+- Confirms pickup or delivery preference
+- Confirms delivery address if applicable
+- System validates refill eligibility before submission
+
+---
+
+#### Refill Request Confirmation
+- System confirms successful submission
+- Prescription status updates to **Refill Requested**
+- Patient receives a confirmation notification
+
+---
+
+#### Order Status Tracking
+- Patient can view real-time order status:
+  - Requested
+  - In Processing
+  - Ready for Pickup / Out for Delivery
+  - Completed
+- Updates are passive and informational only
+
+---
+
+#### Notification & Follow-Up
+- Patient receives notifications when:
+  - Refill is approved
+  - Order is ready
+  - Order is completed
+- No action is required unless the patient chooses to engage
+
+---
+
+#### Optional Profile Management
+- Patient may update:
+  - Contact information
+  - Delivery preferences
+  - Notification preferences
+- Changes are saved for future refill cycles
+
+---
+
+#### Session End
+- Patient logs out or closes the app
+- AI continues monitoring refill timing in the background for future reminders
+
+---
+
+### Key Control Principles
+- Patient always initiates refill actions
+- AI predicts and reminds but never auto-refills
+- Notifications are timely, optional, and non-intrusive
+- No medical, dosage, or treatment advice is presented
+
+---
+
+### Patient Application Screens (Mobile App + Responsive Web)
+
+#### Login Screen
+- Secure authentication
+- Session initiation and security validation
+
+---
+
+#### Account Verification / First-Time Login
+- Shown on first login or after password reset
+- Identity verification and contact confirmation
+
+---
+
+#### Patient Home Dashboard
+- Active prescriptions list
+- Upcoming refill indicators
+- Current order status
+- AI-triggered refill reminder banners
+
+---
+
+#### My Medications List
+- All active and inactive prescriptions
+- Medication name, last refill date, eligibility indicator, and status
+
+---
+
+#### Medication Detail
+- Medication name
+- Read-only prescription instructions
+- Last refill date
+- Estimated next refill window
+- Refill request action (when eligible)
+
+---
+
+#### AI Refill Reminder
+- Opened from refill notifications
+- Explains:
+  - Why the reminder was triggered
+  - Which medication is affected
+  - Available actions (refill now, later, dismiss)
+
+---
+
+#### Refill Review & Confirmation
+- Review selected medication(s)
+- Confirm eligibility
+- Proceed with refill request
+
+---
+
+#### Pickup / Delivery Selection
+- In-store pickup option
+- Delivery option (if available)
+- Saved preferences pre-selected when applicable
+
+---
+
+#### Delivery Address Confirmation
+- Shown only when delivery is selected
+- Confirm, edit, or add delivery address
+
+---
+
+#### Refill Submission Success
+- Confirmation of refill request
+- Expected processing status
+- Next notification expectations
+
+---
+
+#### Order Status Tracking
+- Real-time status updates
+- Visual status timeline
+- Pickup or delivery indicator
+
+---
+
+#### Notifications Center
+- Centralized list of all notifications
+- Refill reminders and order updates
+
+---
+
+#### Notification Preferences
+- Configure notification channels
+- Adjust reminder frequency
+- Enable or disable refill nudges
+
+---
+
+#### Profile & Account Settings
+- Update contact details
+- Manage delivery preferences
+- Password and security settings

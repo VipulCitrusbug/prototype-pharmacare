@@ -28,6 +28,12 @@ import ManagerInventoryPage from "@/pages/manager/inventory";
 import ManagerInsightsPage from "@/pages/manager/insights";
 import ManagerStaffPage from "@/pages/manager/staff";
 import ManagerReportsPage from "@/pages/manager/reports";
+import PatientDashboardPage from "@/pages/patient/dashboard";
+import PatientMedicationsPage from "@/pages/patient/medications";
+import PatientMedicationDetailPage from "@/pages/patient/medication-detail";
+import PatientOrdersPage from "@/pages/patient/orders";
+import PatientNotificationsPage from "@/pages/patient/notifications";
+import PatientSettingsPage from "@/pages/patient/settings";
 import type { User } from "@shared/schema";
 
 function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
@@ -65,11 +71,31 @@ function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
       const user = userQuery.data;
       const currentPath = location || "/";
       const isManagerRoute = currentPath.startsWith("/manager");
+      const isPatientRoute = currentPath.startsWith("/patient");
       
+      // Block non-managers from manager routes
       if (isManagerRoute && user.role !== "manager") {
-        setLocation("/dashboard");
-      } else if (user.role === "manager" && (currentPath === "/" || currentPath === "/dashboard")) {
+        if (user.role === "patient") {
+          setLocation("/patient");
+        } else {
+          setLocation("/dashboard");
+        }
+      }
+      // Block non-patients from patient routes
+      else if (isPatientRoute && user.role !== "patient") {
+        if (user.role === "manager") {
+          setLocation("/manager");
+        } else {
+          setLocation("/dashboard");
+        }
+      }
+      // Redirect managers to their portal on root/dashboard
+      else if (user.role === "manager" && (currentPath === "/" || currentPath === "/dashboard")) {
         setLocation("/manager");
+      }
+      // Redirect patients to their portal on root/dashboard
+      else if (user.role === "patient" && (currentPath === "/" || currentPath === "/dashboard")) {
+        setLocation("/patient");
       }
     }
   }, [userQuery.isLoading, userQuery.data, location, setLocation]);
@@ -154,6 +180,15 @@ function Router() {
         <Route path="/manager/insights" component={ManagerInsightsPage} />
         <Route path="/manager/staff" component={ManagerStaffPage} />
         <Route path="/manager/reports" component={ManagerReportsPage} />
+        
+        {/* Patient routes */}
+        <Route path="/patient" component={PatientDashboardPage} />
+        <Route path="/patient/dashboard" component={PatientDashboardPage} />
+        <Route path="/patient/medications" component={PatientMedicationsPage} />
+        <Route path="/patient/medications/:id" component={PatientMedicationDetailPage} />
+        <Route path="/patient/orders" component={PatientOrdersPage} />
+        <Route path="/patient/notifications" component={PatientNotificationsPage} />
+        <Route path="/patient/settings" component={PatientSettingsPage} />
         
         <Route component={NotFound} />
       </Switch>

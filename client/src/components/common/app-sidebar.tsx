@@ -91,9 +91,16 @@ const roleNavigation: Record<UserRoleType, NavGroup[]> = {
     {
       label: "My Health",
       items: [
-        { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-        { title: "Prescriptions", url: "/prescriptions", icon: PillBottle },
-        { title: "Order Status", url: "/orders", icon: Truck },
+        { title: "Dashboard", url: "/patient", icon: LayoutDashboard },
+        { title: "My Medications", url: "/patient/medications", icon: PillBottle },
+        { title: "Order Status", url: "/patient/orders", icon: Truck },
+      ],
+    },
+    {
+      label: "Account",
+      items: [
+        { title: "Notifications", url: "/patient/notifications", icon: AlertTriangle },
+        { title: "Settings", url: "/patient/settings", icon: Settings },
       ],
     },
   ],

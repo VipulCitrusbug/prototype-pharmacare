@@ -121,6 +121,9 @@ PharmaCare Plus is an AI-assisted pharmacy management platform designed to suppo
 - `GET /api/manager/metrics` - Manager operations KPIs
 - `GET /api/manager/alerts` - AI-powered proactive alerts
 
+### Patient
+- `GET /api/patient/metrics` - Patient dashboard metrics
+
 ## Demo Credentials
 
 ### Pharmacist
@@ -129,6 +132,10 @@ PharmaCare Plus is an AI-assisted pharmacy management platform designed to suppo
 
 ### Manager
 - Username: `manager`
+- Password: `password123`
+
+### Patient
+- Username: `patient`
 - Password: `password123`
 
 ## Development
@@ -156,6 +163,29 @@ The Manager portal provides AI-driven operational insights for pharmacy manageme
 - AI confidence scores on all predictive insights
 - Role-based access prevents pharmacists from accessing manager routes
 
+## Patient Portal
+
+The Patient portal provides a simple, guided experience for managing prescriptions:
+
+### Pages
+- **My Health Dashboard** (`/patient`) - Active medications, refill reminders, order status overview
+- **My Medications** (`/patient/medications`) - List of active/inactive prescriptions with refill status
+- **Medication Detail** (`/patient/medications/:id`) - Prescription details, refill request with delivery options
+- **Order Status** (`/patient/orders`) - Real-time order tracking with status timeline
+- **Notifications** (`/patient/notifications`) - Refill reminders and order updates
+- **Settings** (`/patient/settings`) - Profile, addresses, notification preferences
+
+### AI Features (Patient-Specific)
+- AI Smart Refill Predictor - Suggests refills based on historical patterns
+- Non-intrusive reminders - No medical advice, just convenience
+- Patient always initiates refill actions
+
+### Design Philosophy
+- Simple, guided, low-effort experience
+- No exposure to internal pharmacy workflows
+- AI involvement limited to refill prediction only
+- Patient controls all actions
+
 ## Recent Changes
 - Created comprehensive common component library
 - Implemented role-based navigation
@@ -165,3 +195,7 @@ The Manager portal provides AI-driven operational insights for pharmacy manageme
 - Added complete Manager portal with 6 pages (Operations, AI Alerts, Inventory, Insights, Staff, Reports)
 - Implemented role-based routing with guards for manager routes
 - Added demo manager user account
+- Added complete Patient portal with 6 pages (Dashboard, Medications, Medication Detail, Orders, Notifications, Settings)
+- Implemented role-based routing with guards for patient routes
+- Added demo patient user account
+- Added server-side authorization middleware for patient and manager API endpoints

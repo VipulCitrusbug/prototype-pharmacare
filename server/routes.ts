@@ -352,5 +352,67 @@ export async function registerRoutes(
     }
   });
 
+  // Patient authorization middleware
+  const requirePatient = async (req: any, res: any, next: any) => {
+    const userId = (req.session as any).userId;
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    const user = await storage.getUser(userId);
+    if (!user || user.role !== "patient") {
+      return res.status(403).json({ error: "Forbidden: Patient access required" });
+    }
+    next();
+  };
+
+  // Patient endpoints
+  app.get("/api/patient/metrics", requirePatient, async (req, res) => {
+    try {
+      await new Promise((r) => setTimeout(r, 200));
+
+      res.json([
+        {
+          id: "active-rx",
+          title: "Active Medications",
+          value: 4,
+          change: 0,
+          changeType: "neutral",
+          icon: "pill",
+          color: "clinical",
+        },
+        {
+          id: "pending-refills",
+          title: "Pending Refills",
+          value: 1,
+          change: 1,
+          changeType: "increase",
+          icon: "refresh",
+          color: "amber",
+        },
+        {
+          id: "next-refill",
+          title: "Next Refill Due",
+          value: "3 days",
+          change: 0,
+          changeType: "neutral",
+          icon: "calendar",
+          color: "mint",
+        },
+        {
+          id: "orders-in-progress",
+          title: "Orders in Progress",
+          value: 1,
+          change: 0,
+          changeType: "neutral",
+          icon: "truck",
+          color: "info",
+        },
+      ]);
+    } catch (error) {
+      console.error("Get patient metrics error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   return httpServer;
 }
