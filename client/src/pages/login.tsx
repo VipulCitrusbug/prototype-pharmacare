@@ -122,23 +122,22 @@ export default function LoginPage() {
                             type={showPassword ? "text" : "password"}
                             placeholder="Enter your password"
                             autoComplete="current-password"
+                            className="pr-10"
                             data-testid="input-password"
                             {...field}
                           />
-                          <Button
+                          <button
                             type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="absolute right-0 top-0 h-full px-3"
+                            className="absolute right-0 top-0 h-full px-3 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
                             onClick={() => setShowPassword(!showPassword)}
                             data-testid="button-toggle-password"
                           >
                             {showPassword ? (
-                              <EyeOff className="w-4 h-4 text-muted-foreground" />
+                              <EyeOff className="w-4 h-4" />
                             ) : (
-                              <Eye className="w-4 h-4 text-muted-foreground" />
+                              <Eye className="w-4 h-4" />
                             )}
-                          </Button>
+                          </button>
                         </div>
                       </FormControl>
                       <FormMessage />

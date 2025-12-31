@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useLocation } from "wouter";
+import { useLocation, useSearch } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -167,10 +167,19 @@ type StatusFilter = "all" | PrescriptionStatusType;
 
 export default function QueuePage() {
   const [, setLocation] = useLocation();
+  const searchParams = useSearch();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+    const statusParam = params.get("status");
+    if (statusParam && ["pending", "in_review", "preparing", "completed", "dispensed"].includes(statusParam)) {
+      setStatusFilter(statusParam as StatusFilter);
+    }
+  }, [searchParams]);
 
   const prescriptionsQuery = useQuery<Prescription[]>({
     queryKey: ["/api/prescriptions?status=pending,in_review,preparing"],

@@ -1,0 +1,129 @@
+3. Prescription Selection
+Pharmacist selects a prescription from the prioritized queue.
+
+
+Prescription status moves to “In Review”.
+
+
+System locks the prescription to prevent parallel processing conflicts.
+
+
+
+4. Prescription Intake & Data Capture (AI Prescription Intelligence)
+If the prescription is scanned, faxed, or handwritten:
+
+
+AI OCR + NLP extracts prescription data.
+
+
+Structured fields are populated (drug name, dosage, frequency, duration).
+
+
+Low-confidence fields are clearly highlighted for pharmacist review.
+
+
+If the prescription is already structured (eRx or manual entry):
+
+
+Data is prefilled and ready for validation.
+
+
+Decision Point:
+The pharmacist reviews all extracted fields.
+
+
+Pharmacist confirms, edits, or corrects any AI-extracted data.
+
+
+Corrections are saved and used to improve future AI accuracy.
+
+
+
+5. Prescription Validation
+Pharmacist validates:
+
+
+Drug correctness
+
+
+Dosage and frequency alignment
+
+
+Completeness of instructions
+
+
+Validation is a mandatory human action.
+
+
+System prevents progression if required fields are incomplete or unresolved.
+
+
+
+6. Dispensing Preparation
+Pharmacist proceeds to dispensing preparation.
+
+
+Inventory availability is confirmed.
+
+
+Expiry-sensitive stock is surfaced to guide selection.
+
+
+Prescription status updates to “Preparing”.
+
+
+
+7. Dispensing Execution
+Pharmacist completes dispensing actions.
+
+
+Any deviations, substitutions, or overrides trigger documentation requirements.
+
+
+Prescription status updates to “Dispensed”.
+
+
+
+8. Documentation (AI Documentation Assistant)
+AI Documentation Assistant auto-drafts:
+
+
+Dispensing notes
+
+
+Override justifications (if applicable)
+
+
+Draft content is presented in editable form.
+
+
+Pharmacist reviews, edits if needed, and explicitly confirms documentation.
+
+
+Decision Point:
+Pharmacist approves documentation.
+
+
+System timestamps and locks the entry for audit purposes.
+
+
+
+9. Prescription Completion
+Prescription status updates to “Ready for Pickup” or “Out for Delivery”, based on order type.
+
+
+Patient notification is triggered by the system (outside pharmacist action).
+
+
+Prescription is removed from active pharmacist queue.
+
+
+
+10. Continuous Queue Re-evaluation (AI-Assisted)
+AI Workload Prioritization re-evaluates the queue in real time.
+
+
+Newly added or aging prescriptions are re-ranked.
+
+
+Alerts are raised if backlog thresholds are crossed

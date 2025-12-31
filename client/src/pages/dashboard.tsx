@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -147,6 +147,8 @@ const mockPrescriptions: Prescription[] = [
 ];
 
 export default function DashboardPage() {
+  const [, setLocation] = useLocation();
+  
   const metricsQuery = useQuery<DashboardMetric[]>({
     queryKey: ["/api/dashboard/metrics"],
     staleTime: 30000,
@@ -162,6 +164,18 @@ export default function DashboardPage() {
 
   const metrics = metricsQuery.data || mockMetrics;
   const prescriptions = prescriptionsQuery.data || mockPrescriptions;
+
+  const metricRoutes: Record<string, string> = {
+    "pending": "/queue?status=pending",
+    "in-review": "/queue?status=in_review",
+    "preparing": "/queue?status=preparing",
+    "completed": "/queue?status=completed",
+  };
+
+  const handleMetricClick = (metricId: string) => {
+    const route = metricRoutes[metricId] || "/queue";
+    setLocation(route);
+  };
 
   if (hasError) {
     return (
@@ -197,7 +211,11 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {metrics.map((metric) => (
-          <MetricCard key={metric.id} metric={metric} />
+          <MetricCard 
+            key={metric.id} 
+            metric={metric} 
+            onClick={() => handleMetricClick(metric.id)}
+          />
         ))}
       </div>
 
@@ -230,7 +248,7 @@ export default function DashboardPage() {
                 <PrescriptionCard
                   key={prescription.id}
                   prescription={prescription}
-                  onSelect={(p) => console.log("Selected:", p.id)}
+                  onSelect={(p) => setLocation(`/prescription/${p.id}`)}
                 />
               ))}
             </div>

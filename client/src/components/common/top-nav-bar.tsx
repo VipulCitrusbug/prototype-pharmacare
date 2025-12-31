@@ -1,3 +1,4 @@
+import { useLocation } from "wouter";
 import { Logo } from "./logo";
 import { ThemeToggle } from "./theme-toggle";
 import { UserAvatar } from "./user-avatar";
@@ -21,6 +22,7 @@ interface TopNavBarProps {
 }
 
 export function TopNavBar({ user, onLogout, showSidebarTrigger = true }: TopNavBarProps) {
+  const [, setLocation] = useLocation();
   const displayName = user
     ? `${user.firstName || ""} ${user.lastName || ""}`.trim() || user.username
     : "Guest";
@@ -79,11 +81,17 @@ export function TopNavBar({ user, onLogout, showSidebarTrigger = true }: TopNavB
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem data-testid="menu-item-profile">
+              <DropdownMenuItem 
+                onClick={() => setLocation("/profile")}
+                data-testid="menu-item-profile"
+              >
                 <User className="w-4 h-4 mr-2" />
                 Profile
               </DropdownMenuItem>
-              <DropdownMenuItem data-testid="menu-item-settings">
+              <DropdownMenuItem 
+                onClick={() => setLocation("/settings")}
+                data-testid="menu-item-settings"
+              >
                 <Settings className="w-4 h-4 mr-2" />
                 Settings
               </DropdownMenuItem>

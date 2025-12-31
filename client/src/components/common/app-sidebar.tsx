@@ -47,13 +47,12 @@ const roleNavigation: Record<UserRoleType, NavGroup[]> = {
       label: "Overview",
       items: [
         { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-        { title: "Prescription Queue", url: "/queue", icon: ClipboardList },
       ],
     },
     {
-      label: "Dispensing",
+      label: "Prescriptions",
       items: [
-        { title: "Active Prescriptions", url: "/prescriptions", icon: PillBottle },
+        { title: "Prescription Queue", url: "/queue", icon: ClipboardList },
         { title: "Inventory", url: "/inventory", icon: Package },
       ],
     },

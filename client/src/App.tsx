@@ -12,6 +12,16 @@ import SignupPage from "@/pages/signup";
 import DashboardPage from "@/pages/dashboard";
 import QueuePage from "@/pages/queue";
 import PrescriptionDetailPage from "@/pages/prescription-detail";
+import PrescriptionReviewPage from "@/pages/prescription-review";
+import PrescriptionValidatePage from "@/pages/prescription-validate";
+import PrescriptionDispensePage from "@/pages/prescription-dispense";
+import PrescriptionDocumentPage from "@/pages/prescription-document";
+import PrescriptionCompletePage from "@/pages/prescription-complete";
+import InventoryPage from "@/pages/inventory";
+import PatientsPage from "@/pages/patients";
+import ReportsPage from "@/pages/reports";
+import ProfilePage from "@/pages/profile";
+import SettingsPage from "@/pages/settings";
 import type { User } from "@shared/schema";
 
 function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
@@ -103,7 +113,16 @@ function Router() {
         <Route path="/dashboard" component={DashboardPage} />
         <Route path="/queue" component={QueuePage} />
         <Route path="/prescription/:id" component={PrescriptionDetailPage} />
-        <Route path="/prescriptions" component={QueuePage} />
+        <Route path="/prescription/:id/review" component={PrescriptionReviewPage} />
+        <Route path="/prescription/:id/validate" component={PrescriptionValidatePage} />
+        <Route path="/prescription/:id/dispense" component={PrescriptionDispensePage} />
+        <Route path="/prescription/:id/document" component={PrescriptionDocumentPage} />
+        <Route path="/prescription/:id/complete" component={PrescriptionCompletePage} />
+        <Route path="/inventory" component={InventoryPage} />
+        <Route path="/patients" component={PatientsPage} />
+        <Route path="/reports" component={ReportsPage} />
+        <Route path="/profile" component={ProfilePage} />
+        <Route path="/settings" component={SettingsPage} />
         <Route component={NotFound} />
       </Switch>
     </AuthenticatedLayout>
