@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, useLocation } from "wouter";
+import { useState, useEffect } from "react";
+import { Link, useLocation, Redirect } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,15 +8,27 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Logo, ThemeToggle, ButtonSpinner } from "@/components/common";
 import { Eye, EyeOff, LogIn } from "lucide-react";
-import { loginSchema, type LoginInput } from "@shared/schema";
-import { useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { loginSchema, type LoginInput, type User } from "@shared/schema";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
 export default function LoginPage() {
   const [, setLocation] = useLocation();
   const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
+
+  // Check if user is already logged in
+  const userQuery = useQuery<User | null>({
+    queryKey: ["/api/auth/me"],
+    staleTime: Infinity,
+    retry: false,
+  });
+
+  // Redirect to dashboard if already logged in
+  if (userQuery.data) {
+    return <Redirect to="/dashboard" />;
+  }
 
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
@@ -32,6 +44,8 @@ export default function LoginPage() {
       return res.json();
     },
     onSuccess: (data) => {
+      // Invalidate and refetch user query to update auth state
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
       toast({
         title: "Welcome back!",
         description: `Logged in as ${data.user.firstName || data.user.username}`,

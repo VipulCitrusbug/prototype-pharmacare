@@ -1,4 +1,5 @@
-import { Switch, Route, useLocation } from "wouter";
+import { useEffect } from "react";
+import { Switch, Route, useLocation, Redirect } from "wouter";
 import { queryClient, apiRequest } from "./lib/queryClient";
 import { QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -14,6 +15,7 @@ import PrescriptionDetailPage from "@/pages/prescription-detail";
 import type { User } from "@shared/schema";
 
 function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
+  const [, setLocation] = useLocation();
   const userQuery = useQuery<User | null>({
     queryKey: ["/api/auth/me"],
     staleTime: Infinity,
@@ -25,7 +27,7 @@ function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
       const response = await fetch("/api/auth/logout", { method: "POST" });
       if (response.ok) {
         queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
-        window.location.href = "/login";
+        setLocation("/login");
       } else {
         console.error("Logout failed with status:", response.status);
       }
@@ -39,8 +41,14 @@ function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
   }
 
   const user = userQuery.data;
-  const userRole = user?.role || "pharmacist";
-  const userName = user ? `${user.firstName || ""} ${user.lastName || ""}`.trim() || user.username : "User";
+
+  // Redirect to login if not authenticated
+  if (!user) {
+    return <Redirect to="/login" />;
+  }
+
+  const userRole = user.role || "pharmacist";
+  const userName = `${user.firstName || ""} ${user.lastName || ""}`.trim() || user.username;
 
   const style = {
     "--sidebar-width": "16rem",
@@ -53,7 +61,7 @@ function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
         <AppSidebar
           userRole={userRole as any}
           userName={userName}
-          userAvatar={user?.avatar}
+          userAvatar={user.avatar}
         />
         <div className="flex flex-col flex-1 min-w-0">
           <TopNavBar user={user} onLogout={handleLogout} />

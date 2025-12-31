@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation } from "wouter";
+import { Link, useLocation, Redirect } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,8 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Logo, ThemeToggle, ButtonSpinner } from "@/components/common";
 import { Eye, EyeOff, UserPlus } from "lucide-react";
-import { signupSchema, type SignupInput } from "@shared/schema";
-import { useMutation } from "@tanstack/react-query";
+import { signupSchema, type SignupInput, type User } from "@shared/schema";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -27,6 +27,18 @@ export default function SignupPage() {
   const [, setLocation] = useLocation();
   const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
+
+  // Check if user is already logged in
+  const userQuery = useQuery<User | null>({
+    queryKey: ["/api/auth/me"],
+    staleTime: Infinity,
+    retry: false,
+  });
+
+  // Redirect to dashboard if already logged in
+  if (userQuery.data) {
+    return <Redirect to="/dashboard" />;
+  }
 
   const form = useForm<SignupInput>({
     resolver: zodResolver(signupSchema),
