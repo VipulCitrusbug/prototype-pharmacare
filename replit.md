@@ -186,6 +186,34 @@ The Patient portal provides a simple, guided experience for managing prescriptio
 - AI involvement limited to refill prediction only
 - Patient controls all actions
 
+## Admin Portal
+
+The Admin portal provides system configuration and AI-powered optimization for pharmacy management:
+
+### Pages
+- **Dashboard** (`/admin/dashboard`) - System health, AI recommendations preview, configuration status
+- **AI Configuration Advisor** (`/admin/advisor`) - AI-powered optimization recommendations with apply/dismiss workflow
+- **Pricing Rules Management** (`/admin/pricing`) - View, create, edit, delete pricing rules with priority ordering
+- **Pricing Rule Editor** (`/admin/pricing/:id`) - Create/edit individual pricing rules with validation
+- **Integration Status** (`/admin/integrations`) - Read-only monitoring of external system connections (EHR, insurance, delivery)
+- **Reports & Audit Logs** (`/admin/reports`) - Configuration history, exports, and audit trail
+
+### AI Features (Admin-Specific)
+- AI Configuration Advisor provides optimization recommendations based on usage patterns
+- Recommendations include confidence scores (e.g., 91%)
+- Categories: Pricing, Cleanup, Optimization, Conflict Resolution
+- Impact levels: High, Medium, Low
+
+### Design Philosophy
+- AI is advisory only - no automatic changes are made
+- All configuration modifications require explicit admin approval
+- Complete audit trail for compliance and accountability
+- Read-only integration monitoring (no direct external system control)
+
+### Demo Credentials
+- Username: `admin`
+- Password: `password123`
+
 ## Recent Changes
 - Created comprehensive common component library
 - Implemented role-based navigation
@@ -199,3 +227,6 @@ The Patient portal provides a simple, guided experience for managing prescriptio
 - Implemented role-based routing with guards for patient routes
 - Added demo patient user account
 - Added server-side authorization middleware for patient and manager API endpoints
+- Added complete Admin portal with 6 pages (Dashboard, AI Advisor, Pricing Rules, Rule Editor, Integrations, Reports)
+- Implemented role-based routing with guards for admin routes
+- Added demo admin user account
