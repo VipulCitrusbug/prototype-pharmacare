@@ -240,8 +240,21 @@ export async function registerRoutes(
     }
   });
 
+  // Manager authorization middleware
+  const requireManager = async (req: any, res: any, next: any) => {
+    const userId = (req.session as any).userId;
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    const user = await storage.getUser(userId);
+    if (!user || user.role !== "manager") {
+      return res.status(403).json({ error: "Forbidden: Manager access required" });
+    }
+    next();
+  };
+
   // Manager endpoints
-  app.get("/api/manager/metrics", async (req, res) => {
+  app.get("/api/manager/metrics", requireManager, async (req, res) => {
     try {
       await new Promise((r) => setTimeout(r, 300));
 
@@ -294,7 +307,7 @@ export async function registerRoutes(
     }
   });
 
-  app.get("/api/manager/alerts", async (req, res) => {
+  app.get("/api/manager/alerts", requireManager, async (req, res) => {
     try {
       await new Promise((r) => setTimeout(r, 200));
 

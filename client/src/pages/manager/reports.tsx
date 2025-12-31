@@ -123,11 +123,11 @@ export default function ManagerReportsPage() {
       </div>
 
       <Tabs defaultValue="generate">
-        <TabsList>
-          <TabsTrigger value="generate" data-testid="tab-generate">
+        <TabsList data-testid="tabs-reports">
+          <TabsTrigger value="generate" data-testid="button-tab-generate">
             Generate Report
           </TabsTrigger>
-          <TabsTrigger value="history" data-testid="tab-history">
+          <TabsTrigger value="history" data-testid="button-tab-history">
             Export History
           </TabsTrigger>
         </TabsList>
@@ -184,28 +184,28 @@ export default function ManagerReportsPage() {
                       <div className="space-y-2">
                         <Label>Date Range</Label>
                         <Select value={dateRange} onValueChange={setDateRange}>
-                          <SelectTrigger data-testid="select-date-range">
+                          <SelectTrigger data-testid="button-select-date-range">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="day">Today</SelectItem>
-                            <SelectItem value="week">This Week</SelectItem>
-                            <SelectItem value="month">This Month</SelectItem>
-                            <SelectItem value="quarter">This Quarter</SelectItem>
-                            <SelectItem value="custom">Custom Range</SelectItem>
+                            <SelectItem value="day" data-testid="option-day">Today</SelectItem>
+                            <SelectItem value="week" data-testid="option-week">This Week</SelectItem>
+                            <SelectItem value="month" data-testid="option-month">This Month</SelectItem>
+                            <SelectItem value="quarter" data-testid="option-quarter">This Quarter</SelectItem>
+                            <SelectItem value="custom" data-testid="option-custom">Custom Range</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
                       <div className="space-y-2">
                         <Label>Export Format</Label>
                         <Select value={format} onValueChange={setFormat}>
-                          <SelectTrigger data-testid="select-format">
+                          <SelectTrigger data-testid="button-select-format">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="xlsx">Excel (.xlsx)</SelectItem>
-                            <SelectItem value="pdf">PDF (.pdf)</SelectItem>
-                            <SelectItem value="csv">CSV (.csv)</SelectItem>
+                            <SelectItem value="xlsx" data-testid="option-xlsx">Excel (.xlsx)</SelectItem>
+                            <SelectItem value="pdf" data-testid="option-pdf">PDF (.pdf)</SelectItem>
+                            <SelectItem value="csv" data-testid="option-csv">CSV (.csv)</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -219,6 +219,7 @@ export default function ManagerReportsPage() {
                             id="charts"
                             checked={includeCharts}
                             onCheckedChange={(checked) => setIncludeCharts(checked as boolean)}
+                            data-testid="checkbox-charts"
                           />
                           <label
                             htmlFor="charts"
@@ -232,6 +233,7 @@ export default function ManagerReportsPage() {
                             id="rawdata"
                             checked={includeRawData}
                             onCheckedChange={(checked) => setIncludeRawData(checked as boolean)}
+                            data-testid="checkbox-rawdata"
                           />
                           <label
                             htmlFor="rawdata"

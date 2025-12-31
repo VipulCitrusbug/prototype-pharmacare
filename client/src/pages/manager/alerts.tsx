@@ -149,14 +149,14 @@ export default function ManagerAlertsPage() {
       </div>
 
       <Tabs defaultValue="all" onValueChange={(v) => setFilter(v as any)}>
-        <TabsList>
-          <TabsTrigger value="all" data-testid="tab-all-alerts">
+        <TabsList data-testid="tabs-alerts">
+          <TabsTrigger value="all" data-testid="button-tab-all-alerts">
             All ({alertCounts.all})
           </TabsTrigger>
-          <TabsTrigger value="active" data-testid="tab-active-alerts">
+          <TabsTrigger value="active" data-testid="button-tab-active-alerts">
             Active ({alertCounts.active})
           </TabsTrigger>
-          <TabsTrigger value="acknowledged" data-testid="tab-acknowledged-alerts">
+          <TabsTrigger value="acknowledged" data-testid="button-tab-acknowledged-alerts">
             Acknowledged ({alertCounts.acknowledged})
           </TabsTrigger>
         </TabsList>

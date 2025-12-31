@@ -34,6 +34,13 @@ PharmaCare Plus is an AI-assisted pharmacy management platform designed to suppo
 │   │   │   ├── dashboard.tsx
 │   │   │   ├── queue.tsx
 │   │   │   ├── prescription-detail.tsx
+│   │   │   ├── manager/         # Manager portal pages
+│   │   │   │   ├── dashboard.tsx
+│   │   │   │   ├── alerts.tsx
+│   │   │   │   ├── inventory.tsx
+│   │   │   │   ├── insights.tsx
+│   │   │   │   ├── staff.tsx
+│   │   │   │   └── reports.tsx
 │   │   │   └── not-found.tsx
 │   │   ├── hooks/           # Custom hooks
 │   │   ├── lib/             # Utilities
@@ -96,18 +103,32 @@ PharmaCare Plus is an AI-assisted pharmacy management platform designed to suppo
 6. **Admin** - System configuration
 
 ## API Endpoints
+
+### Authentication
 - `POST /api/auth/signup` - User registration
 - `POST /api/auth/login` - User authentication
 - `POST /api/auth/logout` - Session termination
 - `GET /api/auth/me` - Current user info
+
+### Pharmacist
 - `GET /api/dashboard/metrics` - Dashboard statistics
 - `GET /api/prescriptions` - List prescriptions with filters
 - `GET /api/prescriptions/:id` - Single prescription
 - `POST /api/prescriptions` - Create prescription
 - `PATCH /api/prescriptions/:id` - Update prescription
 
+### Manager
+- `GET /api/manager/metrics` - Manager operations KPIs
+- `GET /api/manager/alerts` - AI-powered proactive alerts
+
 ## Demo Credentials
+
+### Pharmacist
 - Username: `pharmacist`
+- Password: `password123`
+
+### Manager
+- Username: `manager`
 - Password: `password123`
 
 ## Development
@@ -117,9 +138,30 @@ PharmaCare Plus is an AI-assisted pharmacy management platform designed to suppo
 - Forms: react-hook-form with zod validation
 - Data fetching: TanStack Query
 
+## Manager Portal
+
+The Manager portal provides AI-driven operational insights for pharmacy management:
+
+### Pages
+- **Operations Dashboard** (`/manager`) - KPIs, alerts preview, quick actions
+- **AI Proactive Alerts** (`/manager/alerts`) - Early warning system with predictive analytics
+- **Inventory Intelligence** (`/manager/inventory`) - Demand forecasts, reorder recommendations, expiry risks
+- **Operational Insights** (`/manager/insights`) - Volume trends, turnaround breakdown, bottleneck detection
+- **Staff Performance Signals** (`/manager/staff`) - Aggregate metrics for capacity planning (non-punitive)
+- **Reports & Export** (`/manager/reports`) - Leadership-ready reports and data exports
+
+### Design Philosophy
+- Uses aggregate-level metrics designed for process improvement
+- Non-punitive staff performance signals for capacity planning
+- AI confidence scores on all predictive insights
+- Role-based access prevents pharmacists from accessing manager routes
+
 ## Recent Changes
 - Created comprehensive common component library
 - Implemented role-based navigation
 - Built pharmacist dashboard, prescription queue, and detail views
 - Added dark mode support with theme toggle
 - Configured design tokens matching PharmaCare Plus branding
+- Added complete Manager portal with 6 pages (Operations, AI Alerts, Inventory, Insights, Staff, Reports)
+- Implemented role-based routing with guards for manager routes
+- Added demo manager user account

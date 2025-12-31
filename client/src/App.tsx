@@ -31,7 +31,7 @@ import ManagerReportsPage from "@/pages/manager/reports";
 import type { User } from "@shared/schema";
 
 function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const userQuery = useQuery<User | null>({
     queryKey: ["/api/auth/me"],
     staleTime: Infinity,
@@ -58,6 +58,21 @@ function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
       setLocation("/login");
     }
   }, [userQuery.isLoading, userQuery.data, setLocation]);
+
+  // Role-based route guard
+  useEffect(() => {
+    if (!userQuery.isLoading && userQuery.data) {
+      const user = userQuery.data;
+      const currentPath = location || "/";
+      const isManagerRoute = currentPath.startsWith("/manager");
+      
+      if (isManagerRoute && user.role !== "manager") {
+        setLocation("/dashboard");
+      } else if (user.role === "manager" && (currentPath === "/" || currentPath === "/dashboard")) {
+        setLocation("/manager");
+      }
+    }
+  }, [userQuery.isLoading, userQuery.data, location, setLocation]);
 
   if (userQuery.isLoading) {
     return <PageLoader text="Loading..." />;

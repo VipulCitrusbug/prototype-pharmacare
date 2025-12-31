@@ -241,14 +241,14 @@ export default function ManagerInventoryPage() {
       </div>
 
       <Tabs defaultValue="forecasts" onValueChange={setSelectedTab}>
-        <TabsList>
-          <TabsTrigger value="forecasts" data-testid="tab-forecasts">
+        <TabsList data-testid="tabs-inventory">
+          <TabsTrigger value="forecasts" data-testid="button-tab-forecasts">
             Demand Forecasts
           </TabsTrigger>
-          <TabsTrigger value="reorder" data-testid="tab-reorder">
+          <TabsTrigger value="reorder" data-testid="button-tab-reorder">
             Reorder Recommendations
           </TabsTrigger>
-          <TabsTrigger value="expiry" data-testid="tab-expiry">
+          <TabsTrigger value="expiry" data-testid="button-tab-expiry">
             Expiry Risk
           </TabsTrigger>
         </TabsList>
@@ -394,10 +394,10 @@ export default function ManagerInventoryPage() {
                         </div>
                       </div>
                       <div className="flex flex-col gap-2">
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" data-testid={`button-transfer-${item.id}`}>
                           Transfer Stock
                         </Button>
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" data-testid={`button-review-${item.id}`}>
                           Mark for Review
                         </Button>
                       </div>

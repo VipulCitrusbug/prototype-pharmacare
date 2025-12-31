@@ -80,13 +80,13 @@ export default function ManagerStaffPage() {
         </div>
         <div className="flex items-center gap-2">
           <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger className="w-32" data-testid="select-time-range">
+            <SelectTrigger className="w-32" data-testid="button-select-time-range">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="week">This Week</SelectItem>
-              <SelectItem value="month">This Month</SelectItem>
-              <SelectItem value="quarter">Quarter</SelectItem>
+              <SelectItem value="week" data-testid="option-week">This Week</SelectItem>
+              <SelectItem value="month" data-testid="option-month">This Month</SelectItem>
+              <SelectItem value="quarter" data-testid="option-quarter">Quarter</SelectItem>
             </SelectContent>
           </Select>
         </div>
