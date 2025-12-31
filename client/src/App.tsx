@@ -40,6 +40,12 @@ import FinanceClaimDetailPage from "@/pages/finance/claim-detail";
 import FinanceDocumentsPage from "@/pages/finance/documents";
 import FinanceReportsPage from "@/pages/finance/reports";
 import FinanceSettingsPage from "@/pages/finance/settings";
+import ComplianceDashboardPage from "@/pages/compliance/dashboard";
+import ComplianceFlagsPage from "@/pages/compliance/flags";
+import ComplianceFlagDetailPage from "@/pages/compliance/flag-detail";
+import ComplianceTrendsPage from "@/pages/compliance/trends";
+import ComplianceAuditPage from "@/pages/compliance/audit";
+import ComplianceReportsPage from "@/pages/compliance/reports";
 import type { User } from "@shared/schema";
 
 function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
@@ -79,36 +85,36 @@ function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
       const isManagerRoute = currentPath.startsWith("/manager");
       const isPatientRoute = currentPath.startsWith("/patient");
       const isFinanceRoute = currentPath.startsWith("/finance");
+      const isComplianceRoute = currentPath.startsWith("/compliance");
+
+      const getRedirectPath = (role: string | undefined | null) => {
+        if (!role) return "/dashboard";
+        switch (role) {
+          case "manager": return "/manager";
+          case "patient": return "/patient";
+          case "finance": return "/finance";
+          case "compliance": return "/compliance";
+          case "pharmacist": return "/dashboard";
+          case "admin": return "/dashboard";
+          default: return "/dashboard";
+        }
+      };
       
       // Block non-managers from manager routes
       if (isManagerRoute && user.role !== "manager") {
-        if (user.role === "patient") {
-          setLocation("/patient");
-        } else if (user.role === "finance") {
-          setLocation("/finance");
-        } else {
-          setLocation("/dashboard");
-        }
+        setLocation(getRedirectPath(user.role));
       }
       // Block non-patients from patient routes
       else if (isPatientRoute && user.role !== "patient") {
-        if (user.role === "manager") {
-          setLocation("/manager");
-        } else if (user.role === "finance") {
-          setLocation("/finance");
-        } else {
-          setLocation("/dashboard");
-        }
+        setLocation(getRedirectPath(user.role));
       }
       // Block non-finance from finance routes
       else if (isFinanceRoute && user.role !== "finance") {
-        if (user.role === "manager") {
-          setLocation("/manager");
-        } else if (user.role === "patient") {
-          setLocation("/patient");
-        } else {
-          setLocation("/dashboard");
-        }
+        setLocation(getRedirectPath(user.role));
+      }
+      // Block non-compliance from compliance routes
+      else if (isComplianceRoute && user.role !== "compliance") {
+        setLocation(getRedirectPath(user.role));
       }
       // Redirect managers to their portal on root/dashboard
       else if (user.role === "manager" && (currentPath === "/" || currentPath === "/dashboard")) {
@@ -121,6 +127,10 @@ function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
       // Redirect finance to their portal on root/dashboard
       else if (user.role === "finance" && (currentPath === "/" || currentPath === "/dashboard")) {
         setLocation("/finance");
+      }
+      // Redirect compliance to their portal on root/dashboard
+      else if (user.role === "compliance" && (currentPath === "/" || currentPath === "/dashboard")) {
+        setLocation("/compliance");
       }
     }
   }, [userQuery.isLoading, userQuery.data, location, setLocation]);
@@ -223,6 +233,15 @@ function Router() {
         <Route path="/finance/documents" component={FinanceDocumentsPage} />
         <Route path="/finance/reports" component={FinanceReportsPage} />
         <Route path="/finance/settings" component={FinanceSettingsPage} />
+        
+        {/* Compliance routes */}
+        <Route path="/compliance" component={ComplianceDashboardPage} />
+        <Route path="/compliance/dashboard" component={ComplianceDashboardPage} />
+        <Route path="/compliance/flags" component={ComplianceFlagsPage} />
+        <Route path="/compliance/flags/:id" component={ComplianceFlagDetailPage} />
+        <Route path="/compliance/trends" component={ComplianceTrendsPage} />
+        <Route path="/compliance/audit" component={ComplianceAuditPage} />
+        <Route path="/compliance/reports" component={ComplianceReportsPage} />
         
         <Route component={NotFound} />
       </Switch>

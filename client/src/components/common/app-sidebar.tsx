@@ -130,15 +130,21 @@ const roleNavigation: Record<UserRoleType, NavGroup[]> = {
     {
       label: "Overview",
       items: [
-        { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-        { title: "Alerts", url: "/alerts", icon: AlertTriangle },
+        { title: "Dashboard", url: "/compliance", icon: LayoutDashboard },
+        { title: "AI Monitoring Flags", url: "/compliance/flags", icon: AlertTriangle },
       ],
     },
     {
-      label: "Monitoring",
+      label: "Analysis",
       items: [
-        { title: "Audit Trail", url: "/audit", icon: Shield },
-        { title: "Reports", url: "/reports", icon: FileText },
+        { title: "Trend Analysis", url: "/compliance/trends", icon: Activity },
+        { title: "Audit Trail", url: "/compliance/audit", icon: Shield },
+      ],
+    },
+    {
+      label: "Documentation",
+      items: [
+        { title: "Reports", url: "/compliance/reports", icon: FileText },
       ],
     },
   ],
