@@ -1,0 +1,246 @@
+### Compliance Officer Role — Website Content Blueprint
+
+---
+
+### Role Overview
+The **Compliance Officer** is responsible for ensuring that pharmacy operations adhere to regulatory, legal, and internal compliance standards, with a strong focus on **controlled substances, audit readiness, and risk detection**. This role operates independently from prescription processing, dispensing, and financial workflows, acting as a **governance and oversight layer** across the entire system.
+
+The platform supports the Compliance Officer through **AI-assisted monitoring and pattern detection**, enabling early identification of potential compliance risks before they escalate into violations or audit findings. AI is used strictly for **risk signaling and anomaly detection**, never for enforcement or automated corrective action.
+
+The Compliance Officer does **not** modify prescriptions, dispense medications, or intervene directly in operational workflows. All insights are observational and investigatory, supporting informed review, documentation, and escalation through established organizational processes.
+
+---
+
+### Core Responsibilities
+- Monitor controlled substance dispensing patterns
+- Identify abnormal refill frequencies or unusual usage trends
+- Review system audit trails and access logs
+- Prepare for internal and external audits
+- Investigate AI-flagged compliance anomalies
+- Maintain a defensible and well-documented compliance posture
+
+---
+
+### AI Support Philosophy
+AI support for the Compliance Officer is designed around **early detection, transparency, and explainability**, not accusation or automation.
+
+The system:
+- Identifies statistically unusual or high-risk patterns
+- Provides contextual evidence supporting each flag
+- Uses neutral, non-judgmental language
+- Leaves investigation, interpretation, and escalation entirely to the Compliance Officer
+
+AI explicitly does **not**:
+- Trigger punitive actions
+- Auto-report incidents to regulators
+- Make regulatory or legal judgments
+
+All AI outputs function as **signals**, not conclusions.
+
+---
+
+### AI Capabilities Available to the Compliance Officer
+
+#### AI Controlled Substance Monitoring
+AI continuously analyzes dispensing and refill data related to controlled medications to:
+- Detect unusual dispensing volume patterns
+- Flag abnormal refill frequencies relative to historical norms
+- Identify staff-level anomaly signals using trend-based analysis (non-accusatory)
+- Highlight locations, time periods, or medication categories requiring closer review
+
+Each AI-generated flag includes **supporting data and trend context** to assist investigation and documentation.
+
+---
+
+### Outcomes for the Compliance Officer
+- Early identification of potential compliance risks
+- Reduced likelihood of regulatory violations
+- Stronger internal and external audit preparedness
+- Clear, explainable evidence supporting compliance reviews
+
+---
+
+### Detailed Compliance Officer User Flow
+
+#### Login & Compliance Access Initialization
+- Compliance Officer logs into the web portal using secure credentials
+- Role-based permissions load compliance-only modules (monitoring, flags, audits, reports)
+- Audit logging begins for all views, exports, and investigation actions
+
+---
+
+#### Compliance Dashboard Landing
+- User lands on the Compliance Dashboard showing:
+  - Controlled substance activity summaries (volume trends)
+  - AI-flagged anomaly counts (new vs reviewed)
+  - Abnormal refill frequency indicators
+  - Monitoring period selector (daily / weekly / monthly)
+
+Dashboard provides a high-level compliance snapshot without requiring prescription-level interaction.
+
+---
+
+#### Review AI Monitoring Flags Queue
+- Compliance Officer opens the AI Monitoring Flags Queue
+- Flags are listed with:
+  - Flag type (volume anomaly, refill frequency anomaly, pattern deviation)
+  - Severity level (low / medium / high based on deviation)
+  - Affected time period and medication category
+  - Review status (New / Under Review / Closed)
+
+Queue supports filtering by medication category, severity, time window, and location (if applicable).
+
+---
+
+#### Flag Detail & Context Review
+- Compliance Officer selects a flagged item
+- System opens the Flag Detail View showing:
+  - Description of what triggered the flag
+  - Trend comparison against baseline periods
+  - Dispensing or refill frequency deviations
+  - Supporting evidence logs (read-only)
+
+**AI Language Constraint:**  
+The system uses neutral phrasing such as *“unusual pattern detected”* and never labels activity as fraud or misconduct.
+
+---
+
+#### Investigation Drill-Down
+Depending on flag type, the Compliance Officer performs focused analysis:
+
+**Abnormal Refill Frequency Review**
+- Examine refill intervals and frequency trends
+- Compare against typical refill cadence norms
+- Identify whether deviations are isolated or widespread
+
+**Unusual Dispensing Volume Review**
+- Analyze dispensing volume across time windows
+- Compare peak periods to historical baselines
+- Identify concentration by medication type or time block
+
+**Staff-Level Pattern Signals (Non-Accusatory)**
+- Review aggregated staff-related signals
+- Use insights to guide investigation scope only
+- Any HR or disciplinary escalation occurs outside the system
+
+---
+
+#### Audit Trail Review
+- Compliance Officer accesses audit logs linked to the flagged activity
+- Logs include:
+  - System user identity associated with actions
+  - Timestamped action history
+  - Relevant override or adjustment events (read-only)
+
+Logs can be filtered by date range, user role, and medication category.
+
+---
+
+#### Decision & Flag Handling
+**Decision Point:**  
+After review, the Compliance Officer selects an outcome:
+- **Explained / No Issue**  
+  - Adds internal notes and closes the flag
+- **Needs Follow-Up**  
+  - Keeps the flag open and documents next steps
+- **Escalated for Internal Review**  
+  - Records escalation notes (actual escalation occurs outside the system)
+
+System records:
+- Decision status
+- Notes entered
+- Timestamp and Compliance Officer identity for audit traceability
+
+---
+
+#### Reporting & Export
+- Compliance Officer generates reports such as:
+  - Controlled substance monitoring summaries
+  - Flag history (open vs closed trends)
+  - Abnormal refill frequency reports by period
+
+All exports are permission-controlled and audit logged.
+
+---
+
+#### Continuous Monitoring Loop
+- AI Controlled Substance Monitoring runs continuously in the background
+- New flags surface as patterns emerge
+- Compliance Officer reviews dashboards and flags based on internal review cadence
+
+---
+
+#### Session End
+- Compliance Officer logs out or session times out
+- All actions remain preserved in audit logs
+
+---
+
+### Key Control Principles
+- Compliance role operates independently of clinical and financial workflows
+- AI detects and explains patterns; humans investigate and decide
+- No automated enforcement or punitive action is enabled
+- All compliance activity is auditable and traceable
+
+---
+
+### Compliance Officer Web Screens
+
+#### Login Screen
+- Secure authentication
+- Role-based access control
+
+---
+
+#### Compliance Dashboard
+- Controlled substance activity summaries
+- AI-flagged anomaly counts
+- Abnormal refill frequency indicators
+- Monitoring period selection
+
+---
+
+#### AI Monitoring Flags Queue
+- Central list of detected compliance flags
+- Severity, category, and status indicators
+- Advanced filtering options
+
+---
+
+#### Flag Detail & Evidence
+- Anomaly description
+- Baseline comparison visuals
+- Supporting data (read-only)
+
+---
+
+#### Dispensing & Refill Trend Analysis
+- Refill frequency trend charts
+- Dispensing volume comparisons
+- Time-based deviation analysis
+
+---
+
+#### Staff Pattern Signals (Non-Accusatory)
+- Aggregated staff-related trend indicators
+- No individual enforcement or targeting
+
+---
+
+#### Audit Trail & Access Logs
+- Read-only audit logs
+- Filtering by date, role, action, and medication category
+
+---
+
+#### Compliance Notes & Flag Resolution
+- Document investigation outcomes
+- Mark flags as resolved or under review
+- Record escalation references
+
+---
+
+#### Compliance Reports & Export
+- Controlled substance monitoring reports
+- Flag history summaries
+- Audit-support documentation exports
