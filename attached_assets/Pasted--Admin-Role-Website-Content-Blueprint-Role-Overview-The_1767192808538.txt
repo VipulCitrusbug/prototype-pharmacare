@@ -1,0 +1,230 @@
+### Admin Role — Website Content Blueprint
+
+---
+
+### Role Overview
+The **Admin** is responsible for system configuration, governance, and operational enablement of the Pharmacy Management System. This role ensures that the platform is correctly configured, consistently maintained, and aligned with business rules, pricing policies, and system integrations that support pharmacy operations.
+
+Unlike operational, clinical, financial, or compliance roles, the Admin does **not** participate in prescription processing, dispensing, billing validation, or investigations. Instead, the Admin focuses on **configuration accuracy and system health**, ensuring that incorrect setup does not introduce downstream operational, financial, or compliance risks.
+
+The system supports the Admin through a **lightweight AI Configuration Advisor**, which surfaces potential inefficiencies and optimization opportunities without making automatic changes.
+
+---
+
+### Core Responsibilities
+- Configure system-level settings and business rules
+- Manage pricing rules and discount structures
+- Maintain user roles and access permissions
+- Configure and monitor external system integrations
+- Monitor overall configuration health
+- Ensure consistency between configured rules and operational workflows
+
+---
+
+### AI Support Philosophy
+AI support for the Admin role is **advisory and preventative**, never autonomous.
+
+The system:
+- Reviews configuration patterns and usage behavior
+- Suggests optimizations and improvements
+- Flags inefficient, unused, or conflicting rules
+- Provides rationale and context for each suggestion
+
+AI explicitly does **not**:
+- Auto-modify pricing rules
+- Change permissions or access levels
+- Apply configuration updates without Admin approval
+
+All configuration decisions remain under explicit Admin control.
+
+---
+
+### AI Capabilities Available to the Admin
+
+#### AI Configuration Advisor
+AI assists the Admin by:
+- Suggesting improved pricing rule structures based on usage patterns
+- Highlighting underutilized, redundant, or conflicting rules
+- Identifying configurations that may cause operational friction
+- Providing clear context and supporting data behind each recommendation
+
+These insights help maintain a **clean, efficient, and governable configuration environment** as the system evolves.
+
+---
+
+### Outcomes for the Admin Role
+- Reduced risk of misconfiguration-related issues
+- More effective pricing and discount rule management
+- Improved alignment between system setup and real-world operations
+- Stable, auditable, and governable configuration over time
+
+---
+
+### Detailed Admin User Flow
+
+#### Login & System Access Initialization
+- Admin logs into the web-based admin portal using secure credentials
+- Role-based permissions load admin-only configuration modules
+- Audit logging begins for all configuration reviews, changes, and exports
+
+---
+
+#### Admin Dashboard Landing
+- Admin lands on the Admin Dashboard showing:
+  - Active pricing rules
+  - Recent configuration changes
+  - AI Configuration Advisor recommendation count
+  - Integration health indicators (if applicable)
+
+This dashboard serves as the starting point for governance and system maintenance.
+
+---
+
+#### Review AI Configuration Advisor Recommendations
+- AI continuously evaluates pricing and rule usage patterns
+- Admin reviews AI-generated suggestions such as:
+  - Consolidation of overlapping pricing rules
+  - Identification of unused or rarely triggered discounts
+  - Detection of conflicting rule logic affecting checkout behavior
+- Each recommendation includes usage data and rationale
+
+**Decision Point:**  
+Admin decides whether to apply, modify, or ignore each recommendation.  
+No AI suggestion is applied automatically.
+
+---
+
+#### Pricing Rules Management
+- Admin navigates to Pricing Rules Configuration
+- Admin can:
+  - Create new pricing or discount rules
+  - Edit existing rule conditions and values
+  - Disable or retire outdated rules
+- System validates rule logic to prevent conflicts before saving
+
+---
+
+#### Configuration Validation
+Before finalizing changes:
+- System runs logical conflict checks
+- Admin reviews a summary of impacted workflows
+- Admin explicitly confirms changes
+
+---
+
+#### Configuration Change Logging
+The system records:
+- What was changed
+- Who made the change
+- When the change occurred
+- Previous and updated configuration snapshots
+
+This ensures traceability, accountability, and rollback readiness.
+
+---
+
+#### Integration Oversight (Read-Only)
+- Admin reviews connected system integrations (e.g., payment or external services)
+- System displays:
+  - Integration health indicators
+  - Last sync timestamps
+  - Error summaries (if applicable)
+
+Admin does not modify integration logic unless explicitly authorized.
+
+---
+
+#### Configuration Review & Cleanup
+- Admin periodically reviews:
+  - Active configuration inventory
+  - Deprecated or unused rules
+  - AI-suggested cleanup opportunities
+- Obsolete configurations may be archived or retired
+
+---
+
+#### Reporting & Export
+- Admin generates reports such as:
+  - Pricing rule inventories
+  - Configuration change history
+  - AI recommendation summaries
+- Reports can be exported for governance, audits, or internal review
+
+---
+
+#### Session End
+- Admin logs out or session times out
+- All configuration actions remain stored in audit logs
+
+---
+
+### Key Control Principles
+- AI advises; Admin decides
+- No configuration change without explicit confirmation
+- All changes are versioned and fully auditable
+- System prevents logically conflicting setups
+
+---
+
+### Admin Web Screens
+
+#### Login Screen
+- Secure authentication
+- Admin-level access enforcement
+
+---
+
+#### Admin Dashboard
+- Active pricing rule count
+- Recent configuration changes
+- AI Configuration Advisor summary
+- System configuration health indicators
+
+---
+
+#### AI Configuration Advisor
+- List of AI-generated recommendations
+- Usage-based rationale and context
+- Manual decision controls for Admin
+
+---
+
+#### Pricing Rules Management
+- Create, edit, enable, disable, or retire pricing rules
+
+---
+
+#### Pricing Rule Editor
+- Define rule conditions and pricing logic
+- Configure validity constraints
+- Pre-save validation checks
+
+---
+
+#### Configuration Validation & Review
+- Summary of changes
+- Impacted workflow overview
+- Validation results
+- Explicit confirmation requirement
+
+---
+
+#### Integration Status
+- Integration health indicators
+- Last sync timestamps
+- Error summaries (read-only)
+
+---
+
+#### Configuration Reports & Audit Logs
+- Configuration change history
+- Pricing rule inventories
+- AI recommendation logs for audits
+
+---
+
+### Design & Governance Notes
+- All configuration changes are version-controlled
+- AI suggestions are advisory and never auto-applied
+- Admin actions are fully audit logged
+- No operational or clinical workflows are exposed

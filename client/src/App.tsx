@@ -46,6 +46,12 @@ import ComplianceFlagDetailPage from "@/pages/compliance/flag-detail";
 import ComplianceTrendsPage from "@/pages/compliance/trends";
 import ComplianceAuditPage from "@/pages/compliance/audit";
 import ComplianceReportsPage from "@/pages/compliance/reports";
+import AdminDashboardPage from "@/pages/admin/dashboard";
+import AdminAdvisorPage from "@/pages/admin/advisor";
+import AdminPricingPage from "@/pages/admin/pricing";
+import AdminPricingEditorPage from "@/pages/admin/pricing-editor";
+import AdminIntegrationsPage from "@/pages/admin/integrations";
+import AdminReportsPage from "@/pages/admin/reports";
 import type { User } from "@shared/schema";
 
 function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
@@ -86,6 +92,7 @@ function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
       const isPatientRoute = currentPath.startsWith("/patient");
       const isFinanceRoute = currentPath.startsWith("/finance");
       const isComplianceRoute = currentPath.startsWith("/compliance");
+      const isAdminRoute = currentPath.startsWith("/admin");
 
       const getRedirectPath = (role: string | undefined | null) => {
         if (!role) return "/dashboard";
@@ -94,8 +101,8 @@ function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
           case "patient": return "/patient";
           case "finance": return "/finance";
           case "compliance": return "/compliance";
+          case "admin": return "/admin";
           case "pharmacist": return "/dashboard";
-          case "admin": return "/dashboard";
           default: return "/dashboard";
         }
       };
@@ -116,6 +123,10 @@ function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
       else if (isComplianceRoute && user.role !== "compliance") {
         setLocation(getRedirectPath(user.role));
       }
+      // Block non-admin from admin routes
+      else if (isAdminRoute && user.role !== "admin") {
+        setLocation(getRedirectPath(user.role));
+      }
       // Redirect managers to their portal on root/dashboard
       else if (user.role === "manager" && (currentPath === "/" || currentPath === "/dashboard")) {
         setLocation("/manager");
@@ -131,6 +142,10 @@ function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
       // Redirect compliance to their portal on root/dashboard
       else if (user.role === "compliance" && (currentPath === "/" || currentPath === "/dashboard")) {
         setLocation("/compliance");
+      }
+      // Redirect admin to their portal on root/dashboard
+      else if (user.role === "admin" && (currentPath === "/" || currentPath === "/dashboard")) {
+        setLocation("/admin");
       }
     }
   }, [userQuery.isLoading, userQuery.data, location, setLocation]);
@@ -242,6 +257,15 @@ function Router() {
         <Route path="/compliance/trends" component={ComplianceTrendsPage} />
         <Route path="/compliance/audit" component={ComplianceAuditPage} />
         <Route path="/compliance/reports" component={ComplianceReportsPage} />
+        
+        {/* Admin routes */}
+        <Route path="/admin" component={AdminDashboardPage} />
+        <Route path="/admin/dashboard" component={AdminDashboardPage} />
+        <Route path="/admin/advisor" component={AdminAdvisorPage} />
+        <Route path="/admin/pricing" component={AdminPricingPage} />
+        <Route path="/admin/pricing/:id" component={AdminPricingEditorPage} />
+        <Route path="/admin/integrations" component={AdminIntegrationsPage} />
+        <Route path="/admin/reports" component={AdminReportsPage} />
         
         <Route component={NotFound} />
       </Switch>

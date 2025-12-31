@@ -27,6 +27,7 @@ import {
   Activity,
   PillBottle,
   Truck,
+  Plug,
 } from "lucide-react";
 import type { UserRoleType } from "@shared/schema";
 
@@ -150,11 +151,23 @@ const roleNavigation: Record<UserRoleType, NavGroup[]> = {
   ],
   admin: [
     {
-      label: "System",
+      label: "Overview",
       items: [
-        { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-        { title: "Users", url: "/users", icon: Users },
-        { title: "Settings", url: "/settings", icon: Settings },
+        { title: "Dashboard", url: "/admin/dashboard", icon: LayoutDashboard },
+        { title: "AI Advisor", url: "/admin/advisor", icon: AlertTriangle },
+      ],
+    },
+    {
+      label: "Configuration",
+      items: [
+        { title: "Pricing Rules", url: "/admin/pricing", icon: DollarSign },
+        { title: "Integrations", url: "/admin/integrations", icon: Activity },
+      ],
+    },
+    {
+      label: "Governance",
+      items: [
+        { title: "Reports & Logs", url: "/admin/reports", icon: FileText },
       ],
     },
   ],
