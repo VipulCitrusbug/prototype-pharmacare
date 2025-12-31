@@ -1,0 +1,270 @@
+### Finance Specialist Role — Website Content Blueprint
+
+---
+
+### Role Overview
+The **Finance Specialist** is responsible for safeguarding financial accuracy, claim success, and revenue integrity across pharmacy operations. This role focuses on validating insurance claims, identifying reimbursement risks early, and maintaining clean, compliant billing records tied to prescription activity.
+
+Unlike traditional finance workflows that rely heavily on post-submission corrections, the system is designed to support the Finance Specialist with **AI-driven pre-validation and claim readiness checks**. The objective is to reduce claim rejections, minimize payer back-and-forth, and accelerate reimbursements—without automating financial decisions or bypassing human oversight.
+
+The Finance Specialist does **not** modify prescriptions or clinical data. Their scope is strictly limited to billing data, insurance metadata, and claim documentation, ensuring compliance with payer rules and internal financial controls.
+
+---
+
+### Core Responsibilities
+- Review and validate insurance claims before submission
+- Identify missing, inconsistent, or high-risk claim data
+- Reduce claim rejection and resubmission cycles
+- Ensure correct application of drug coefficients and payer rules
+- Maintain clean, auditable claim records for reconciliation
+- Coordinate with operations or compliance teams when financial risks are detected
+
+---
+
+### AI Support Philosophy
+AI support for the Finance Specialist is designed around **prevention, clarity, and control**, not automation.
+
+The system:
+- Flags claim issues before submission
+- Explains *why* a claim is likely to fail
+- Highlights missing data or documentation
+- Suggests corrective focus areas
+
+AI explicitly does **not**:
+- Auto-submit claims
+- Auto-adjust pricing
+- Override payer rules or financial policies
+
+All AI outputs are **advisory, transparent, explainable, and reviewable**. Final decisions always remain with the Finance Specialist.
+
+---
+
+### AI Capabilities Available to the Finance Specialist
+
+#### AI Insurance & Claim Readiness Engine
+AI assists by:
+- Pre-checking claims against known payer rules and validation patterns
+- Applying drug coefficients to assess reimbursement alignment
+- Flagging claims with a high likelihood of rejection
+- Highlighting missing or inconsistent documentation
+- Presenting clear, actionable readiness indicators
+
+**Operational Value:**  
+Issues are resolved *before* submission, significantly reducing downstream rework and delays.
+
+---
+
+### Outcomes for the Finance Specialist
+- Reduced claim rejection rates
+- Faster insurance reimbursements
+- Lower administrative overhead from rework
+- Improved financial predictability and cash flow
+
+---
+
+### Detailed Finance Specialist User Flow
+
+#### Login & Role Initialization
+- Finance Specialist logs into the web-based portal using secure credentials
+- Role-based permissions load finance-only modules (claims, billing, reports)
+- Audit logging begins for all view, edit, and export actions
+
+---
+
+#### Finance Dashboard Landing
+- User lands on the Finance Dashboard displaying:
+  - Claims pending review
+  - AI-flagged high-risk claims
+  - Ready-for-submission claims
+  - Recently submitted and rejected claims (read-only)
+
+Summary indicators highlight:
+- Claim readiness distribution
+- Rejection risk counts
+- Documentation gaps
+
+---
+
+#### Claims Queue Review
+- Finance Specialist opens the Claims Review Queue
+- Claims are listed with:
+  - Prescription reference
+  - Payer / insurance provider
+  - Claim status
+  - AI readiness indicator (Ready / Review Required / High Risk)
+
+Queue supports filtering by payer, risk level, and submission status.
+
+---
+
+#### Claim Selection & Detail Review
+- User selects a claim from the queue
+- Claim Detail View displays:
+  - Read-only prescription and billing summary
+  - Insurance details and payer identifiers
+  - Applied drug coefficients
+  - Attached supporting documentation
+
+---
+
+#### AI Claim Readiness Evaluation
+- AI Insurance & Claim Readiness Engine runs automatically
+- Displays:
+  - Overall claim readiness score
+  - Likely rejection reasons
+  - Missing or inconsistent fields
+  - Payer-specific validation flags
+
+All AI insights are clearly labeled as advisory.
+
+---
+
+#### Issue Resolution (If Required)
+**Decision Point:**  
+If AI flags issues:
+- Finance Specialist reviews flagged items
+- Identifies missing documentation or incorrect metadata
+- Coordinates internally (outside the system) if corrections are needed
+
+System allows:
+- Uploading or replacing missing documentation
+- Updating claim-related billing metadata within permitted scope
+
+---
+
+#### Claim Final Validation
+- Finance Specialist re-runs AI readiness check
+- Confirms all required fields and documents are complete
+- Claim status updates to **Ready for Submission**
+
+---
+
+#### Claim Submission
+- Finance Specialist initiates claim submission (manual or integrated flow)
+- System records:
+  - Submission timestamp
+  - Payer reference
+  - Claim version history
+
+Claim status updates to **Submitted**.
+
+---
+
+#### Post-Submission Monitoring (Read-Only)
+- Finance Specialist monitors outcomes:
+  - Accepted
+  - Rejected
+  - Returned for clarification
+
+Rejected claims are visible for learning and pattern analysis but do not automatically re-enter the readiness workflow.
+
+---
+
+#### Reporting & Review
+- Finance Specialist accesses reports to review:
+  - Claim success vs rejection trends
+  - Common rejection reasons
+  - Average claim preparation time
+
+Reports can be exported for internal financial review.
+
+---
+
+#### Session End
+- User logs out or session times out
+- All actions remain captured in audit logs
+
+---
+
+### Key Control Principles
+- Finance users operate on billing and claim data only
+- AI provides prevention-focused insights, not automated decisions
+- Claims are human-reviewed at every critical step
+- All actions are versioned and audit-logged
+
+---
+
+### Finance Specialist Web Screens
+
+#### Login Screen
+- Secure authentication
+- Role-based access enforcement
+
+---
+
+#### Finance Dashboard
+- Claims pending review
+- AI-flagged high-risk claims
+- Ready-for-submission indicators
+- Submitted and rejected claim counters
+
+---
+
+#### Claims Review Queue
+- Central list of actionable claims
+- AI readiness indicators
+- Filtering by payer, risk level, and status
+
+---
+
+#### Claim Detail
+- Read-only prescription and billing summary
+- Insurance identifiers
+- Drug coefficient application
+- Supporting documentation view
+
+---
+
+#### AI Claim Readiness Panel
+- Embedded advisory panel showing:
+  - Readiness score
+  - Likely rejection reasons
+  - Validation flags
+
+---
+
+#### Documentation Management
+- Upload, view, or replace claim documents
+- Ensures submission completeness
+
+---
+
+#### Claim Validation & Final Review
+- Re-run readiness checks
+- Confirm all validations
+- Mark claim as ready for submission
+
+---
+
+#### Claim Submission Confirmation
+- Submission timestamp
+- Payer reference
+- Claim version snapshot for audit
+
+---
+
+#### Post-Submission Claim Status
+- Read-only outcome tracking
+- Payer response notes (if applicable)
+
+---
+
+#### Rejection & Risk Insights
+- Common rejection reasons
+- Rejection trends by payer
+- High-risk patterns detected by AI
+
+---
+
+#### Finance Reports & Export
+- Claim readiness summaries
+- Rejection trend analysis
+- Submission performance metrics
+
+---
+
+### Design & Governance Notes
+- All AI outputs are advisory and clearly labeled
+- Claim edits are strictly limited and version-controlled
+- No clinical or prescription data is editable by finance users
+- All actions and exports are audit logged

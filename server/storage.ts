@@ -63,6 +63,19 @@ export class MemStorage implements IStorage {
     };
     this.users.set(demoPatient.id, demoPatient);
 
+    const demoFinance: User = {
+      id: "demo-finance",
+      username: "finance",
+      password: "password123",
+      email: "finance@pharmacare.com",
+      firstName: "Rebecca",
+      lastName: "Taylor",
+      role: "finance",
+      avatar: null,
+      createdAt: new Date(),
+    };
+    this.users.set(demoFinance.id, demoFinance);
+
     const samplePrescriptions: Prescription[] = [
       {
         id: "rx-001",

@@ -108,15 +108,21 @@ const roleNavigation: Record<UserRoleType, NavGroup[]> = {
     {
       label: "Overview",
       items: [
-        { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-        { title: "Billing", url: "/billing", icon: DollarSign },
+        { title: "Dashboard", url: "/finance", icon: LayoutDashboard },
+        { title: "Claims Queue", url: "/finance/claims", icon: ClipboardList },
       ],
     },
     {
-      label: "Reports",
+      label: "Management",
       items: [
-        { title: "Revenue", url: "/revenue", icon: BarChart3 },
-        { title: "Claims", url: "/claims", icon: FileText },
+        { title: "Documentation", url: "/finance/documents", icon: FileText },
+        { title: "Reports", url: "/finance/reports", icon: BarChart3 },
+      ],
+    },
+    {
+      label: "Account",
+      items: [
+        { title: "Settings", url: "/finance/settings", icon: Settings },
       ],
     },
   ],

@@ -34,6 +34,12 @@ import PatientMedicationDetailPage from "@/pages/patient/medication-detail";
 import PatientOrdersPage from "@/pages/patient/orders";
 import PatientNotificationsPage from "@/pages/patient/notifications";
 import PatientSettingsPage from "@/pages/patient/settings";
+import FinanceDashboardPage from "@/pages/finance/dashboard";
+import FinanceClaimsPage from "@/pages/finance/claims";
+import FinanceClaimDetailPage from "@/pages/finance/claim-detail";
+import FinanceDocumentsPage from "@/pages/finance/documents";
+import FinanceReportsPage from "@/pages/finance/reports";
+import FinanceSettingsPage from "@/pages/finance/settings";
 import type { User } from "@shared/schema";
 
 function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
@@ -72,11 +78,14 @@ function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
       const currentPath = location || "/";
       const isManagerRoute = currentPath.startsWith("/manager");
       const isPatientRoute = currentPath.startsWith("/patient");
+      const isFinanceRoute = currentPath.startsWith("/finance");
       
       // Block non-managers from manager routes
       if (isManagerRoute && user.role !== "manager") {
         if (user.role === "patient") {
           setLocation("/patient");
+        } else if (user.role === "finance") {
+          setLocation("/finance");
         } else {
           setLocation("/dashboard");
         }
@@ -85,6 +94,18 @@ function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
       else if (isPatientRoute && user.role !== "patient") {
         if (user.role === "manager") {
           setLocation("/manager");
+        } else if (user.role === "finance") {
+          setLocation("/finance");
+        } else {
+          setLocation("/dashboard");
+        }
+      }
+      // Block non-finance from finance routes
+      else if (isFinanceRoute && user.role !== "finance") {
+        if (user.role === "manager") {
+          setLocation("/manager");
+        } else if (user.role === "patient") {
+          setLocation("/patient");
         } else {
           setLocation("/dashboard");
         }
@@ -96,6 +117,10 @@ function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
       // Redirect patients to their portal on root/dashboard
       else if (user.role === "patient" && (currentPath === "/" || currentPath === "/dashboard")) {
         setLocation("/patient");
+      }
+      // Redirect finance to their portal on root/dashboard
+      else if (user.role === "finance" && (currentPath === "/" || currentPath === "/dashboard")) {
+        setLocation("/finance");
       }
     }
   }, [userQuery.isLoading, userQuery.data, location, setLocation]);
@@ -189,6 +214,15 @@ function Router() {
         <Route path="/patient/orders" component={PatientOrdersPage} />
         <Route path="/patient/notifications" component={PatientNotificationsPage} />
         <Route path="/patient/settings" component={PatientSettingsPage} />
+        
+        {/* Finance routes */}
+        <Route path="/finance" component={FinanceDashboardPage} />
+        <Route path="/finance/dashboard" component={FinanceDashboardPage} />
+        <Route path="/finance/claims" component={FinanceClaimsPage} />
+        <Route path="/finance/claims/:id" component={FinanceClaimDetailPage} />
+        <Route path="/finance/documents" component={FinanceDocumentsPage} />
+        <Route path="/finance/reports" component={FinanceReportsPage} />
+        <Route path="/finance/settings" component={FinanceSettingsPage} />
         
         <Route component={NotFound} />
       </Switch>

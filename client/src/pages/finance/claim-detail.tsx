@@ -1,0 +1,397 @@
+import { useState } from "react";
+import { useParams, Link } from "wouter";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { AIAssistBadge } from "@/components/common";
+import { useToast } from "@/hooks/use-toast";
+import {
+  AlertTriangle,
+  ArrowLeft,
+  CheckCircle2,
+  Clock,
+  DollarSign,
+  FileCheck,
+  FileText,
+  RefreshCw,
+  Send,
+  Sparkles,
+  Upload,
+  User,
+  XCircle,
+} from "lucide-react";
+
+const mockClaimDetail = {
+  id: "clm-001",
+  claimNumber: "CLM-2024-1850",
+  patientName: "Sarah Johnson",
+  patientId: "PT-12345",
+  dateOfBirth: "1985-03-15",
+  prescriptionRef: "RX-001",
+  payer: "BlueCross BlueShield",
+  payerId: "BCBS-001",
+  memberId: "XYZ123456789",
+  groupNumber: "GRP-5678",
+  amount: 1245.00,
+  drugName: "Metformin 500mg",
+  drugNdc: "12345-678-90",
+  quantity: 90,
+  daysSupply: 30,
+  drugCoefficient: 1.25,
+  status: "pending" as const,
+  riskLevel: "high" as const,
+  readinessScore: 62,
+  issues: [
+    {
+      id: "iss-001",
+      type: "error",
+      title: "Missing Prior Authorization",
+      description: "This medication requires prior authorization from the payer before submission.",
+      suggestion: "Upload prior authorization document or contact payer for expedited approval.",
+    },
+    {
+      id: "iss-002",
+      type: "warning",
+      title: "Drug Coefficient Mismatch",
+      description: "The applied drug coefficient (1.25) differs from payer's expected rate (1.18).",
+      suggestion: "Verify coefficient with payer fee schedule or adjust billing amount.",
+    },
+  ],
+  documents: [
+    { id: "doc-001", name: "Prescription Image", type: "prescription", uploadedAt: "2024-01-15" },
+    { id: "doc-002", name: "Patient Insurance Card", type: "insurance", uploadedAt: "2024-01-15" },
+  ],
+  createdAt: "2024-01-15T10:30:00Z",
+  aiConfidence: 88,
+};
+
+export default function FinanceClaimDetailPage() {
+  const { id } = useParams();
+  const { toast } = useToast();
+  const [isRerunning, setIsRerunning] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const claim = mockClaimDetail;
+
+  const handleRerunValidation = async () => {
+    setIsRerunning(true);
+    await new Promise((r) => setTimeout(r, 2000));
+    setIsRerunning(false);
+    toast({
+      title: "Validation Complete",
+      description: "AI readiness check has been updated.",
+    });
+  };
+
+  const handleSubmitClaim = async () => {
+    setIsSubmitting(true);
+    await new Promise((r) => setTimeout(r, 1500));
+    setIsSubmitting(false);
+    toast({
+      title: "Claim Submitted",
+      description: `Claim ${claim.claimNumber} has been submitted for processing.`,
+    });
+  };
+
+  return (
+    <div className="space-y-6" data-testid="finance-claim-detail-page">
+      <div className="flex items-center gap-4">
+        <Button variant="ghost" size="icon" asChild data-testid="button-back">
+          <Link href="/finance/claims">
+            <ArrowLeft className="w-5 h-5" />
+          </Link>
+        </Button>
+        <div className="flex-1">
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold text-foreground">
+              {claim.claimNumber}
+            </h1>
+            <Badge
+              className={
+                claim.riskLevel === "high"
+                  ? "bg-danger/10 text-danger"
+                  : claim.riskLevel === "medium"
+                  ? "bg-amber-500/10 text-amber-600"
+                  : "bg-success/10 text-success"
+              }
+            >
+              {claim.riskLevel === "high" ? "High Risk" : claim.riskLevel === "medium" ? "Medium Risk" : "Low Risk"}
+            </Badge>
+          </div>
+          <p className="text-muted-foreground">
+            Created on {new Date(claim.createdAt).toLocaleDateString()}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={handleRerunValidation}
+            disabled={isRerunning}
+            data-testid="button-rerun-validation"
+          >
+            <RefreshCw className={`w-4 h-4 mr-2 ${isRerunning ? "animate-spin" : ""}`} />
+            {isRerunning ? "Validating..." : "Re-run Validation"}
+          </Button>
+          <Button
+            onClick={handleSubmitClaim}
+            disabled={claim.readinessScore < 80 || isSubmitting}
+            data-testid="button-submit-claim"
+          >
+            <Send className="w-4 h-4 mr-2" />
+            {isSubmitting ? "Submitting..." : "Submit Claim"}
+          </Button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-accent" />
+                AI Claim Readiness Panel
+              </CardTitle>
+              <CardDescription>
+                AI-powered analysis of claim submission readiness
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-6 mb-6">
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium">Readiness Score</span>
+                    <span className="text-2xl font-bold">{claim.readinessScore}%</span>
+                  </div>
+                  <div className="h-3 bg-muted rounded-full overflow-hidden">
+                    <div
+                      className={`h-full transition-all ${
+                        claim.readinessScore >= 80
+                          ? "bg-success"
+                          : claim.readinessScore >= 60
+                          ? "bg-amber-500"
+                          : "bg-danger"
+                      }`}
+                      style={{ width: `${claim.readinessScore}%` }}
+                    />
+                  </div>
+                </div>
+                <AIAssistBadge confidence={claim.aiConfidence} showLabel />
+              </div>
+
+              {claim.issues.length > 0 ? (
+                <div className="space-y-3">
+                  <h4 className="font-medium text-sm text-muted-foreground">
+                    Issues Detected ({claim.issues.length})
+                  </h4>
+                  {claim.issues.map((issue) => (
+                    <div
+                      key={issue.id}
+                      className={`p-4 rounded-lg border ${
+                        issue.type === "error"
+                          ? "border-danger/30 bg-danger/5"
+                          : "border-amber-500/30 bg-amber-500/5"
+                      }`}
+                      data-testid={`issue-${issue.id}`}
+                    >
+                      <div className="flex items-start gap-3">
+                        {issue.type === "error" ? (
+                          <XCircle className="w-5 h-5 text-danger mt-0.5" />
+                        ) : (
+                          <AlertTriangle className="w-5 h-5 text-amber-500 mt-0.5" />
+                        )}
+                        <div className="flex-1">
+                          <p className="font-medium">{issue.title}</p>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            {issue.description}
+                          </p>
+                          <div className="flex items-center gap-1 mt-2 text-xs text-accent">
+                            <Sparkles className="w-3 h-3" />
+                            <span>AI Suggestion: {issue.suggestion}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-success/10 border border-success/30">
+                  <CheckCircle2 className="w-5 h-5 text-success" />
+                  <div>
+                    <p className="font-medium text-success">Claim Ready for Submission</p>
+                    <p className="text-sm text-muted-foreground">
+                      All validations passed. This claim can be submitted.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="w-5 h-5 text-clinical" />
+                Prescription & Billing Summary
+              </CardTitle>
+              <CardDescription>Read-only prescription and billing details</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-muted-foreground">Drug Name</p>
+                  <p className="font-medium">{claim.drugName}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">NDC</p>
+                  <p className="font-medium">{claim.drugNdc}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Quantity</p>
+                  <p className="font-medium">{claim.quantity} units</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Days Supply</p>
+                  <p className="font-medium">{claim.daysSupply} days</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Drug Coefficient</p>
+                  <p className="font-medium">{claim.drugCoefficient}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Claim Amount</p>
+                  <p className="font-medium text-lg">${claim.amount.toFixed(2)}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileCheck className="w-5 h-5 text-info" />
+                    Supporting Documentation
+                  </CardTitle>
+                  <CardDescription>Attached documents for this claim</CardDescription>
+                </div>
+                <Button variant="outline" size="sm" data-testid="button-upload-doc">
+                  <Upload className="w-4 h-4 mr-2" />
+                  Upload Document
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {claim.documents.map((doc) => (
+                  <div
+                    key={doc.id}
+                    className="flex items-center justify-between p-3 rounded-lg border border-border"
+                    data-testid={`doc-${doc.id}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <FileText className="w-5 h-5 text-muted-foreground" />
+                      <div>
+                        <p className="font-medium text-sm">{doc.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          Uploaded {doc.uploadedAt}
+                        </p>
+                      </div>
+                    </div>
+                    <Button variant="ghost" size="sm" data-testid={`button-view-doc-${doc.id}`}>
+                      View
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <User className="w-5 h-5 text-clinical" />
+                Patient Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div>
+                <p className="text-sm text-muted-foreground">Name</p>
+                <p className="font-medium">{claim.patientName}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Patient ID</p>
+                <p className="font-medium">{claim.patientId}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Date of Birth</p>
+                <p className="font-medium">{claim.dateOfBirth}</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <DollarSign className="w-5 h-5 text-accent" />
+                Insurance Details
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div>
+                <p className="text-sm text-muted-foreground">Payer</p>
+                <p className="font-medium">{claim.payer}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Payer ID</p>
+                <p className="font-medium">{claim.payerId}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Member ID</p>
+                <p className="font-medium">{claim.memberId}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Group Number</p>
+                <p className="font-medium">{claim.groupNumber}</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Clock className="w-5 h-5 text-muted-foreground" />
+                Claim Timeline
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 rounded-full bg-success mt-2" />
+                  <div>
+                    <p className="font-medium text-sm">Claim Created</p>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(claim.createdAt).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 rounded-full bg-amber-500 mt-2" />
+                  <div>
+                    <p className="font-medium text-sm">Pending Review</p>
+                    <p className="text-xs text-muted-foreground">
+                      Awaiting issue resolution
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}

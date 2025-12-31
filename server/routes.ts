@@ -365,6 +365,68 @@ export async function registerRoutes(
     next();
   };
 
+  // Finance authorization middleware
+  const requireFinance = async (req: any, res: any, next: any) => {
+    const userId = (req.session as any).userId;
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    const user = await storage.getUser(userId);
+    if (!user || user.role !== "finance") {
+      return res.status(403).json({ error: "Forbidden: Finance access required" });
+    }
+    next();
+  };
+
+  // Finance endpoints
+  app.get("/api/finance/metrics", requireFinance, async (req, res) => {
+    try {
+      await new Promise((r) => setTimeout(r, 200));
+
+      res.json([
+        {
+          id: "pending-claims",
+          title: "Claims Pending Review",
+          value: 24,
+          change: 3,
+          changeType: "increase",
+          icon: "clipboard",
+          color: "amber",
+        },
+        {
+          id: "ready-submit",
+          title: "Ready for Submission",
+          value: 18,
+          change: 5,
+          changeType: "increase",
+          icon: "check",
+          color: "success",
+        },
+        {
+          id: "high-risk",
+          title: "High-Risk Claims",
+          value: 6,
+          change: 2,
+          changeType: "decrease",
+          icon: "alert",
+          color: "danger",
+        },
+        {
+          id: "success-rate",
+          title: "Success Rate",
+          value: "94.2%",
+          change: 2.1,
+          changeType: "increase",
+          icon: "trending-up",
+          color: "success",
+        },
+      ]);
+    } catch (error) {
+      console.error("Get finance metrics error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   // Patient endpoints
   app.get("/api/patient/metrics", requirePatient, async (req, res) => {
     try {
