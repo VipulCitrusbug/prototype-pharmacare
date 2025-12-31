@@ -1,0 +1,204 @@
+import { Link, useLocation } from "wouter";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar";
+import { Logo } from "./logo";
+import { UserAvatar } from "./user-avatar";
+import {
+  LayoutDashboard,
+  ClipboardList,
+  Package,
+  Users,
+  BarChart3,
+  Shield,
+  Settings,
+  FileText,
+  DollarSign,
+  AlertTriangle,
+  Activity,
+  PillBottle,
+  Truck,
+} from "lucide-react";
+import type { UserRoleType } from "@shared/schema";
+
+interface NavItem {
+  title: string;
+  url: string;
+  icon: typeof LayoutDashboard;
+}
+
+interface NavGroup {
+  label: string;
+  items: NavItem[];
+}
+
+const roleNavigation: Record<UserRoleType, NavGroup[]> = {
+  pharmacist: [
+    {
+      label: "Overview",
+      items: [
+        { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+        { title: "Prescription Queue", url: "/queue", icon: ClipboardList },
+      ],
+    },
+    {
+      label: "Dispensing",
+      items: [
+        { title: "Active Prescriptions", url: "/prescriptions", icon: PillBottle },
+        { title: "Inventory", url: "/inventory", icon: Package },
+      ],
+    },
+    {
+      label: "Records",
+      items: [
+        { title: "Patients", url: "/patients", icon: Users },
+        { title: "Reports", url: "/reports", icon: FileText },
+      ],
+    },
+  ],
+  manager: [
+    {
+      label: "Overview",
+      items: [
+        { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+        { title: "Operations", url: "/operations", icon: Activity },
+      ],
+    },
+    {
+      label: "Management",
+      items: [
+        { title: "Staff", url: "/staff", icon: Users },
+        { title: "Inventory", url: "/inventory", icon: Package },
+        { title: "Analytics", url: "/analytics", icon: BarChart3 },
+      ],
+    },
+  ],
+  patient: [
+    {
+      label: "My Health",
+      items: [
+        { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+        { title: "Prescriptions", url: "/prescriptions", icon: PillBottle },
+        { title: "Order Status", url: "/orders", icon: Truck },
+      ],
+    },
+  ],
+  finance: [
+    {
+      label: "Overview",
+      items: [
+        { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+        { title: "Billing", url: "/billing", icon: DollarSign },
+      ],
+    },
+    {
+      label: "Reports",
+      items: [
+        { title: "Revenue", url: "/revenue", icon: BarChart3 },
+        { title: "Claims", url: "/claims", icon: FileText },
+      ],
+    },
+  ],
+  compliance: [
+    {
+      label: "Overview",
+      items: [
+        { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+        { title: "Alerts", url: "/alerts", icon: AlertTriangle },
+      ],
+    },
+    {
+      label: "Monitoring",
+      items: [
+        { title: "Audit Trail", url: "/audit", icon: Shield },
+        { title: "Reports", url: "/reports", icon: FileText },
+      ],
+    },
+  ],
+  admin: [
+    {
+      label: "System",
+      items: [
+        { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+        { title: "Users", url: "/users", icon: Users },
+        { title: "Settings", url: "/settings", icon: Settings },
+      ],
+    },
+  ],
+};
+
+interface AppSidebarProps {
+  userRole: UserRoleType;
+  userName?: string;
+  userAvatar?: string | null;
+}
+
+export function AppSidebar({ userRole, userName, userAvatar }: AppSidebarProps) {
+  const [location] = useLocation();
+  const navigation = roleNavigation[userRole] || roleNavigation.patient;
+
+  return (
+    <Sidebar data-testid="app-sidebar">
+      <SidebarHeader className="p-4 border-b border-sidebar-border">
+        <Logo size="md" />
+      </SidebarHeader>
+
+      <SidebarContent className="px-2">
+        {navigation.map((group) => (
+          <SidebarGroup key={group.label}>
+            <SidebarGroupLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              {group.label}
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {group.items.map((item) => {
+                  const isActive = location === item.url;
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={isActive}
+                        tooltip={item.title}
+                      >
+                        <Link href={item.url} data-testid={`nav-${item.title.toLowerCase().replace(/\s+/g, "-")}`}>
+                          <item.icon className="w-5 h-5" />
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
+      </SidebarContent>
+
+      <SidebarFooter className="p-4 border-t border-sidebar-border">
+        <div className="flex items-center gap-3">
+          <UserAvatar
+            name={userName || "User"}
+            image={userAvatar}
+            role={userRole}
+            size="sm"
+          />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-sidebar-foreground truncate">
+              {userName || "User"}
+            </p>
+            <p className="text-xs text-muted-foreground capitalize">{userRole}</p>
+          </div>
+        </div>
+      </SidebarFooter>
+    </Sidebar>
+  );
+}

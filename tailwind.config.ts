@@ -6,12 +6,11 @@ export default {
   theme: {
     extend: {
       borderRadius: {
-        lg: ".5625rem", /* 9px */
-        md: ".375rem", /* 6px */
-        sm: ".1875rem", /* 3px */
+        lg: ".5rem",
+        md: ".375rem",
+        sm: ".25rem",
       },
       colors: {
-        // Flat / base colors (regular buttons)
         background: "hsl(var(--background) / <alpha-value>)",
         foreground: "hsl(var(--foreground) / <alpha-value>)",
         border: "hsl(var(--border) / <alpha-value>)",
@@ -75,12 +74,35 @@ export default {
           foreground: "hsl(var(--sidebar-accent-foreground) / <alpha-value>)",
           border: "var(--sidebar-accent-border)"
         },
-        status: {
-          online: "rgb(34 197 94)",
-          away: "rgb(245 158 11)",
-          busy: "rgb(239 68 68)",
-          offline: "rgb(156 163 175)",
+        clinical: {
+          DEFAULT: "#1F3A5F",
+          hover: "#244B78",
+          light: "#2A4A6E",
         },
+        mint: {
+          DEFAULT: "#2FB7A3",
+          light: "#2FB7A3/10",
+        },
+        amber: {
+          DEFAULT: "#F2B705",
+          light: "#F2B705/10",
+        },
+        success: {
+          DEFAULT: "#3CB371",
+          light: "#3CB371/10",
+        },
+        danger: {
+          DEFAULT: "#D64545",
+          light: "#D64545/10",
+        },
+        info: {
+          DEFAULT: "#3B82F6",
+          light: "#3B82F6/10",
+        },
+        offwhite: "#F7F9FC",
+        charcoal: "#1F2933",
+        slate: "#6B7280",
+        coolgray: "#E2E8F0",
       },
       fontFamily: {
         sans: ["var(--font-sans)"],

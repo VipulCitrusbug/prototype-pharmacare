@@ -1,28 +1,109 @@
-import { Switch, Route } from "wouter";
-import { queryClient } from "./lib/queryClient";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { Switch, Route, useLocation } from "wouter";
+import { queryClient, apiRequest } from "./lib/queryClient";
+import { QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { ThemeProvider, AppSidebar, TopNavBar, PageLoader } from "@/components/common";
 import NotFound from "@/pages/not-found";
+import LoginPage from "@/pages/login";
+import SignupPage from "@/pages/signup";
+import DashboardPage from "@/pages/dashboard";
+import QueuePage from "@/pages/queue";
+import PrescriptionDetailPage from "@/pages/prescription-detail";
+import type { User } from "@shared/schema";
+
+function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
+  const userQuery = useQuery<User | null>({
+    queryKey: ["/api/auth/me"],
+    staleTime: Infinity,
+    retry: false,
+  });
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("/api/auth/logout", { method: "POST" });
+      if (response.ok) {
+        queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+        window.location.href = "/login";
+      } else {
+        console.error("Logout failed with status:", response.status);
+      }
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
+  if (userQuery.isLoading) {
+    return <PageLoader text="Loading..." />;
+  }
+
+  const user = userQuery.data;
+  const userRole = user?.role || "pharmacist";
+  const userName = user ? `${user.firstName || ""} ${user.lastName || ""}`.trim() || user.username : "User";
+
+  const style = {
+    "--sidebar-width": "16rem",
+    "--sidebar-width-icon": "3rem",
+  };
+
+  return (
+    <SidebarProvider style={style as React.CSSProperties}>
+      <div className="flex h-screen w-full">
+        <AppSidebar
+          userRole={userRole as any}
+          userName={userName}
+          userAvatar={user?.avatar}
+        />
+        <div className="flex flex-col flex-1 min-w-0">
+          <TopNavBar user={user} onLogout={handleLogout} />
+          <main className="flex-1 overflow-auto p-6 bg-background">
+            {children}
+          </main>
+        </div>
+      </div>
+    </SidebarProvider>
+  );
+}
 
 function Router() {
+  const [location] = useLocation();
+
+  const isAuthPage = location === "/login" || location === "/signup";
+
+  if (isAuthPage) {
+    return (
+      <Switch>
+        <Route path="/login" component={LoginPage} />
+        <Route path="/signup" component={SignupPage} />
+        <Route component={NotFound} />
+      </Switch>
+    );
+  }
+
   return (
-    <Switch>
-      {/* Add pages below */}
-      {/* <Route path="/" component={Home}/> */}
-      {/* Fallback to 404 */}
-      <Route component={NotFound} />
-    </Switch>
+    <AuthenticatedLayout>
+      <Switch>
+        <Route path="/" component={DashboardPage} />
+        <Route path="/dashboard" component={DashboardPage} />
+        <Route path="/queue" component={QueuePage} />
+        <Route path="/prescription/:id" component={PrescriptionDetailPage} />
+        <Route path="/prescriptions" component={QueuePage} />
+        <Route component={NotFound} />
+      </Switch>
+    </AuthenticatedLayout>
   );
 }
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Router />
-      </TooltipProvider>
+      <ThemeProvider defaultTheme="light" storageKey="pharmacare-theme">
+        <TooltipProvider>
+          <Toaster />
+          <Router />
+        </TooltipProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
