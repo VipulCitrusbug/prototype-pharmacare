@@ -1,0 +1,268 @@
+### Pharmacy Manager Role — Website Content Blueprint
+
+---
+
+### Role Overview
+The **Pharmacy Manager** provides end-to-end operational oversight of the pharmacy, ensuring daily operations are efficient, compliant, and financially sustainable. Unlike the pharmacist role, which is execution-focused, the manager operates at a **supervisory, analytical, and decision-making level**, relying on system-wide insights rather than prescription-level actions.
+
+This role focuses on identifying **patterns, trends, risks, and performance signals** across the entire pharmacy operation. The Pharmacy Manager does not participate in clinical validation or individual prescription handling.
+
+The system supports this role through **AI-driven, aggregated intelligence** that enables proactive management instead of reactive firefighting. All AI insights are advisory, explainable, and non-punitive—designed to improve operations without enabling micromanagement or staff surveillance.
+
+---
+
+### Core Responsibilities
+- Oversee pharmacy-wide operations and service quality
+- Monitor prescription volumes, refill performance, and turnaround times
+- Manage inventory health, reorder planning, and expiry risk
+- Identify workflow bottlenecks and operational inefficiencies
+- Review staff performance signals at an aggregate level only
+- Respond to system alerts related to inventory, workload, or delays
+- Support financial and compliance objectives through operational controls
+
+---
+
+### AI Support Philosophy
+AI for the Pharmacy Manager is designed to answer:
+- **“What is likely to happen next?”**
+- **“Where should I intervene early?”**
+
+AI is explicitly **not** designed to answer:
+- “Who made a mistake?”
+- “Which individual should be corrected?”
+
+The system:
+- Surfaces predictive insights, not raw data dumps
+- Provides early warnings, not post-incident reports
+- Focuses on system-level performance, not individual fault-finding
+
+All AI outputs are **trend-based, explainable, and decision-oriented**, supporting informed managerial judgment.
+
+---
+
+### AI Capabilities Available to the Pharmacy Manager
+
+#### AI Inventory Intelligence
+AI continuously analyzes historical dispensing data and seasonal patterns to:
+- Forecast medication demand
+- Recommend reorder quantities and optimal timing
+- Predict expiry risk at SKU level
+- Identify slow-moving or dead stock
+
+**Operational Value:**  
+Inventory planning shifts from reactive restocking to proactive optimization, reducing waste and stock-outs.
+
+---
+
+#### AI Operational Insights
+AI provides structured visibility into pharmacy performance, including:
+- Prescription volume trends over time
+- Refill completion and abandonment rates
+- Turnaround time analytics from intake to completion
+- Detection of workflow bottlenecks affecting service levels
+
+Insights are presented in **summary-driven, decision-ready formats**, not raw operational logs.
+
+---
+
+#### AI Staff Performance Signals (Aggregated & Non-Punitive)
+AI evaluates operational metrics to surface:
+- Dispensing speed versus accuracy trends (aggregate)
+- Override frequency patterns at pharmacy-wide level
+- Workload distribution across time periods
+
+**Important Boundary:**  
+These signals are intended for **capacity planning and process improvement**, not individual performance enforcement.
+
+---
+
+#### AI Proactive Alerts
+The system proactively notifies the Pharmacy Manager when:
+- Refill backlogs begin to rise
+- Inventory shows elevated expiry risk in the near term
+
+Alerts are triggered **early**, providing sufficient lead time for corrective action.
+
+---
+
+### Outcomes for the Pharmacy Manager
+- Clear visibility into pharmacy performance without operational noise
+- Reduced inventory waste and fewer stock-out scenarios
+- Early identification of workflow and capacity risks
+- Confident, data-driven decisions grounded in predictive insights
+
+---
+
+### Detailed Pharmacy Manager User Flow
+
+#### Login & Access Initialization
+- Pharmacy Manager logs in using secure credentials
+- Role-based permissions load dashboards, analytics, and configuration access
+- Audit logging begins for managerial actions (views, exports, alert handling)
+
+---
+
+#### Manager Dashboard Landing (Operational Snapshot)
+- Manager lands on the **Operations Overview Dashboard**
+- High-level KPIs displayed:
+  - Current prescription workload volume
+  - Refill completion rate
+  - Average turnaround time
+  - Active bottleneck indicators
+  - Inventory health (low stock and expiry risks)
+
+Manager reviews KPIs to determine whether immediate action is required.
+
+---
+
+#### Review AI Proactive Alerts
+- Active alerts appear prominently on the dashboard
+- Typical alerts include:
+  - Rising refill backlog
+  - High expiry risk within the next defined window
+- Selecting an alert reveals:
+  - Supporting trend visualizations
+  - Impact estimates (affected prescriptions or SKUs)
+  - Suggested focus area (inventory, workflow, or capacity)
+
+**Decision Point:**  
+Manager navigates to the relevant module for deeper review.
+
+---
+
+#### Inventory Planning & Optimization (AI Inventory Intelligence)
+- Manager opens the Inventory Intelligence module
+- AI provides:
+  - Demand forecasts (historical + seasonal)
+  - Suggested reorder quantities and timing
+  - SKU-level expiry risk predictions
+  - Dead and slow-moving stock identification
+
+Manager actions:
+- Review and validate AI reorder suggestions
+- Adjust plans based on expected demand or business context
+- Identify corrective actions for high-expiry-risk items
+
+Final approval confirms the **inventory plan**, even if purchase execution occurs elsewhere.
+
+---
+
+#### Monitor Operational Performance (AI Operational Insights)
+- Manager reviews operational analytics:
+  - Volume trends by day, week, and month
+  - Refill performance patterns
+  - Turnaround time breakdown by stage
+  - Bottleneck locations within workflows
+
+Manager evaluates:
+- Where delays are accumulating
+- How current performance compares to historical baselines
+- Whether peak-hour overloads require intervention
+
+---
+
+#### Review Staff Performance Signals (Aggregate)
+- Manager accesses Staff Performance Signals
+- AI presents:
+  - Speed vs accuracy trends over time
+  - Override frequency patterns (aggregate only)
+  - Workload distribution by time blocks
+
+Manager uses insights for:
+- Capacity planning
+- Process improvement
+- Operational policy refinement
+
+**Constraint:**  
+Insights are system-focused, not individual-focused.
+
+---
+
+#### Manager Response & Follow-Up
+Based on insights, the manager may:
+- Initiate operational escalations outside the system
+- Coordinate with pharmacy staff on workload adjustments
+- Reprioritize operational focus areas
+
+System support includes:
+- Saving insight snapshots
+- Marking alerts as reviewed
+- Adding internal reference notes (if enabled)
+
+---
+
+#### Reporting Review & Export
+- Manager generates reports for internal or leadership review
+- Reports may include:
+  - Inventory forecasts and expiry summaries
+  - Operational KPI trends
+  - Alert history and pattern snapshots
+
+All export actions are audit-logged.
+
+---
+
+#### Session End
+- Manager logs out or session times out
+- All actions remain preserved in audit logs
+
+---
+
+### Key Control Principles
+- Manager operates at **trend and aggregate level**, not prescription execution
+- AI provides recommendations; the manager validates and acts
+- Alerts are proactive and early-warning focused
+- Staff insights remain non-punitive and improvement-oriented
+
+---
+
+### Pharmacy Manager Web Screens
+
+#### Login Screen
+- Secure authentication
+- Role-based access control
+
+---
+
+#### Pharmacy Manager Dashboard (Operations Overview)
+- Prescription workload summary
+- Refill completion metrics
+- Turnaround time indicators
+- Inventory health signals
+- Active AI alerts
+
+---
+
+#### AI Proactive Alerts
+- Active and historical alerts
+- Severity indicators
+- Trend context and acknowledgment controls
+
+---
+
+#### Inventory Intelligence
+- Demand forecasts
+- Reorder recommendations
+- Expiry risk predictions
+- Dead stock identification
+
+---
+
+#### Operational Insights
+- Volume and refill analytics
+- Turnaround time breakdowns
+- Bottleneck detection visuals
+
+---
+
+#### Staff Performance Signals
+- Aggregated speed vs accuracy trends
+- Override frequency analysis
+- Workload distribution insights
+
+---
+
+#### Reports & Export
+- Inventory and operational summaries
+- Alert and trend exports
+- Leadership-ready reporting outputs

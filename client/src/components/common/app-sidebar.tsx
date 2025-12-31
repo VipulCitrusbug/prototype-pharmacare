@@ -68,16 +68,22 @@ const roleNavigation: Record<UserRoleType, NavGroup[]> = {
     {
       label: "Overview",
       items: [
-        { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-        { title: "Operations", url: "/operations", icon: Activity },
+        { title: "Dashboard", url: "/manager", icon: LayoutDashboard },
+        { title: "AI Alerts", url: "/manager/alerts", icon: AlertTriangle },
+      ],
+    },
+    {
+      label: "Intelligence",
+      items: [
+        { title: "Inventory", url: "/manager/inventory", icon: Package },
+        { title: "Insights", url: "/manager/insights", icon: BarChart3 },
       ],
     },
     {
       label: "Management",
       items: [
-        { title: "Staff", url: "/staff", icon: Users },
-        { title: "Inventory", url: "/inventory", icon: Package },
-        { title: "Analytics", url: "/analytics", icon: BarChart3 },
+        { title: "Staff Signals", url: "/manager/staff", icon: Users },
+        { title: "Reports", url: "/manager/reports", icon: FileText },
       ],
     },
   ],

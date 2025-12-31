@@ -22,6 +22,12 @@ import PatientsPage from "@/pages/patients";
 import ReportsPage from "@/pages/reports";
 import ProfilePage from "@/pages/profile";
 import SettingsPage from "@/pages/settings";
+import ManagerDashboardPage from "@/pages/manager/dashboard";
+import ManagerAlertsPage from "@/pages/manager/alerts";
+import ManagerInventoryPage from "@/pages/manager/inventory";
+import ManagerInsightsPage from "@/pages/manager/insights";
+import ManagerStaffPage from "@/pages/manager/staff";
+import ManagerReportsPage from "@/pages/manager/reports";
 import type { User } from "@shared/schema";
 
 function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
@@ -109,6 +115,7 @@ function Router() {
   return (
     <AuthenticatedLayout>
       <Switch>
+        {/* Pharmacist routes */}
         <Route path="/" component={DashboardPage} />
         <Route path="/dashboard" component={DashboardPage} />
         <Route path="/queue" component={QueuePage} />
@@ -123,6 +130,16 @@ function Router() {
         <Route path="/reports" component={ReportsPage} />
         <Route path="/profile" component={ProfilePage} />
         <Route path="/settings" component={SettingsPage} />
+        
+        {/* Manager routes */}
+        <Route path="/manager" component={ManagerDashboardPage} />
+        <Route path="/manager/dashboard" component={ManagerDashboardPage} />
+        <Route path="/manager/alerts" component={ManagerAlertsPage} />
+        <Route path="/manager/inventory" component={ManagerInventoryPage} />
+        <Route path="/manager/insights" component={ManagerInsightsPage} />
+        <Route path="/manager/staff" component={ManagerStaffPage} />
+        <Route path="/manager/reports" component={ManagerReportsPage} />
+        
         <Route component={NotFound} />
       </Switch>
     </AuthenticatedLayout>

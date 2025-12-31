@@ -69,10 +69,11 @@ export default function SignupPage() {
     },
   });
 
-  // Redirect to dashboard if already logged in (using useEffect)
+  // Redirect based on role if already logged in (using useEffect)
   useEffect(() => {
     if (userQuery.data) {
-      setLocation("/dashboard");
+      const redirectPath = userQuery.data.role === "manager" ? "/manager" : "/dashboard";
+      setLocation(redirectPath);
     }
   }, [userQuery.data, setLocation]);
 

@@ -45,7 +45,8 @@ export default function LoginPage() {
         title: "Welcome back!",
         description: `Logged in as ${data.user.firstName || data.user.username}`,
       });
-      setLocation("/dashboard");
+      const redirectPath = data.user.role === "manager" ? "/manager" : "/dashboard";
+      setLocation(redirectPath);
     },
     onError: (error: Error) => {
       toast({
@@ -56,10 +57,11 @@ export default function LoginPage() {
     },
   });
 
-  // Redirect to dashboard if already logged in (using useEffect)
+  // Redirect based on role if already logged in (using useEffect)
   useEffect(() => {
     if (userQuery.data) {
-      setLocation("/dashboard");
+      const redirectPath = userQuery.data.role === "manager" ? "/manager" : "/dashboard";
+      setLocation(redirectPath);
     }
   }, [userQuery.data, setLocation]);
 

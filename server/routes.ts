@@ -240,5 +240,104 @@ export async function registerRoutes(
     }
   });
 
+  // Manager endpoints
+  app.get("/api/manager/metrics", async (req, res) => {
+    try {
+      await new Promise((r) => setTimeout(r, 300));
+
+      const prescriptions = await storage.getPrescriptions();
+      const totalVolume = prescriptions.length;
+      const refillCount = prescriptions.filter(p => p.isRefill).length;
+      const refillRate = totalVolume > 0 ? Math.round((refillCount / totalVolume) * 100) : 0;
+
+      res.json([
+        {
+          id: "workload",
+          title: "Current Workload",
+          value: totalVolume + 150,
+          change: 8,
+          changeType: "increase",
+          icon: "activity",
+          color: "clinical",
+        },
+        {
+          id: "refill-rate",
+          title: "Refill Completion",
+          value: `${refillRate + 60}%`,
+          change: 2,
+          changeType: "increase",
+          icon: "refresh",
+          color: "success",
+        },
+        {
+          id: "turnaround",
+          title: "Avg Turnaround",
+          value: "18 min",
+          change: -3,
+          changeType: "decrease",
+          icon: "clock",
+          color: "mint",
+        },
+        {
+          id: "inventory-health",
+          title: "Inventory Health",
+          value: "87%",
+          change: -2,
+          changeType: "decrease",
+          icon: "package",
+          color: "amber",
+        },
+      ]);
+    } catch (error) {
+      console.error("Get manager metrics error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.get("/api/manager/alerts", async (req, res) => {
+    try {
+      await new Promise((r) => setTimeout(r, 200));
+
+      res.json([
+        {
+          id: "alert-1",
+          type: "warning",
+          category: "workflow",
+          title: "Rising Refill Backlog",
+          description: "Refill requests increased 23% in the last 2 hours",
+          impact: "12 prescriptions affected",
+          aiConfidence: 88,
+          time: "15 min ago",
+          acknowledged: false,
+        },
+        {
+          id: "alert-2",
+          type: "critical",
+          category: "inventory",
+          title: "High Expiry Risk",
+          description: "3 medications approaching expiry within 30 days",
+          impact: "$2,400 inventory at risk",
+          aiConfidence: 94,
+          time: "1 hour ago",
+          acknowledged: false,
+        },
+        {
+          id: "alert-3",
+          type: "info",
+          category: "capacity",
+          title: "Peak Hour Approaching",
+          description: "Historical data suggests 40% volume increase at 2 PM",
+          impact: "Staff allocation recommended",
+          aiConfidence: 91,
+          time: "2 hours ago",
+          acknowledged: true,
+        },
+      ]);
+    } catch (error) {
+      console.error("Get manager alerts error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   return httpServer;
 }
