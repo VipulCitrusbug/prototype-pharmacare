@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation, Redirect } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Logo, ThemeToggle, ButtonSpinner } from "@/components/common";
+import { Logo, ThemeToggle, ButtonSpinner, PageLoader } from "@/components/common";
 import { Eye, EyeOff, LogIn } from "lucide-react";
 import { loginSchema, type LoginInput, type User } from "@shared/schema";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -25,11 +25,7 @@ export default function LoginPage() {
     retry: false,
   });
 
-  // Redirect to dashboard if already logged in
-  if (userQuery.data) {
-    return <Redirect to="/dashboard" />;
-  }
-
+  // All hooks must be called before any conditional returns
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -44,7 +40,6 @@ export default function LoginPage() {
       return res.json();
     },
     onSuccess: (data) => {
-      // Invalidate and refetch user query to update auth state
       queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
       toast({
         title: "Welcome back!",
@@ -60,6 +55,18 @@ export default function LoginPage() {
       });
     },
   });
+
+  // Redirect to dashboard if already logged in (using useEffect)
+  useEffect(() => {
+    if (userQuery.data) {
+      setLocation("/dashboard");
+    }
+  }, [userQuery.data, setLocation]);
+
+  // Show loading while checking auth or if already logged in
+  if (userQuery.isLoading || userQuery.data) {
+    return <PageLoader text="Loading..." />;
+  }
 
   const onSubmit = (data: LoginInput) => {
     loginMutation.mutate(data);

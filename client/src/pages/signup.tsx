@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, useLocation, Redirect } from "wouter";
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Logo, ThemeToggle, ButtonSpinner } from "@/components/common";
+import { Logo, ThemeToggle, ButtonSpinner, PageLoader } from "@/components/common";
 import { Eye, EyeOff, UserPlus } from "lucide-react";
 import { signupSchema, type SignupInput, type User } from "@shared/schema";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -35,11 +35,7 @@ export default function SignupPage() {
     retry: false,
   });
 
-  // Redirect to dashboard if already logged in
-  if (userQuery.data) {
-    return <Redirect to="/dashboard" />;
-  }
-
+  // All hooks must be called before any conditional returns
   const form = useForm<SignupInput>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -72,6 +68,18 @@ export default function SignupPage() {
       });
     },
   });
+
+  // Redirect to dashboard if already logged in (using useEffect)
+  useEffect(() => {
+    if (userQuery.data) {
+      setLocation("/dashboard");
+    }
+  }, [userQuery.data, setLocation]);
+
+  // Show loading while checking auth or if already logged in
+  if (userQuery.isLoading || userQuery.data) {
+    return <PageLoader text="Loading..." />;
+  }
 
   const onSubmit = (data: SignupInput) => {
     signupMutation.mutate(data);

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Switch, Route, useLocation, Redirect } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient, apiRequest } from "./lib/queryClient";
 import { QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -36,15 +36,22 @@ function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
     }
   };
 
+  // Redirect to login if not authenticated (using useEffect)
+  useEffect(() => {
+    if (!userQuery.isLoading && !userQuery.data) {
+      setLocation("/login");
+    }
+  }, [userQuery.isLoading, userQuery.data, setLocation]);
+
   if (userQuery.isLoading) {
     return <PageLoader text="Loading..." />;
   }
 
   const user = userQuery.data;
 
-  // Redirect to login if not authenticated
+  // Show loader while redirecting to login
   if (!user) {
-    return <Redirect to="/login" />;
+    return <PageLoader text="Redirecting to login..." />;
   }
 
   const userRole = user.role || "pharmacist";
