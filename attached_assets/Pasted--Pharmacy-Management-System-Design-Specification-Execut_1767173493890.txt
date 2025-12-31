@@ -1,0 +1,1076 @@
+# Pharmacy Management System - Design Specification
+
+## Executive Summary
+
+This document defines the comprehensive design system, visual identity, and user interface guidelines for the Pharmacy Management System. The design prioritizes clarity, professionalism, accessibility, and consistency across all user roles and touchpoints.
+
+---
+
+## Brand Identity
+
+### Brand Name
+**PharmaCare Plus** (or your preferred healthcare brand name)
+
+### Brand Positioning
+A modern, AI-assisted pharmacy management platform that combines clinical precision with operational efficiency. The brand conveys trust, intelligence, and care through its visual language.
+
+### Brand Values
+- **Trust:** Reliable, secure, compliant
+- **Clarity:** Clear, transparent, understandable
+- **Intelligence:** Smart, efficient, assistive
+- **Care:** Patient-centered, supportive, accessible
+
+---
+
+## Logo Design Guidelines
+
+### Logo Specifications
+- **Primary Logo:** Brand name with medical cross or pharmacy symbol
+- **Icon/Mark:** Simplified symbol for app icons and small spaces
+- **Orientation:** Horizontal primary, stacked secondary
+- **Clear Space:** Minimum clear space = height of the "P" in PharmaCare
+
+### Logo Usage
+- Display prominently in header/navigation
+- Use on login/signup screens
+- Include in loading states
+- Maintain proper clear space
+- Never distort or rotate
+- Never place on busy backgrounds without proper contrast
+
+### Logo Colors
+- **Primary:** Full color on light backgrounds
+- **Reversed:** White on dark backgrounds (#1F3A5F)
+- **Monochrome:** Solid Deep Clinical Blue when color not available
+
+---
+
+## Color System
+
+### Primary Color Palette
+
+#### Deep Clinical Blue (#1F3A5F)
+**Usage:**
+- Top navigation bar background
+- Primary action buttons (Submit, Approve, Confirm)
+- Active menu items and selected states
+- Brand logo base color
+- Primary headings and emphasis
+
+**Accessibility:** Meets WCAG AA for text on white
+**Hex:** #1F3A5F
+**RGB:** 31, 58, 95
+
+---
+
+#### Soft Mint Teal (#2FB7A3)
+**Usage:**
+- AI-assist highlights and badges
+- Insight cards and recommendations
+- Status indicators (helpful, ready, optimized)
+- Secondary action buttons
+- Success states with informational context
+
+**Hex:** #2FB7A3
+**RGB:** 47, 183, 163
+
+---
+
+#### Muted Amber (#F2B705)
+**Usage:**
+- Pending actions and review states
+- Non-critical warnings
+- Review-required indicators
+- Attention-grabbing accents (used sparingly)
+
+**Hex:** #F2B705
+**RGB:** 242, 183, 5
+
+---
+
+### Status & Feedback Colors
+
+#### Success Green (#3CB371)
+**Usage:**
+- Completed actions
+- Approved states
+- Successful operations
+- Positive confirmations
+
+**Hex:** #3CB371
+**RGB:** 60, 179, 113
+
+---
+
+#### Controlled Red (#D64545)
+**Usage:**
+- Errors and critical alerts
+- Compliance flags
+- Claim rejections
+- Critical warnings only (use sparingly)
+
+**Hex:** #D64545
+**RGB:** 214, 69, 69
+
+---
+
+#### Soft Blue (#3B82F6)
+**Usage:**
+- Informational messages
+- Neutral system notifications
+- Helpful hints and tips
+- Links and interactive elements
+
+**Hex:** #3B82F6
+**RGB:** 59, 130, 246
+
+---
+
+### Background Colors
+
+#### Soft Off-White (#F7F9FC)
+**Usage:**
+- Main application background
+- Dashboard surfaces
+- High-level layout containers
+- Page backgrounds
+
+**Hex:** #F7F9FC
+**RGB:** 247, 249, 252
+
+---
+
+#### Pure White (#FFFFFF)
+**Usage:**
+- Cards and elevated surfaces
+- Modal backgrounds
+- Form containers
+- Table backgrounds
+- Input fields
+
+**Hex:** #FFFFFF
+**RGB:** 255, 255, 255
+
+---
+
+### Border & Divider Colors
+
+#### Cool Gray (#E2E8F0)
+**Usage:**
+- Card borders
+- Table grid lines
+- Section dividers
+- Input field borders
+- Subtle separators
+
+**Hex:** #E2E8F0
+**RGB:** 226, 232, 240
+
+---
+
+### Text Colors
+
+#### Charcoal Blue-Gray (#1F2933)
+**Usage:**
+- Primary headings (H1, H2)
+- Body text and main content
+- High-emphasis text
+- Navigation labels
+
+**Hex:** #1F2933
+**RGB:** 31, 41, 51
+
+---
+
+#### Slate Gray (#6B7280)
+**Usage:**
+- Secondary text and descriptions
+- Helper text and hints
+- Metadata and timestamps
+- Labels and captions
+- Placeholder text
+
+**Hex:** #6B7280
+**RGB:** 107, 114, 128
+
+---
+
+### Interactive State Colors
+
+#### Hover State - Darkened Clinical Blue (#244B78)
+**Usage:**
+- Primary button hover states
+- Navigation item hover
+- Interactive element hover feedback
+
+**Hex:** #244B78
+**RGB:** 36, 75, 120
+
+---
+
+#### Disabled State - Light Gray (#EDF2F7)
+**Usage:**
+- Disabled button backgrounds
+- Inactive UI elements
+- Non-interactive states
+
+**Text Color:** #9CA3AF (for disabled text)
+**Hex:** #EDF2F7
+**RGB:** 237, 242, 247
+
+---
+
+## Typography System
+
+### Font Families
+
+#### Primary Font: Inter
+**Usage:** UI elements, body text, buttons, labels
+**Fallback:** -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif
+**Rationale:** Excellent readability, professional appearance, optimized for screens
+
+#### Secondary Font: System UI Font Stack
+**Usage:** Fallback and system integration
+**Stack:** -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif
+
+---
+
+### Type Scale
+
+#### Display / Hero Text
+- **Size:** 48px / 3rem
+- **Weight:** 700 (Bold)
+- **Line Height:** 1.2
+- **Usage:** Landing pages, major section headers
+
+#### H1 - Primary Heading
+- **Size:** 32px / 2rem
+- **Weight:** 700 (Bold)
+- **Line Height:** 1.3
+- **Color:** #1F2933
+- **Usage:** Page titles, dashboard headers
+
+#### H2 - Section Heading
+- **Size:** 24px / 1.5rem
+- **Weight:** 600 (Semi-Bold)
+- **Line Height:** 1.4
+- **Color:** #1F2933
+- **Usage:** Section titles, card headers
+
+#### H3 - Subsection Heading
+- **Size:** 20px / 1.25rem
+- **Weight:** 600 (Semi-Bold)
+- **Line Height:** 1.4
+- **Color:** #1F2933
+- **Usage:** Subsection titles, form sections
+
+#### H4 - Component Heading
+- **Size:** 18px / 1.125rem
+- **Weight:** 600 (Semi-Bold)
+- **Line Height:** 1.5
+- **Color:** #1F2933
+- **Usage:** Component titles, list headers
+
+#### Body Large
+- **Size:** 18px / 1.125rem
+- **Weight:** 400 (Regular)
+- **Line Height:** 1.6
+- **Color:** #1F2933
+- **Usage:** Important body text, introductions
+
+#### Body Regular
+- **Size:** 16px / 1rem
+- **Weight:** 400 (Regular)
+- **Line Height:** 1.6
+- **Color:** #1F2933
+- **Usage:** Standard body text, descriptions
+
+#### Body Small
+- **Size:** 14px / 0.875rem
+- **Weight:** 400 (Regular)
+- **Line Height:** 1.5
+- **Color:** #6B7280
+- **Usage:** Helper text, metadata, captions
+
+#### Caption / Fine Print
+- **Size:** 12px / 0.75rem
+- **Weight:** 400 (Regular)
+- **Line Height:** 1.4
+- **Color:** #6B7280
+- **Usage:** Timestamps, legal text, tiny labels
+
+---
+
+### Text Styling Guidelines
+
+#### Emphasis
+- **Bold (600-700):** Important information, headings, labels
+- **Italic:** Subtle emphasis, AI-generated content markers
+- **Underline:** Links only (avoid for emphasis)
+
+#### Spacing
+- **Paragraph Spacing:** 1em (16px) between paragraphs
+- **Heading Spacing:** 1.5em above, 0.5em below
+- **List Spacing:** 0.5em between items
+
+---
+
+## Spacing & Layout System
+
+### Spacing Scale
+Based on 8px grid system for consistency and alignment
+
+- **4px:** Minimal spacing (buttons, tight elements)
+- **8px:** Extra small (compact spacing)
+- **12px:** Small (form field spacing)
+- **16px:** Medium (standard spacing)
+- **24px:** Large (section spacing)
+- **32px:** Extra large (major sections)
+- **48px:** XXL (page sections)
+- **64px:** XXXL (major page divisions)
+
+### Layout Grid
+- **Desktop:** 12-column grid
+- **Tablet:** 8-column grid
+- **Mobile:** 4-column grid
+- **Gutter:** 24px (desktop), 16px (mobile)
+- **Max Width:** 1440px (content container)
+
+### Container Widths
+- **Full Width:** 100% (navigation, footers)
+- **Content Container:** 1440px max
+- **Reading Width:** 800px max (long-form content)
+- **Form Width:** 600px max (centered forms)
+
+---
+
+## Component Design System
+
+### Buttons
+
+#### Primary Button
+**Appearance:**
+- Background: #1F3A5F (Deep Clinical Blue)
+- Text: #FFFFFF (White)
+- Height: 44px (desktop), 48px (mobile)
+- Padding: 12px 24px
+- Border Radius: 8px
+- Font Weight: 600
+- Font Size: 16px
+
+**States:**
+- **Default:** Solid background
+- **Hover:** Background #244B78, slight elevation (box-shadow)
+- **Active:** Background #1A2F4D, pressed appearance
+- **Disabled:** Background #EDF2F7, text #9CA3AF, no pointer events
+- **Loading:** Show spinner inside, slightly reduced opacity, disabled
+
+**Usage:** Primary actions, form submissions, confirmations
+
+---
+
+#### Secondary Button
+**Appearance:**
+- Background: Transparent or #FFFFFF
+- Border: 2px solid #1F3A5F
+- Text: #1F3A5F
+- Height: 44px (desktop), 48px (mobile)
+- Padding: 12px 24px
+- Border Radius: 8px
+- Font Weight: 600
+- Font Size: 16px
+
+**States:**
+- **Default:** Border with transparent/white background
+- **Hover:** Background #F7F9FC
+- **Active:** Background #E2E8F0
+- **Disabled:** Border #E2E8F0, text #9CA3AF
+
+**Usage:** Secondary actions, cancel buttons, alternative options
+
+---
+
+#### Tertiary / Text Button
+**Appearance:**
+- Background: Transparent
+- Text: #1F3A5F or #3B82F6
+- Height: Auto
+- Padding: 8px 16px
+- Border Radius: 6px
+- Font Weight: 600
+- Font Size: 14px
+
+**States:**
+- **Default:** Text only
+- **Hover:** Background #F7F9FC
+- **Active:** Background #E2E8F0
+
+**Usage:** Less prominent actions, inline actions, navigation
+
+---
+
+#### Icon Button
+**Appearance:**
+- Size: 40px × 40px (square)
+- Background: Transparent or #F7F9FC
+- Border Radius: 8px (rounded) or 50% (circular)
+- Icon Size: 20px
+
+**States:**
+- **Default:** Icon with optional background
+- **Hover:** Background #E2E8F0
+- **Active:** Background #D1D5DB
+
+**Usage:** Actions with clear icon meaning (close, edit, delete)
+
+---
+
+### Input Fields
+
+#### Text Input
+**Appearance:**
+- Height: 44px
+- Padding: 12px 16px
+- Border: 1px solid #E2E8F0
+- Border Radius: 8px
+- Background: #FFFFFF
+- Font Size: 16px
+- Color: #1F2933
+
+**States:**
+- **Default:** Light border
+- **Focus:** Border #1F3A5F, 2px, box-shadow (0 0 0 3px rgba(31, 58, 95, 0.1))
+- **Error:** Border #D64545, red helper text below
+- **Disabled:** Background #F7F9FC, text #9CA3AF
+- **Filled:** Slightly darker border
+
+**Label:**
+- Above input, 14px, weight 600, color #1F2933
+- Required indicator: red asterisk (*)
+
+**Helper Text:**
+- Below input, 12px, color #6B7280
+- Error text in #D64545
+
+---
+
+#### Textarea
+- Same styling as text input
+- Min height: 120px
+- Resizable vertically
+- Max height: 400px
+
+---
+
+#### Select Dropdown
+- Same base styling as text input
+- Chevron icon on right
+- Dropdown menu appears below
+- Options have hover state (#F7F9FC)
+- Selected option highlighted (#E2E8F0)
+
+---
+
+#### Checkbox
+**Appearance:**
+- Size: 20px × 20px
+- Border: 2px solid #E2E8F0
+- Border Radius: 4px
+- Checkmark: White on #1F3A5F when checked
+
+**States:**
+- **Unchecked:** Empty box
+- **Checked:** Filled with checkmark
+- **Indeterminate:** Dash icon (for partial selection)
+- **Disabled:** Gray border and background
+
+---
+
+#### Radio Button
+- Size: 20px × 20px
+- Border: 2px solid #E2E8F0
+- Border Radius: 50% (circular)
+- Dot: #1F3A5F when selected
+
+---
+
+#### Toggle Switch
+- Width: 44px, Height: 24px
+- Track: #E2E8F0 (off), #2FB7A3 (on)
+- Handle: #FFFFFF, 20px diameter
+- Border Radius: 12px (pill shape)
+- Smooth transition animation
+
+---
+
+### Cards
+
+#### Standard Card
+**Appearance:**
+- Background: #FFFFFF
+- Border: 1px solid #E2E8F0
+- Border Radius: 12px
+- Padding: 24px
+- Box Shadow: 0 1px 3px rgba(0, 0, 0, 0.1)
+
+**Hover State (if clickable):**
+- Box Shadow: 0 4px 12px rgba(0, 0, 0, 0.15)
+- Border: 1px solid #1F3A5F
+- Slight scale transform (1.02)
+
+**Structure:**
+- Header with icon/title
+- Body content
+- Optional footer with actions
+
+---
+
+#### Insight / AI Card
+**Appearance:**
+- Background: Linear gradient or solid #F0FDFA (mint tint)
+- Border: 1px solid #2FB7A3
+- Border Radius: 12px
+- Padding: 20px
+- "AI Insight" badge in top-right
+
+**Icon:**
+- Sparkle or brain icon in #2FB7A3
+
+---
+
+#### Alert / Warning Card
+**Colors based on severity:**
+- **Info:** Blue border (#3B82F6), light blue background
+- **Warning:** Amber border (#F2B705), light amber background
+- **Error:** Red border (#D64545), light red background
+- **Success:** Green border (#3CB371), light green background
+
+**Structure:**
+- Icon on left matching severity
+- Title in bold
+- Description text
+- Optional action button
+
+---
+
+### Tables
+
+#### Table Structure
+**Appearance:**
+- Background: #FFFFFF
+- Border: 1px solid #E2E8F0
+- Border Radius: 12px (container)
+- Cell Padding: 16px
+
+**Header:**
+- Background: #F7F9FC
+- Font Weight: 600
+- Font Size: 14px
+- Color: #1F2933
+- Border Bottom: 2px solid #E2E8F0
+
+**Rows:**
+- Alternating backgrounds (optional): white and #FAFBFC
+- Hover: Background #F7F9FC
+- Border Between Rows: 1px solid #E2E8F0
+
+**Responsive:**
+- Stack to cards on mobile
+- Horizontal scroll with sticky first column (optional)
+
+---
+
+### Navigation
+
+#### Top Navigation Bar
+**Appearance:**
+- Height: 64px
+- Background: #1F3A5F
+- Box Shadow: 0 2px 4px rgba(0, 0, 0, 0.1)
+- Fixed position (stays on top during scroll)
+
+**Contents:**
+- Logo (left, ~180px width)
+- Navigation items (center)
+- User profile / logout (right)
+
+**Navigation Items:**
+- Color: #FFFFFF with 0.8 opacity
+- Active: Full opacity, underline or background pill
+- Hover: Full opacity, background rgba(255, 255, 255, 0.1)
+
+---
+
+#### Sidebar Navigation
+**Appearance:**
+- Width: 260px
+- Background: #FFFFFF or #F7F9FC
+- Border Right: 1px solid #E2E8F0
+- Fixed or collapsible
+
+**Menu Items:**
+- Padding: 12px 16px
+- Border Radius: 8px
+- Icon + Text layout
+
+**States:**
+- **Default:** Text #1F2933
+- **Hover:** Background #E2E8F0
+- **Active:** Background #1F3A5F, text #FFFFFF
+
+---
+
+### Modals
+
+#### Modal Container
+**Appearance:**
+- Background: #FFFFFF
+- Border Radius: 16px
+- Box Shadow: 0 20px 60px rgba(0, 0, 0, 0.3)
+- Max Width: 600px (default)
+- Padding: 32px
+
+**Backdrop:**
+- Background: rgba(0, 0, 0, 0.5)
+- Blur effect (optional)
+
+**Structure:**
+- Header with title and close button
+- Body content
+- Footer with action buttons
+
+**Animation:**
+- Fade in backdrop
+- Scale and fade in modal
+- Duration: 200-300ms
+
+---
+
+### Toast Notifications
+
+#### Toast Container
+**Appearance:**
+- Width: 360px (max)
+- Background: #FFFFFF
+- Border Radius: 12px
+- Box Shadow: 0 4px 16px rgba(0, 0, 0, 0.15)
+- Padding: 16px
+- Border Left: 4px solid (status color)
+
+**Position:**
+- Top-right (default)
+- Stacked vertically with 12px gap
+
+**Types:**
+- **Success:** Green left border (#3CB371)
+- **Error:** Red left border (#D64545)
+- **Warning:** Amber left border (#F2B705)
+- **Info:** Blue left border (#3B82F6)
+
+**Structure:**
+- Icon (left, matching type)
+- Title (bold, 14px)
+- Message (regular, 14px)
+- Close button (top-right, optional)
+
+**Behavior:**
+- Slide in from right
+- Auto-dismiss after 3 seconds (default)
+- Hover pauses auto-dismiss
+- Slide out on dismiss
+
+---
+
+### Loading States
+
+#### Spinner
+**Appearance:**
+- Size: 20px (small), 32px (medium), 48px (large)
+- Color: #1F3A5F or context-appropriate
+- Animated circular spinner
+
+**Usage:**
+- Inside buttons during loading
+- Center of page during full-page load
+- Inside cards during content loading
+
+---
+
+#### Skeleton Loader
+**Appearance:**
+- Background: Linear gradient (#E2E8F0 to #F7F9FC)
+- Border Radius: matches content
+- Animated shimmer effect
+- Dimensions match expected content
+
+**Usage:**
+- Table rows
+- Card content
+- Text blocks
+- Images
+
+---
+
+#### Progress Bar
+**Appearance:**
+- Height: 8px
+- Background: #E2E8F0
+- Fill: #1F3A5F or #2FB7A3
+- Border Radius: 4px
+- Smooth animation
+
+**Usage:**
+- Multi-step processes
+- File uploads
+- Long operations
+
+---
+
+## Iconography
+
+### Icon Library
+**Recommended:** Lucide React, Heroicons, or Feather Icons
+**Style:** Outline style primary, filled for active states
+**Size:** 16px (small), 20px (medium), 24px (large)
+**Color:** Inherit from parent or context-appropriate
+
+### Icon Usage Guidelines
+
+#### Navigation Icons
+- Dashboard: Grid or layout icon
+- Queue: List or inbox icon
+- Reports: Bar chart or document icon
+- Settings: Gear or sliders icon
+- Profile: User circle icon
+- Logout: Log out or sign out icon
+
+#### Action Icons
+- Add: Plus icon
+- Edit: Pencil or edit icon
+- Delete: Trash icon
+- Save: Check or disk icon
+- Cancel: X or close icon
+- Search: Magnifying glass icon
+- Filter: Funnel icon
+- Sort: Arrows or sort icon
+- Download: Download arrow icon
+- Upload: Upload arrow icon
+- Print: Printer icon
+- Share: Share nodes icon
+
+#### Status Icons
+- Success: Check circle (green)
+- Error: X circle or alert triangle (red)
+- Warning: Alert circle (amber)
+- Info: Info circle (blue)
+- Pending: Clock icon (amber)
+- In Progress: Refresh or loader icon (blue)
+
+#### Prescription Workflow Icons
+- New Prescription: Plus in document icon
+- Refill: Refresh or cycle icon
+- Review: Eye or magnifying glass icon
+- Validate: Check shield icon
+- Dispense: Pills or medication icon
+- Complete: Check in circle icon
+
+#### AI-Related Icons
+- AI Insight: Sparkle or brain icon
+- AI Draft: Document with sparkle icon
+- AI Priority: Star with sparkle icon
+- Confidence High: Check with sparkle icon
+- Confidence Low: Alert with sparkle icon
+
+---
+
+## Responsive Design
+
+### Breakpoints
+- **Mobile:** 0-767px
+- **Tablet:** 768px-1023px
+- **Desktop:** 1024px-1439px
+- **Large Desktop:** 1440px+
+
+### Responsive Behavior
+
+#### Navigation
+- **Desktop:** Full horizontal navigation bar
+- **Tablet:** Collapsible sidebar or dropdown menu
+- **Mobile:** Hamburger menu with full-screen overlay
+
+#### Cards
+- **Desktop:** Multi-column grid (3-4 columns)
+- **Tablet:** 2-column grid
+- **Mobile:** Single column stack
+
+#### Tables
+- **Desktop:** Full table view
+- **Tablet:** Horizontal scroll with sticky columns
+- **Mobile:** Card-based view (table converts to cards)
+
+#### Forms
+- **Desktop:** Two-column layout for related fields
+- **Tablet:** Single column
+- **Mobile:** Single column with full-width inputs
+
+#### Spacing
+- **Desktop:** Full spacing scale
+- **Tablet:** Reduced spacing (75%)
+- **Mobile:** Minimal spacing (50%)
+
+#### Typography
+- **Desktop:** Full type scale
+- **Mobile:** Reduce H1 to 24px, H2 to 20px, maintain readability
+
+---
+
+## Accessibility Guidelines
+
+### Color Contrast
+- **Text on Background:** Minimum 4.5:1 (WCAG AA)
+- **Large Text (18px+):** Minimum 3:1
+- **Interactive Elements:** Minimum 3:1
+
+### Focus States
+- Visible focus indicator on all interactive elements
+- Focus ring: 2px solid #1F3A5F, 4px offset
+- Never remove focus outlines (use custom instead)
+
+### Keyboard Navigation
+- All interactive elements keyboard accessible
+- Logical tab order
+- Skip to content link
+- Escape key closes modals/dropdowns
+
+### Screen Reader Support
+- Semantic HTML elements
+- ARIA labels where needed
+- Alt text for all images
+- Descriptive link text
+- Form labels properly associated
+
+### Motion & Animation
+- Respect prefers-reduced-motion
+- Provide option to disable animations
+- Essential animations only
+
+---
+
+## Design Patterns
+
+### Empty States
+**Structure:**
+- Centered content
+- Illustrative icon (large, 64px+)
+- Heading explaining state
+- Description with guidance
+- Primary action button
+
+**Example:**
+"No prescriptions in queue"
+"Your prescription queue is empty. New prescriptions will appear here."
+[Refresh Button]
+
+---
+
+### Error States
+**Structure:**
+- Error icon (red)
+- Clear error message
+- Specific guidance on resolution
+- Retry action or alternative path
+
+**Tone:**
+- Friendly, not blaming
+- Specific, not generic
+- Actionable, not dead-end
+
+---
+
+### Success States
+**Structure:**
+- Success icon (green check)
+- Confirmation message
+- Summary of action taken
+- Next steps or return action
+
+**Timing:**
+- Show immediately after action
+- Auto-transition after 2-3 seconds (or provide manual close)
+
+---
+
+### Loading States
+**Guidelines:**
+- Show within 100ms of action
+- Use skeleton for initial loads
+- Use spinner for action feedback
+- Show progress for long operations
+- Provide cancel option for long operations
+
+---
+
+## Animation Guidelines
+
+### Timing
+- **Instant:** 0-100ms (tooltip, dropdown)
+- **Fast:** 100-200ms (hover, focus)
+- **Standard:** 200-300ms (modal, drawer)
+- **Slow:** 300-500ms (page transitions)
+
+### Easing
+- **Ease-out:** User-triggered actions (button clicks)
+- **Ease-in:** Exiting elements
+- **Ease-in-out:** Smooth transitions
+
+### Animation Types
+- **Fade:** Opacity transitions
+- **Slide:** Position transitions (modals, drawers)
+- **Scale:** Size transitions (cards on hover)
+- **Rotate:** Spinner, loading indicators
+
+### Principles
+- Purposeful: Animations should serve a function
+- Subtle: Don't distract from content
+- Consistent: Use same timings and easing throughout
+- Respectful: Honor reduced-motion preferences
+
+---
+
+## Design Best Practices
+
+### Visual Hierarchy
+1. Use size, weight, and color to establish hierarchy
+2. Most important elements should be most prominent
+3. Group related content visually
+4. Use whitespace to separate sections
+
+### Consistency
+- Use design system components consistently
+- Maintain spacing and alignment across pages
+- Keep interaction patterns predictable
+- Use consistent terminology
+
+### Readability
+- Maintain adequate line length (45-75 characters)
+- Use sufficient line height (1.5-1.6 for body text)
+- Ensure adequate color contrast
+- Avoid all-caps for long text
+
+### Scannability
+- Use descriptive headings
+- Break content into digestible chunks
+- Highlight key information
+- Use bullet points for lists
+- Left-align text
+
+### Trust & Credibility
+- Professional appearance
+- Clear, honest language
+- Visible security indicators
+- Proper error handling
+- Consistent quality throughout
+
+---
+
+## Component Library Reference
+
+### Button Variants Summary
+- Primary (filled)
+- Secondary (outlined)
+- Tertiary (text)
+- Icon button
+- Loading state (all types)
+- Disabled state (all types)
+
+### Input Variants Summary
+- Text input
+- Textarea
+- Select dropdown
+- Checkbox
+- Radio button
+- Toggle switch
+- Date picker
+- Search input
+
+### Feedback Components
+- Toast notification (success, error, warning, info)
+- Alert banner
+- Inline validation message
+- Loading spinner
+- Progress bar
+- Skeleton loader
+
+### Navigation Components
+- Top navigation bar
+- Sidebar navigation
+- Breadcrumb trail
+- Pagination
+- Tabs
+
+### Display Components
+- Card (standard, insight, alert)
+- Table
+- List
+- Badge
+- Tag
+- Avatar
+- Divider
+
+### Overlay Components
+- Modal
+- Drawer/Sidebar
+- Dropdown menu
+- Tooltip
+- Popover
+
+---
+
+## Implementation Notes
+
+### CSS Framework
+- **Recommended:** Tailwind CSS (use core utilities only)
+- **Alternative:** CSS Modules or Styled Components
+- Ensure responsive utilities available
+- Maintain design system constraints
+
+### Component Library
+- **Recommended:** shadcn/ui (pre-configured with design system)
+- **Alternative:** Headless UI + custom styling
+- Ensure accessibility built-in
+- Maintain consistent API
+
+### Icons
+- **Recommended:** Lucide React
+- Import only needed icons
+- Maintain consistent sizing
+- Use semantic naming
+
+---
+
+## Design Checklist
+
+Before finalizing any screen:
+- [ ] Follows color system consistently
+- [ ] Uses typography scale correctly
+- [ ] Maintains spacing scale
+- [ ] All interactive states defined
+- [ ] Loading states implemented
+- [ ] Error states designed
+- [ ] Empty states included
+- [ ] Responsive across breakpoints
+- [ ] Accessible (keyboard, screen reader)
+- [ ] Icons appropriate and consistent
+- [ ] Buttons clearly clickable
+- [ ] Forms properly validated
+- [ ] Toast notifications auto-dismiss
+- [ ] Brand logo visible
+- [ ] Logout button accessible
+
+---
+
+## Conclusion
+
+This design specification provides a complete visual system for the Pharmacy Management System. Consistent application of these guidelines will ensure a professional, accessible, and user-friendly interface that builds trust with healthcare professionals and patients alike.
+
+All design decisions prioritize clarity, usability, and the serious responsibility of healthcare technology while maintaining a modern, approachable aesthetic.

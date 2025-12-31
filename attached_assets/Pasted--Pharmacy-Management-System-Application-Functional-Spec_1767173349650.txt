@@ -1,0 +1,826 @@
+# Pharmacy Management System - Application Functional Specification
+
+## Executive Summary
+
+The Pharmacy Management System is a role-driven, AI-assisted platform designed to support safe, efficient, and compliant pharmacy operations. This document outlines the functional requirements, user roles, workflows, and technical implementation guidelines for the application prototype.
+
+**Important Note:** This is a UI/UX prototype only. No real backend services, APIs, authentication systems, or medical logic should be implemented.
+
+---
+
+## Application Overview
+
+The platform enables pharmacists to accurately process and dispense prescriptions while reducing cognitive load through assistive, non-decisional AI support. Managers and finance teams gain visibility into operational trends, risks, and performance signals. Patients experience a simple interface for refill management and order tracking. Compliance officers receive early risk detection and audit-ready insights.
+
+**Core Principle:** AI functions strictly as an advisory layer, enhancing speed, consistency, and visibility while preserving human authority and professional accountability.
+
+---
+
+## Target User Roles
+
+### Pharmacist — Primary Executor
+**Primary Responsibilities:**
+- Review and validate prescriptions from all intake sources
+- Accurately interpret medication details (drug, dosage, frequency, duration)
+- Manage prescription queues efficiently under varying workloads
+- Dispense medications in compliance with safety and regulatory standards
+- Record dispensing actions, overrides, and clinical justifications
+- Maintain audit-ready documentation
+
+**AI Support Capabilities:**
+- Prescription data extraction (OCR/NLP for handwritten, scanned, faxed prescriptions)
+- Workload prioritization based on urgency factors
+- Auto-drafted dispensing notes and justification suggestions
+- Continuous learning from pharmacist corrections
+
+**Key Constraint:** Pharmacist always makes final decisions. AI assists and highlights but never approves or acts independently.
+
+---
+
+### Pharmacy Manager — Operations Oversight
+**Primary Responsibilities:**
+- Oversee overall pharmacy operations and efficiency
+- Monitor staffing levels and workload distribution
+- Track inventory planning and performance trends
+- Make proactive operational decisions
+
+**AI Support Capabilities:**
+- Aggregated operational insights (non-punitive)
+- Performance trend analysis
+- Staffing and inventory recommendations
+
+---
+
+### Patient — Service Consumer
+**Primary Responsibilities:**
+- Request prescription refills
+- Track order status
+- Manage personal health information
+
+**AI Support Capabilities:**
+- Proactive refill reminders
+- Status notifications
+- Guided interface navigation
+
+**Key Constraint:** No medical advice provided through AI.
+
+---
+
+### Finance Specialist — Revenue & Billing
+**Primary Responsibilities:**
+- Ensure billing accuracy
+- Manage insurance claim readiness
+- Monitor revenue integrity
+
+**AI Support Capabilities:**
+- Pre-validation of claims
+- Risk checks to reduce rejections
+- Financial anomaly detection
+
+**Key Constraint:** Financial decisions remain under human control.
+
+---
+
+### Compliance Officer — Regulatory Monitoring
+**Primary Responsibilities:**
+- Monitor regulatory adherence
+- Ensure audit readiness
+- Track controlled substance patterns
+
+**AI Support Capabilities:**
+- Anomaly detection
+- Early risk signaling
+- Compliance pattern analysis
+
+**Key Constraint:** AI provides detection only, not intervention.
+
+---
+
+### Admin — System Configuration
+**Primary Responsibilities:**
+- Manage system configuration
+- Handle integrations
+- Ensure platform reliability
+- Maintain governance rules
+
+**AI Support Capabilities:**
+- Advisory configuration insights
+- Setup efficiency identification
+
+**Key Constraint:** No automatic changes to system configuration.
+
+---
+
+## Data & Interaction Simulation Rules
+
+### Data Storage
+- Store all mock data locally in structured JSON files
+- No real backend or APIs
+- All data must be safe, structured, and appear secure
+
+### User Data Persistence
+- Simulate user login with role-based access
+- Save all user-entered data:
+  - Profile information
+  - Vitals and symptoms
+  - Medications
+  - Prescriptions
+  - Action logs
+- User data must appear consistently throughout the app after login
+- Data should persist across navigation
+
+### Backend Simulation
+- Implement intentional loading delays (500ms - 2000ms)
+- Use skeleton loaders during data fetching
+- Show spinners or progress indicators
+- Simulate realistic response times
+
+---
+
+## Authentication & Authorization
+
+### Sign Up Process
+1. User provides credentials
+2. User selects role during registration
+3. Role is saved to user profile in JSON structure
+4. User data is structured and stored
+
+### Login Process
+1. Validate credentials against stored JSON data
+2. Load role-based permissions
+3. Redirect to appropriate dashboard based on role
+4. Initialize session with user data
+
+### Role-Based Access
+- Each role has specific accessible screens
+- Navigation adapts based on user role
+- Permissions enforced at UI level
+
+### Session Management
+- Maintain active session state
+- Implement logout functionality
+- Clear session data on logout
+- Optional: Session timeout after inactivity
+
+---
+
+## Form Handling & Validations
+
+### Required Validations
+- Required field checks
+- Input format validations (email, phone, dates)
+- Length constraints where applicable
+- Data type validations
+
+### Button States
+- **Disabled** when:
+  - Validation errors exist
+  - Required inputs are missing
+  - Request is in loading state
+- **Enabled** when all validations pass
+- **Loading** when action is triggered
+
+### Error Messaging
+- Display clear, specific error messages
+- Show inline field-level errors
+- Use warning messages for non-critical issues
+- Provide guidance on how to fix errors
+
+---
+
+## Interactions & User Feedback
+
+### Navigation
+- Fully clickable navigation between pages
+- Back button functionality where appropriate
+- Breadcrumb trails for complex workflows
+- Clear active state indicators
+
+### Button States
+- **Default:** Normal clickable state
+- **Hover:** Visual feedback on mouse over
+- **Active:** Pressed/clicked appearance
+- **Disabled:** Grayed out, non-interactive
+- **Loading:** Spinner inside button during action
+
+### Loading Indicators
+- Skeleton loaders for page content
+- Spinners for in-progress actions
+- Progress bars for multi-step processes
+- Smooth page transitions
+
+### Toast Notifications
+**Usage for:**
+- Success confirmations
+- Error alerts
+- Warning messages
+- Information updates
+
+**Behavior:**
+- Auto-dismiss within 2-4 seconds
+- Never remain permanently on screen
+- Position consistently (top-right recommended)
+- Include appropriate icon for message type
+
+---
+
+## Pharmacist Role — Detailed Functionality
+
+### AI Support Philosophy
+**AI capabilities are intentionally constrained:**
+- Reduces manual data entry
+- Improves workload prioritization
+- Standardizes documentation quality
+
+**AI does NOT:**
+- Automatically approve prescriptions
+- Automatically dispense medications
+- Make clinical decisions
+- Override pharmacist judgment
+
+**Transparency Requirements:**
+- All AI outputs are clearly visible
+- All AI suggestions are fully editable
+- All actions are permanently traceable
+
+---
+
+### AI Capabilities for Pharmacists
+
+#### AI Prescription Intelligence
+- Extracts data from handwritten, scanned, faxed prescriptions
+- Uses OCR and NLP for text recognition
+- Converts unstructured content to structured fields
+- Highlights low-confidence or ambiguous fields
+- Never auto-fills without review
+- Learns from pharmacist corrections
+
+**Fields Extracted:**
+- Drug name
+- Dosage
+- Frequency
+- Duration
+- Prescriber information
+- Patient information
+
+---
+
+#### AI Workload Prioritization
+**Evaluation Factors:**
+- New vs refill status
+- Pickup or delivery commitments
+- Aging prescriptions
+- Expiry-sensitive inventory
+- Time-sensitive requirements
+
+**Actions:**
+- Dynamically reorders work queue
+- Flags high-priority items visually
+- Continuously re-evaluates during workday
+- Surfaces backlog alerts
+
+---
+
+#### AI Documentation Assistant
+- Auto-drafts dispensing notes
+- Suggests standardized justification language
+- Generates audit-ready documentation drafts
+- All drafts require pharmacist review and approval
+
+---
+
+### Pharmacist User Flow
+
+#### 1. Login & Session Initialization
+- Secure credential authentication
+- Load role-based permissions
+- Initialize pharmacist dashboard
+- Enable full audit logging
+
+---
+
+#### 2. Work Queue Initialization
+**Automatic Actions:**
+- Load prescription queue
+- AI evaluates urgency factors
+- Order prescriptions by priority
+- Flag high-risk items
+
+**Visual Indicators:**
+- New prescriptions
+- Refills
+- Delivery commitments
+- Expiring inventory
+- Aging items
+
+---
+
+#### 3. Prescription Selection
+- Pharmacist selects from queue
+- Status updates to "In Review"
+- Prescription locked to prevent parallel processing
+- Timer starts for workflow tracking
+
+---
+
+#### 4. Prescription Intake & Data Capture
+**For Electronic Prescriptions:**
+- Data prefilled from source
+- Ready for validation
+
+**For Scanned/Faxed/Handwritten Prescriptions:**
+- AI extracts structured data
+- Low-confidence fields highlighted
+- Pharmacist reviews all fields
+- Pharmacist edits or confirms data
+
+**Mandatory Step:**
+- All extracted data must be reviewed
+- Corrections feed back to AI training
+- Cannot proceed without confirmation
+
+---
+
+#### 5. Prescription Validation
+**Validation Checklist:**
+- Medication correctness confirmed
+- Dosage appropriate and clear
+- Frequency validated
+- Instructions complete
+- All required fields populated
+
+**System Enforcement:**
+- Cannot proceed if incomplete
+- Must explicitly confirm validation
+- Validation action is logged
+
+---
+
+#### 6. Dispensing Preparation
+**Actions:**
+- Confirm inventory availability
+- Check for expiry-sensitive stock
+- Identify any required substitutions
+- Status updates to "Preparing"
+
+**Visual Alerts:**
+- Low stock warnings
+- Near-expiry items
+- Substitution suggestions
+
+---
+
+#### 7. Dispensing Execution
+**Actions:**
+- Medication physically dispensed
+- Record any substitutions
+- Document overrides if applicable
+- Status updates to "Dispensed"
+
+**Documentation Triggers:**
+- Substitutions require justification
+- Overrides require detailed notes
+- All actions timestamped
+
+---
+
+#### 8. Documentation & Compliance
+**AI-Assisted Documentation:**
+- AI drafts dispensing notes
+- AI suggests override justifications
+- Pharmacist reviews all drafts
+- Pharmacist edits as needed
+- Pharmacist explicitly approves
+
+**Audit Trail:**
+- All entries timestamped
+- Approved documentation locked
+- Cannot be edited post-approval
+- Complete traceability maintained
+
+---
+
+#### 9. Prescription Completion
+**Final Actions:**
+- Status updates to "Ready for Pickup" or "Out for Delivery"
+- Patient notification triggered automatically
+- Prescription removed from active queue
+- Moved to completed items
+
+**Audit Snapshot:**
+- Complete workflow captured
+- All timestamps recorded
+- Read-only historical record created
+
+---
+
+#### 10. Continuous Queue Management
+**AI Continuous Actions:**
+- Re-evaluate queue priorities
+- Re-rank based on new additions
+- Surface aging prescriptions
+- Alert on backlog thresholds
+
+**Pharmacist Controls:**
+- Override AI prioritization
+- Manually reorder queue
+- Set custom priority flags
+
+---
+
+#### 11. Session End
+**Actions:**
+- Pharmacist logout or timeout
+- Session data preserved
+- All actions logged
+- Queue state saved
+
+---
+
+## Pharmacist Application Screens
+
+### 1. Login Screen
+**Components:**
+- Brand logo and name
+- Email/username input
+- Password input
+- "Remember me" checkbox (optional)
+- Login button
+- "Forgot password" link (mock)
+- "Sign up" link
+
+**Validations:**
+- Required field checks
+- Format validations
+
+---
+
+### 2. Pharmacist Dashboard
+**Key Metrics:**
+- Pending prescriptions count
+- In Review count
+- Preparing count
+- Completed today count
+
+**Work Queue Preview:**
+- Top 5-10 urgent prescriptions
+- AI-prioritized order
+- Visual urgency indicators
+
+**Quick Actions:**
+- Start next prescription
+- View full queue
+- Access reports
+
+**Components:**
+- Header with logo, role indicator, logout
+- Metric cards with icons
+- Prescription queue table/cards
+- Navigation menu
+
+---
+
+### 3. Prescription Work Queue
+**Features:**
+- Full list of pending prescriptions
+- AI-driven prioritization
+- Urgency visual flags
+- Filter options:
+  - New vs Refill
+  - Delivery vs Pickup
+  - Date range
+  - Status
+- Sort options:
+  - Priority (AI)
+  - Date
+  - Patient name
+  - Status
+
+**List/Card Information:**
+- Patient name
+- Prescription ID
+- Medication name
+- Type (New/Refill)
+- Status
+- Urgency indicator
+- Assigned time
+
+**Actions:**
+- Select prescription to review
+- Quick status view
+- Batch actions (future)
+
+---
+
+### 4. Prescription Review & Intake
+**For AI-Extracted Prescriptions:**
+
+**Image Preview:**
+- View scanned/faxed prescription image
+- Zoom capability
+- Side-by-side with extracted data
+
+**Extracted Data Fields:**
+- Patient information (name, DOB, ID)
+- Prescriber information
+- Drug name (highlighted if low confidence)
+- Dosage (highlighted if low confidence)
+- Frequency (highlighted if low confidence)
+- Duration
+- Special instructions
+- Refills allowed
+
+**Field Indicators:**
+- Green checkmark: High confidence
+- Yellow warning: Low confidence - review required
+- Red flag: Unable to extract - manual entry required
+
+**Actions:**
+- Edit any field
+- Confirm extraction accuracy
+- Flag for additional review
+- Save and continue
+
+**For Electronic Prescriptions:**
+- Prefilled data display
+- All fields editable
+- Validation checkpoint
+- Confirm and continue
+
+---
+
+### 5. Prescription Validation
+**Validation Interface:**
+- Medication details summary
+- Dosage verification
+- Frequency confirmation
+- Instruction review
+- Drug interaction check (simulated)
+- Allergy check (simulated)
+
+**Validation Checklist:**
+- [ ] Medication verified
+- [ ] Dosage appropriate
+- [ ] Frequency clear
+- [ ] Instructions complete
+- [ ] No contraindications
+
+**Actions:**
+- Confirm validation (enabled only when all checked)
+- Flag for additional review
+- Return to intake for corrections
+
+---
+
+### 6. Dispensing Preparation
+**Medication Information:**
+- Drug name and strength
+- Dosage form
+- Quantity required
+- Special handling instructions
+
+**Inventory Status:**
+- Available quantity
+- Expiry date
+- Lot number
+- Storage location
+
+**Alerts:**
+- Low stock warning
+- Near expiry alert
+- Substitution required
+
+**Actions:**
+- Confirm inventory selection
+- Record substitution (if applicable)
+- Proceed to dispensing
+
+---
+
+### 7. Dispensing Execution
+**Dispensing Interface:**
+- Medication being dispensed
+- Quantity confirmation
+- Barcode scanning simulation
+- Dispensing instructions
+
+**Override/Substitution:**
+- Substitution selection
+- Reason for substitution
+- Justification notes (required)
+
+**Actions:**
+- Confirm dispensing
+- Record override/substitution
+- Complete dispensing
+
+---
+
+### 8. Documentation & Notes
+**AI-Drafted Content:**
+- Auto-generated dispensing note
+- Suggested override justification (if applicable)
+- Standard documentation template
+
+**Content Clearly Marked:**
+- "AI-Drafted" label visible
+- Edit indicator
+- Pharmacist approval required
+
+**Pharmacist Actions:**
+- Review AI draft
+- Edit as needed
+- Add additional notes
+- Explicitly approve documentation
+
+**Documentation Fields:**
+- Dispensing summary
+- Override justification (if applicable)
+- Special handling notes
+- Pharmacist signature (electronic)
+
+---
+
+### 9. Prescription Completion
+**Completion Summary:**
+- Patient name and ID
+- Medication dispensed
+- Quantity
+- Status: Ready for Pickup / Out for Delivery
+- Completion timestamp
+
+**Audit Trail Display:**
+- Intake timestamp
+- Validation timestamp
+- Dispensing timestamp
+- Completion timestamp
+- All actions logged
+
+**Actions:**
+- Finalize and notify patient
+- Print label (simulated)
+- Return to queue
+
+---
+
+### 10. Reports & Analytics (Optional)
+**Pharmacist Performance:**
+- Prescriptions processed today
+- Average processing time
+- Validation accuracy
+- Documentation quality score
+
+**AI Assistance Metrics:**
+- AI extraction accuracy
+- Time saved through AI
+- Correction frequency
+
+---
+
+## Technical Implementation Guidelines
+
+### JSON Data Structure
+
+#### User Data Structure
+```json
+{
+  "users": [
+    {
+      "id": "user_001",
+      "email": "pharmacist@example.com",
+      "password": "hashed_password",
+      "role": "pharmacist",
+      "firstName": "John",
+      "lastName": "Doe",
+      "profile": {
+        "licenseNumber": "PH123456",
+        "phone": "+1234567890",
+        "specialization": "Clinical Pharmacy"
+      },
+      "preferences": {
+        "notifications": true,
+        "theme": "light"
+      }
+    }
+  ]
+}
+```
+
+#### Prescription Data Structure
+```json
+{
+  "prescriptions": [
+    {
+      "id": "rx_001",
+      "patientId": "patient_001",
+      "status": "pending",
+      "type": "new",
+      "priority": "high",
+      "aiPriorityScore": 95,
+      "source": "electronic",
+      "prescriber": {
+        "name": "Dr. Jane Smith",
+        "npi": "1234567890",
+        "contact": "+1234567890"
+      },
+      "medication": {
+        "drugName": "Amoxicillin",
+        "dosage": "500mg",
+        "frequency": "Three times daily",
+        "duration": "10 days",
+        "quantity": 30,
+        "refills": 0
+      },
+      "extraction": {
+        "method": "ai_ocr",
+        "confidence": {
+          "drugName": 0.98,
+          "dosage": 0.95,
+          "frequency": 0.92
+        },
+        "reviewed": false
+      },
+      "timestamps": {
+        "received": "2025-12-31T08:30:00Z",
+        "reviewed": null,
+        "validated": null,
+        "dispensed": null,
+        "completed": null
+      },
+      "flags": {
+        "urgent": true,
+        "deliveryCommitment": true,
+        "expiryRisk": false
+      }
+    }
+  ]
+}
+```
+
+---
+
+### State Management
+- Use React hooks (useState, useEffect, useContext)
+- Create context for user session
+- Create context for prescriptions
+- Implement local storage persistence
+- Simulate API delays with setTimeout
+
+---
+
+### Routing Structure
+```
+/login
+/signup
+/pharmacist/dashboard
+/pharmacist/queue
+/pharmacist/prescription/:id/intake
+/pharmacist/prescription/:id/validate
+/pharmacist/prescription/:id/prepare
+/pharmacist/prescription/:id/dispense
+/pharmacist/prescription/:id/document
+/pharmacist/prescription/:id/complete
+/pharmacist/reports
+```
+
+---
+
+## Success Metrics
+
+### Functional Success
+- All user flows navigable end-to-end
+- Data persists across sessions
+- Role-based access properly simulated
+- All form validations working
+
+### User Experience Success
+- Loading states visible and smooth
+- Toast notifications behave correctly
+- All buttons have proper interactive states
+- Navigation is intuitive and clear
+
+### Design Success
+- Consistent branding throughout
+- Professional healthcare appearance
+- Responsive across devices
+- Accessibility considerations met
+
+---
+
+## Future Enhancements (Out of Scope for Prototype)
+- Real backend API integration
+- Actual authentication system
+- Multi-factor authentication
+- Real-time notifications
+- Advanced reporting and analytics
+- Integration with pharmacy systems
+- Mobile native applications
+- Offline capability
+
+---
+
+## Conclusion
+
+This functional specification provides a complete blueprint for developing the Pharmacy Management System prototype. The focus is on creating a realistic, interactive experience that demonstrates the platform's capabilities while maintaining the constraint that this is a UI/UX prototype without real backend functionality.
+
+All implementation should prioritize user experience, visual polish, and realistic simulation of system behavior to effectively communicate the platform's value proposition to stakeholders and end users.
