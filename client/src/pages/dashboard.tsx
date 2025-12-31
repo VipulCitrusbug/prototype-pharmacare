@@ -169,12 +169,13 @@ export default function DashboardPage() {
     "pending": "/queue?status=pending",
     "in-review": "/queue?status=in_review",
     "preparing": "/queue?status=preparing",
-    "completed": "/queue?status=completed",
   };
 
   const handleMetricClick = (metricId: string) => {
-    const route = metricRoutes[metricId] || "/queue";
-    setLocation(route);
+    const route = metricRoutes[metricId];
+    if (route) {
+      setLocation(route);
+    }
   };
 
   if (hasError) {
