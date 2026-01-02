@@ -98,33 +98,26 @@ const roleNavigation: Record<UserRoleType, NavGroup[]> = {
       ],
     },
     {
-      label: "Account",
-      items: [
-        { title: "Notifications", url: "/patient/notifications", icon: AlertTriangle },
-        { title: "Settings", url: "/patient/settings", icon: Settings },
-      ],
+      "label": "Account",
+      "items": [
+        { "title": "Notifications", "url": "/patient/notifications", "icon": AlertTriangle }
+      ]
     },
   ],
   finance: [
     {
-      label: "Overview",
-      items: [
-        { title: "Dashboard", url: "/finance", icon: LayoutDashboard },
-        { title: "Claims Queue", url: "/finance/claims", icon: ClipboardList },
-      ],
+      "label": "Overview",
+      "items": [
+        { "title": "Dashboard", "url": "/finance", "icon": LayoutDashboard },
+        { "title": "Claims Queue", "url": "/finance/claims", "icon": ClipboardList }
+      ]
     },
     {
-      label: "Management",
-      items: [
-        { title: "Documentation", url: "/finance/documents", icon: FileText },
-        { title: "Reports", url: "/finance/reports", icon: BarChart3 },
-      ],
-    },
-    {
-      label: "Account",
-      items: [
-        { title: "Settings", url: "/finance/settings", icon: Settings },
-      ],
+      "label": "Management",
+      "items": [
+        { "title": "Documentation", "url": "/finance/documents", "icon": FileText },
+        { "title": "Reports", "url": "/finance/reports", "icon": BarChart3 }
+      ]
     },
   ],
   compliance: [

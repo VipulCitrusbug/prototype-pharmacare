@@ -52,6 +52,8 @@ import AdminPricingPage from "@/pages/admin/pricing";
 import AdminPricingEditorPage from "@/pages/admin/pricing-editor";
 import AdminIntegrationsPage from "@/pages/admin/integrations";
 import AdminReportsPage from "@/pages/admin/reports";
+import NewPrescriptionPage from "@/pages/prescriptions/new";
+import NewInventoryItemPage from "@/pages/inventory/new";
 import type { User } from "@shared/schema";
 
 function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
@@ -89,7 +91,7 @@ function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
       const user = userQuery.data;
       const currentPath = location || "/";
       const isManagerRoute = currentPath.startsWith("/manager");
-      const isPatientRoute = currentPath.startsWith("/patient");
+      const isPatientRoute = currentPath.startsWith("/patient") && !currentPath.startsWith("/patients");
       const isFinanceRoute = currentPath.startsWith("/finance");
       const isComplianceRoute = currentPath.startsWith("/compliance");
       const isAdminRoute = currentPath.startsWith("/admin");
@@ -210,12 +212,14 @@ function Router() {
         <Route path="/" component={DashboardPage} />
         <Route path="/dashboard" component={DashboardPage} />
         <Route path="/queue" component={QueuePage} />
+        <Route path="/prescriptions/new" component={NewPrescriptionPage} />
         <Route path="/prescription/:id" component={PrescriptionDetailPage} />
         <Route path="/prescription/:id/review" component={PrescriptionReviewPage} />
         <Route path="/prescription/:id/validate" component={PrescriptionValidatePage} />
         <Route path="/prescription/:id/dispense" component={PrescriptionDispensePage} />
         <Route path="/prescription/:id/document" component={PrescriptionDocumentPage} />
         <Route path="/prescription/:id/complete" component={PrescriptionCompletePage} />
+        <Route path="/inventory/new" component={NewInventoryItemPage} />
         <Route path="/inventory" component={InventoryPage} />
         <Route path="/patients" component={PatientsPage} />
         <Route path="/reports" component={ReportsPage} />

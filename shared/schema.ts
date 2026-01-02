@@ -42,6 +42,7 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
+  phone: text("phone"),
   role: text("role").notNull().default("patient"),
   avatar: text("avatar"),
   createdAt: timestamp("created_at").defaultNow(),
@@ -71,6 +72,36 @@ export const prescriptions = pgTable("prescriptions", {
   dispensedAt: timestamp("dispensed_at"),
 });
 
+export const inventory = pgTable("inventory", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  genericName: text("generic_name").notNull(),
+  category: text("category").notNull(),
+  quantity: integer("quantity").notNull(),
+  minStock: integer("min_stock").notNull(),
+  unit: text("unit").notNull(),
+  expiryDate: text("expiry_date").notNull(),
+  supplier: text("supplier").notNull(),
+  price: integer("price").notNull(), // Stored as cents to avoid floating point issues
+  status: text("status").notNull().default("available"), // available, out_of_stock, on_order, discontinued
+});
+
+export const patients = pgTable("patients", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
+  email: text("email").notNull().unique(),
+  phone: text("phone").notNull(),
+  dateOfBirth: timestamp("date_of_birth").notNull(),
+  allergies: text("allergies").array().default([]), // Stored as JSON string or PostgreSQL array
+  address: text("address"),
+  insuranceProvider: text("insurance_provider"),
+  insurancePolicyNumber: text("insurance_policy_number"),
+  activePrescriptions: integer("active_prescriptions").default(0),
+  lastVisit: timestamp("last_visit").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
@@ -81,6 +112,19 @@ export const insertPrescriptionSchema = createInsertSchema(prescriptions).omit({
   createdAt: true,
   updatedAt: true,
   dispensedAt: true,
+});
+
+export const insertInventorySchema = createInsertSchema(inventory).omit({
+  id: true,
+});
+
+export const insertPatientSchema = createInsertSchema(patients).omit({
+  id: true,
+  createdAt: true,
+  lastVisit: true,
+  activePrescriptions: true,
+}).extend({
+  dateOfBirth: z.coerce.date(),
 });
 
 export const loginSchema = z.object({
@@ -101,6 +145,10 @@ export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type InsertPrescription = z.infer<typeof insertPrescriptionSchema>;
 export type Prescription = typeof prescriptions.$inferSelect;
+export type InsertInventory = z.infer<typeof insertInventorySchema>;
+export type InventoryItem = typeof inventory.$inferSelect;
+export type InsertPatient = z.infer<typeof insertPatientSchema>;
+export type Patient = typeof patients.$inferSelect;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type SignupInput = z.infer<typeof signupSchema>;
 

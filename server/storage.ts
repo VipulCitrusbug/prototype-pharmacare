@@ -1,252 +1,172 @@
-import { type User, type InsertUser, type Prescription, type InsertPrescription } from "@shared/schema";
+import { type User, type InsertUser, type Prescription, type InsertPrescription, type InventoryItem, type InsertInventory, type Patient, type InsertPatient } from "@shared/schema";
 import { randomUUID } from "crypto";
+import * as fs from "fs";
+import * as path from "path";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUser(id: string, user: Partial<User>): Promise<User | undefined>;
   
   getPrescriptions(filters?: { status?: string; limit?: number }): Promise<Prescription[]>;
   getPrescription(id: string): Promise<Prescription | undefined>;
   createPrescription(prescription: InsertPrescription): Promise<Prescription>;
   updatePrescription(id: string, data: Partial<Prescription>): Promise<Prescription | undefined>;
+  
+  getInventory(): Promise<InventoryItem[]>;
+  getInventoryItem(id: string): Promise<InventoryItem | undefined>;
+  createInventoryItem(item: InsertInventory): Promise<InventoryItem>;
+  updateInventoryItem(id: string, data: Partial<InventoryItem>): Promise<InventoryItem | undefined>;
+
+  getPatients(): Promise<Patient[]>;
+  getPatient(id: string): Promise<Patient | undefined>;
+  createPatient(patient: InsertPatient): Promise<Patient>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-  private prescriptions: Map<string, Prescription>;
+const DATA_DIR = path.join(process.cwd(), "data");
+const USERS_FILE = path.join(DATA_DIR, "users.json");
+const PRESCRIPTIONS_FILE = path.join(DATA_DIR, "prescriptions.json");
+const INVENTORY_FILE = path.join(DATA_DIR, "inventory.json");
+const PATIENTS_FILE = path.join(DATA_DIR, "patients.json");
 
+export class JsonStorage implements IStorage {
   constructor() {
-    this.users = new Map();
-    this.prescriptions = new Map();
-    this.seedData();
+    this.ensureDataDirectory();
+    this.initializeFiles();
   }
 
-  private seedData() {
-    const demoUser: User = {
-      id: "demo-pharmacist",
-      username: "pharmacist",
-      password: "password123",
-      email: "pharmacist@pharmacare.com",
-      firstName: "John",
-      lastName: "Smith",
-      role: "pharmacist",
-      avatar: null,
-      createdAt: new Date(),
-    };
-    this.users.set(demoUser.id, demoUser);
+  private ensureDataDirectory() {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+  }
 
-    const demoManager: User = {
-      id: "demo-manager",
-      username: "manager",
-      password: "password123",
-      email: "manager@pharmacare.com",
-      firstName: "Sarah",
-      lastName: "Anderson",
-      role: "manager",
-      avatar: null,
-      createdAt: new Date(),
-    };
-    this.users.set(demoManager.id, demoManager);
+  private initializeFiles() {
+    // Initialize users file if it doesn't exist
+    if (!fs.existsSync(USERS_FILE)) {
+      fs.writeFileSync(USERS_FILE, JSON.stringify({ users: [] }, null, 2), "utf-8");
+    }
+    
+    // Initialize prescriptions file if it doesn't exist
+    if (!fs.existsSync(PRESCRIPTIONS_FILE)) {
+      fs.writeFileSync(PRESCRIPTIONS_FILE, JSON.stringify({ prescriptions: [] }, null, 2), "utf-8");
+    }
+    
+    // Initialize inventory file if it doesn't exist - load from existing file
+    if (!fs.existsSync(INVENTORY_FILE)) {
+      fs.writeFileSync(INVENTORY_FILE, JSON.stringify({ inventory: [] }, null, 2), "utf-8");
+    }
 
-    const demoPatient: User = {
-      id: "demo-patient",
-      username: "patient",
-      password: "password123",
-      email: "patient@email.com",
-      firstName: "John",
-      lastName: "Doe",
-      role: "patient",
-      avatar: null,
-      createdAt: new Date(),
-    };
-    this.users.set(demoPatient.id, demoPatient);
+    // Initialize patients file if it doesn't exist
+    if (!fs.existsSync(PATIENTS_FILE)) {
+      fs.writeFileSync(PATIENTS_FILE, JSON.stringify({ patients: [] }, null, 2), "utf-8");
+    }
+  }
 
-    const demoFinance: User = {
-      id: "demo-finance",
-      username: "finance",
-      password: "password123",
-      email: "finance@pharmacare.com",
-      firstName: "Rebecca",
-      lastName: "Taylor",
-      role: "finance",
-      avatar: null,
-      createdAt: new Date(),
-    };
-    this.users.set(demoFinance.id, demoFinance);
+  private readUsers(): User[] {
+    try {
+      const data = fs.readFileSync(USERS_FILE, "utf-8");
+      const parsed = JSON.parse(data);
+      
+      if (parsed.users && Array.isArray(parsed.users)) {
+        return parsed.users.map((user: any) => ({
+          ...user,
+          createdAt: new Date(user.createdAt),
+        }));
+      }
+      return [];
+    } catch (error) {
+      console.error("Error reading users from file:", error);
+      return [];
+    }
+  }
 
-    const samplePrescriptions: Prescription[] = [
-      {
-        id: "rx-001",
-        patientId: "p-001",
-        patientName: "Sarah Johnson",
-        prescriberId: "dr-001",
-        prescriberName: "Dr. Michael Chen",
-        drugName: "Metformin",
-        dosage: "500mg",
-        frequency: "Twice daily",
-        duration: "30 days",
-        instructions: "Take with meals",
-        status: "pending",
-        priority: "high",
-        isRefill: false,
-        isDelivery: true,
-        aiConfidence: 95,
-        aiNotes: "Clear prescription, verified dosage",
-        pharmacistNotes: null,
-        assignedPharmacistId: null,
-        createdAt: new Date(Date.now() - 30 * 60000),
-        updatedAt: new Date(),
-        dispensedAt: null,
-      },
-      {
-        id: "rx-002",
-        patientId: "p-002",
-        patientName: "James Wilson",
-        prescriberId: "dr-002",
-        prescriberName: "Dr. Emily Park",
-        drugName: "Lisinopril",
-        dosage: "10mg",
-        frequency: "Once daily",
-        duration: "90 days",
-        instructions: "Take in the morning",
-        status: "in_review",
-        priority: "medium",
-        isRefill: true,
-        isDelivery: false,
-        aiConfidence: 88,
-        aiNotes: "Refill request, previous history available",
-        pharmacistNotes: null,
-        assignedPharmacistId: null,
-        createdAt: new Date(Date.now() - 2 * 60 * 60000),
-        updatedAt: new Date(),
-        dispensedAt: null,
-      },
-      {
-        id: "rx-003",
-        patientId: "p-003",
-        patientName: "Maria Garcia",
-        prescriberId: "dr-001",
-        prescriberName: "Dr. Michael Chen",
-        drugName: "Amoxicillin",
-        dosage: "250mg",
-        frequency: "Three times daily",
-        duration: "7 days",
-        instructions: "Complete full course",
-        status: "preparing",
-        priority: "critical",
-        isRefill: false,
-        isDelivery: true,
-        aiConfidence: 92,
-        aiNotes: "Antibiotic prescription, urgent",
-        pharmacistNotes: null,
-        assignedPharmacistId: null,
-        createdAt: new Date(Date.now() - 15 * 60000),
-        updatedAt: new Date(),
-        dispensedAt: null,
-      },
-      {
-        id: "rx-004",
-        patientId: "p-004",
-        patientName: "Robert Brown",
-        prescriberId: "dr-003",
-        prescriberName: "Dr. Lisa Wang",
-        drugName: "Atorvastatin",
-        dosage: "20mg",
-        frequency: "Once daily at bedtime",
-        duration: "90 days",
-        instructions: "Take at night for best results",
-        status: "pending",
-        priority: "low",
-        isRefill: true,
-        isDelivery: false,
-        aiConfidence: 78,
-        aiNotes: "Handwritten, some characters unclear",
-        pharmacistNotes: null,
-        assignedPharmacistId: null,
-        createdAt: new Date(Date.now() - 4 * 60 * 60000),
-        updatedAt: new Date(),
-        dispensedAt: null,
-      },
-      {
-        id: "rx-005",
-        patientId: "p-005",
-        patientName: "Emily Davis",
-        prescriberId: "dr-002",
-        prescriberName: "Dr. Emily Park",
-        drugName: "Omeprazole",
-        dosage: "20mg",
-        frequency: "Once daily before breakfast",
-        duration: "14 days",
-        instructions: "Take 30 minutes before eating",
-        status: "pending",
-        priority: "medium",
-        isRefill: false,
-        isDelivery: false,
-        aiConfidence: 96,
-        aiNotes: "Electronic prescription, all fields clear",
-        pharmacistNotes: null,
-        assignedPharmacistId: null,
-        createdAt: new Date(Date.now() - 45 * 60000),
-        updatedAt: new Date(),
-        dispensedAt: null,
-      },
-      {
-        id: "rx-006",
-        patientId: "p-006",
-        patientName: "David Kim",
-        prescriberId: "dr-001",
-        prescriberName: "Dr. Michael Chen",
-        drugName: "Levothyroxine",
-        dosage: "50mcg",
-        frequency: "Once daily",
-        duration: "90 days",
-        instructions: "Take on empty stomach",
-        status: "pending",
-        priority: "high",
-        isRefill: true,
-        isDelivery: true,
-        aiConfidence: 91,
-        aiNotes: "Thyroid medication refill",
-        pharmacistNotes: null,
-        assignedPharmacistId: null,
-        createdAt: new Date(Date.now() - 1 * 60 * 60000),
-        updatedAt: new Date(),
-        dispensedAt: null,
-      },
-    ];
+  private writeUsers(users: User[]) {
+    try {
+      const data = JSON.stringify({ users }, null, 2);
+      fs.writeFileSync(USERS_FILE, data, "utf-8");
+    } catch (error) {
+      console.error("Error writing users to file:", error);
+      throw error;
+    }
+  }
 
-    samplePrescriptions.forEach((rx) => {
-      this.prescriptions.set(rx.id, rx);
-    });
+  private readPrescriptions(): Prescription[] {
+    try {
+      const data = fs.readFileSync(PRESCRIPTIONS_FILE, "utf-8");
+      const parsed = JSON.parse(data);
+      
+      if (parsed.prescriptions && Array.isArray(parsed.prescriptions)) {
+        return parsed.prescriptions.map((rx: any) => ({
+          ...rx,
+          createdAt: rx.createdAt ? new Date(rx.createdAt) : null,
+          updatedAt: rx.updatedAt ? new Date(rx.updatedAt) : new Date(),
+          dispensedAt: rx.dispensedAt ? new Date(rx.dispensedAt) : null,
+        }));
+      }
+      return [];
+    } catch (error) {
+      console.error("Error reading prescriptions from file:", error);
+      return [];
+    }
+  }
+
+  private writePrescriptions(prescriptions: Prescription[]) {
+    try {
+      const data = JSON.stringify({ prescriptions }, null, 2);
+      fs.writeFileSync(PRESCRIPTIONS_FILE, data, "utf-8");
+    } catch (error) {
+      console.error("Error writing prescriptions to file:", error);
+      throw error;
+    }
   }
 
   async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+    const users = this.readUsers();
+    return users.find((user) => user.id === id);
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username
-    );
+    const users = this.readUsers();
+    return users.find((user) => user.username === username);
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.email === email
-    );
+    const users = this.readUsers();
+    return users.find((user) => user.email === email);
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
+    const users = this.readUsers();
     const id = randomUUID();
-    const user: User = { ...insertUser, id, createdAt: new Date() };
-    this.users.set(id, user);
+    const user: User = { 
+      ...insertUser, 
+      id, 
+      createdAt: new Date(),
+      role: insertUser.role || "patient",
+      avatar: insertUser.avatar || null,
+      phone: insertUser.phone || null,
+    };
+    users.push(user);
+    this.writeUsers(users);
     return user;
   }
 
+  async updateUser(id: string, updates: Partial<User>): Promise<User | undefined> {
+    const users = this.readUsers();
+    const index = users.findIndex((u) => u.id === id);
+    if (index === -1) return undefined;
+
+    const updatedUser = { ...users[index], ...updates };
+    users[index] = updatedUser;
+    this.writeUsers(users);
+    return updatedUser;
+  }
+
   async getPrescriptions(filters?: { status?: string; limit?: number }): Promise<Prescription[]> {
-    let prescriptions = Array.from(this.prescriptions.values());
+    let prescriptions = this.readPrescriptions();
 
     if (filters?.status) {
       const statuses = filters.status.split(",");
@@ -269,10 +189,12 @@ export class MemStorage implements IStorage {
   }
 
   async getPrescription(id: string): Promise<Prescription | undefined> {
-    return this.prescriptions.get(id);
+    const prescriptions = this.readPrescriptions();
+    return prescriptions.find((rx) => rx.id === id);
   }
 
   async createPrescription(insertPrescription: InsertPrescription): Promise<Prescription> {
+    const prescriptions = this.readPrescriptions();
     const id = randomUUID();
     const prescription: Prescription = {
       ...insertPrescription,
@@ -280,17 +202,32 @@ export class MemStorage implements IStorage {
       createdAt: new Date(),
       updatedAt: new Date(),
       dispensedAt: null,
+      status: insertPrescription.status || "pending",
+      priority: insertPrescription.priority || "medium",
+      prescriberId: insertPrescription.prescriberId ?? null,
+      prescriberName: insertPrescription.prescriberName ?? null,
+      duration: insertPrescription.duration ?? null,
+      instructions: insertPrescription.instructions ?? null,
+      isRefill: insertPrescription.isRefill ?? false,
+      isDelivery: insertPrescription.isDelivery ?? false,
+      aiConfidence: insertPrescription.aiConfidence ?? null,
+      aiNotes: insertPrescription.aiNotes ?? null,
+      pharmacistNotes: insertPrescription.pharmacistNotes ?? null,
+      assignedPharmacistId: insertPrescription.assignedPharmacistId ?? null,
     };
-    this.prescriptions.set(id, prescription);
+    prescriptions.push(prescription);
+    this.writePrescriptions(prescriptions);
     return prescription;
   }
 
   async updatePrescription(id: string, data: Partial<Prescription>): Promise<Prescription | undefined> {
-    const existing = this.prescriptions.get(id);
-    if (!existing) return undefined;
+    const prescriptions = this.readPrescriptions();
+    const index = prescriptions.findIndex((rx) => rx.id === id);
+    
+    if (index === -1) return undefined;
 
     const updated: Prescription = {
-      ...existing,
+      ...prescriptions[index],
       ...data,
       updatedAt: new Date(),
     };
@@ -299,9 +236,131 @@ export class MemStorage implements IStorage {
       updated.dispensedAt = new Date();
     }
 
-    this.prescriptions.set(id, updated);
+    prescriptions[index] = updated;
+    this.writePrescriptions(prescriptions);
     return updated;
+  }
+
+  private readInventory(): InventoryItem[] {
+    try {
+      const data = fs.readFileSync(INVENTORY_FILE, "utf-8");
+      const parsed = JSON.parse(data);
+      
+      if (parsed.inventory && Array.isArray(parsed.inventory)) {
+        return parsed.inventory;
+      }
+      return [];
+    } catch (error) {
+      console.error("Error reading inventory from file:", error);
+      return [];
+    }
+  }
+
+  private writeInventory(inventory: InventoryItem[]) {
+    try {
+      const data = JSON.stringify({ inventory }, null, 2);
+      fs.writeFileSync(INVENTORY_FILE, data, "utf-8");
+    } catch (error) {
+      console.error("Error writing inventory to file:", error);
+      throw error;
+    }
+  }
+
+  async getInventory(): Promise<InventoryItem[]> {
+    return this.readInventory();
+  }
+
+  async getInventoryItem(id: string): Promise<InventoryItem | undefined> {
+    const inventory = this.readInventory();
+    return inventory.find((item) => item.id === id);
+  }
+
+  async createInventoryItem(insertItem: InsertInventory): Promise<InventoryItem> {
+    const inventory = this.readInventory();
+    const id = randomUUID();
+    const item: InventoryItem = {
+      ...insertItem,
+      id,
+    };
+    inventory.push(item);
+    this.writeInventory(inventory);
+    return item;
+  }
+
+  async updateInventoryItem(id: string, data: Partial<InventoryItem>): Promise<InventoryItem | undefined> {
+    const inventory = this.readInventory();
+    const index = inventory.findIndex((item) => item.id === id);
+    
+    if (index === -1) return undefined;
+
+    const updated: InventoryItem = {
+      ...inventory[index],
+      ...data,
+    };
+
+    inventory[index] = updated;
+    this.writeInventory(inventory);
+    return updated;
+  }
+
+  // Patient methods
+  private readPatients(): Patient[] {
+    try {
+      if (!fs.existsSync(PATIENTS_FILE)) return [];
+      
+      const data = fs.readFileSync(PATIENTS_FILE, "utf-8");
+      const parsed = JSON.parse(data);
+      if (parsed.patients && Array.isArray(parsed.patients)) {
+        return parsed.patients.map((p: any) => ({
+          ...p,
+          dateOfBirth: new Date(p.dateOfBirth),
+          lastVisit: p.lastVisit ? new Date(p.lastVisit) : new Date(),
+          createdAt: p.createdAt ? new Date(p.createdAt) : new Date(),
+        }));
+      }
+      return [];
+    } catch (error) {
+      console.error("Error reading patients from file:", error);
+      return [];
+    }
+  }
+
+  private writePatients(patients: Patient[]) {
+    try {
+      const data = JSON.stringify({ patients }, null, 2);
+      fs.writeFileSync(PATIENTS_FILE, data, "utf-8");
+    } catch (error) {
+      console.error("Error writing patients to file:", error);
+      throw error;
+    }
+  }
+
+  async getPatients(): Promise<Patient[]> {
+    return this.readPatients();
+  }
+
+  async getPatient(id: string): Promise<Patient | undefined> {
+    const patients = this.readPatients();
+    return patients.find(p => p.id === id);
+  }
+
+  async createPatient(patient: InsertPatient): Promise<Patient> {
+    const patients = this.readPatients();
+    const newPatient: Patient = {
+      ...patient,
+      id: randomUUID(),
+      lastVisit: new Date(),
+      createdAt: new Date(),
+      activePrescriptions: 0,
+      address: patient.address || null,
+      insuranceProvider: patient.insuranceProvider || null,
+      insurancePolicyNumber: patient.insurancePolicyNumber || null,
+      allergies: patient.allergies || [],
+    };
+    patients.push(newPatient);
+    this.writePatients(patients);
+    return newPatient;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new JsonStorage();

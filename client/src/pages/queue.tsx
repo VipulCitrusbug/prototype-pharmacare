@@ -20,6 +20,7 @@ import {
 } from "@/components/common";
 import { Search, Filter, Sparkles, LayoutGrid, List } from "lucide-react";
 import type { Prescription, PrescriptionStatusType } from "@shared/schema";
+import { apiRequest } from "@/lib/queryClient";
 
 const mockPrescriptions: Prescription[] = [
   {
@@ -182,7 +183,11 @@ export default function QueuePage() {
   }, [searchParams]);
 
   const prescriptionsQuery = useQuery<Prescription[]>({
-    queryKey: ["/api/prescriptions?status=pending,in_review,preparing"],
+    queryKey: ["/api/prescriptions", { status: "pending,in_review,preparing" }],
+    queryFn: async () => {
+      const res = await apiRequest("GET", "/api/prescriptions?status=pending,in_review,preparing");
+      return res.json();
+    },
     staleTime: 30000,
   });
 

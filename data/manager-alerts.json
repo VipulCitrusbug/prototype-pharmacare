@@ -1,0 +1,37 @@
+{
+  "alerts": [
+    {
+      "id": "alert-1",
+      "type": "warning",
+      "category": "workflow",
+      "title": "Rising Refill Backlog",
+      "description": "Refill requests increased 23% in the last 2 hours",
+      "impact": "12 prescriptions affected",
+      "aiConfidence": 88,
+      "time": "15 min ago",
+      "acknowledged": false
+    },
+    {
+      "id": "alert-2",
+      "type": "critical",
+      "category": "inventory",
+      "title": "High Expiry Risk",
+      "description": "3 medications approaching expiry within 30 days",
+      "impact": "$2,400 inventory at risk",
+      "aiConfidence": 94,
+      "time": "1 hour ago",
+      "acknowledged": false
+    },
+    {
+      "id": "alert-3",
+      "type": "info",
+      "category": "capacity",
+      "title": "Peak Hour Approaching",
+      "description": "Historical data suggests 40% volume increase at 2 PM",
+      "impact": "Staff allocation recommended",
+      "aiConfidence": 91,
+      "time": "2 hours ago",
+      "acknowledged": true
+    }
+  ]
+}

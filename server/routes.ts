@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { signupSchema, loginSchema, insertPrescriptionSchema } from "@shared/schema";
+import { signupSchema, loginSchema, insertPrescriptionSchema, insertPatientSchema, insertInventorySchema } from "@shared/schema";
 import session from "express-session";
 import MemoryStore from "memorystore";
 
@@ -115,6 +115,34 @@ export async function registerRoutes(
     }
   });
 
+  app.patch("/api/auth/me", async (req, res) => {
+    try {
+      const userId = (req.session as any).userId;
+      if (!userId) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      // Validate allowed fields
+      const { firstName, lastName, email, phone } = req.body;
+      const updates: any = {};
+      if (firstName !== undefined) updates.firstName = firstName;
+      if (lastName !== undefined) updates.lastName = lastName;
+      if (email !== undefined) updates.email = email;
+      if (phone !== undefined) updates.phone = phone;
+
+      const user = await storage.updateUser(userId, updates);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const { password, ...userWithoutPassword } = user;
+      res.json(userWithoutPassword);
+    } catch (error) {
+      console.error("Update user error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   app.get("/api/dashboard/metrics", async (req, res) => {
     try {
       await new Promise((r) => setTimeout(r, 300));
@@ -224,6 +252,53 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/inventory", async (req, res) => {
+    try {
+      const result = insertInventorySchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({
+          error: "Validation failed",
+          details: result.error.flatten(),
+        });
+      }
+
+      const item = await storage.createInventoryItem(result.data);
+      res.status(201).json(item);
+    } catch (error) {
+      console.error("Create inventory error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Patient routes
+  app.get("/api/patients", async (req, res) => {
+    try {
+      const patients = await storage.getPatients();
+      res.json(patients);
+    } catch (error) {
+      console.error("Get patients error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.post("/api/patients", async (req, res) => {
+    try {
+      const result = insertPatientSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({
+          error: "Validation failed",
+          details: result.error.flatten(),
+        });
+      }
+
+      const patient = await storage.createPatient(result.data);
+      res.status(201).json(patient);
+    } catch (error) {
+      console.error("Create patient error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   app.patch("/api/prescriptions/:id", async (req, res) => {
     try {
       await new Promise((r) => setTimeout(r, 300));
@@ -311,41 +386,19 @@ export async function registerRoutes(
     try {
       await new Promise((r) => setTimeout(r, 200));
 
-      res.json([
-        {
-          id: "alert-1",
-          type: "warning",
-          category: "workflow",
-          title: "Rising Refill Backlog",
-          description: "Refill requests increased 23% in the last 2 hours",
-          impact: "12 prescriptions affected",
-          aiConfidence: 88,
-          time: "15 min ago",
-          acknowledged: false,
-        },
-        {
-          id: "alert-2",
-          type: "critical",
-          category: "inventory",
-          title: "High Expiry Risk",
-          description: "3 medications approaching expiry within 30 days",
-          impact: "$2,400 inventory at risk",
-          aiConfidence: 94,
-          time: "1 hour ago",
-          acknowledged: false,
-        },
-        {
-          id: "alert-3",
-          type: "info",
-          category: "capacity",
-          title: "Peak Hour Approaching",
-          description: "Historical data suggests 40% volume increase at 2 PM",
-          impact: "Staff allocation recommended",
-          aiConfidence: 91,
-          time: "2 hours ago",
-          acknowledged: true,
-        },
-      ]);
+      // Load alerts from JSON file
+      const fs = require("fs");
+      const path = require("path");
+      const alertsFilePath = path.join(process.cwd(), "data", "manager-alerts.json");
+      
+      let alerts = [];
+      if (fs.existsSync(alertsFilePath)) {
+        const data = fs.readFileSync(alertsFilePath, "utf-8");
+        const parsed = JSON.parse(data);
+        alerts = parsed.alerts || [];
+      }
+
+      res.json(alerts);
     } catch (error) {
       console.error("Get manager alerts error:", error);
       res.status(500).json({ error: "Internal server error" });
@@ -472,6 +525,31 @@ export async function registerRoutes(
       ]);
     } catch (error) {
       console.error("Get patient metrics error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Inventory endpoints (accessible to pharmacists and managers)
+  app.get("/api/inventory", async (req, res) => {
+    try {
+      await new Promise((r) => setTimeout(r, 200));
+
+      const inventory = await storage.getInventory();
+      res.json(inventory);
+    } catch (error) {
+      console.error("Get inventory error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.post("/api/inventory", async (req, res) => {
+    try {
+      await new Promise((r) => setTimeout(r, 500));
+
+      const item = await storage.createInventoryItem(req.body);
+      res.status(201).json(item);
+    } catch (error) {
+      console.error("Create inventory item error:", error);
       res.status(500).json({ error: "Internal server error" });
     }
   });

@@ -75,7 +75,17 @@ export default function PrescriptionDetailPage() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/prescriptions"] });
+      // Invalidate all queries that start with /api/prescriptions
+      queryClient.invalidateQueries({ 
+        queryKey: ["/api/prescriptions"],
+        refetchType: 'all' // Refetch both active and inactive queries
+      });
+      // Explicitly invalidate the specific prescription detail query
+      queryClient.invalidateQueries({ 
+        queryKey: [`/api/prescriptions/${params?.id}`]
+      });
+      // Also invalidate dashboard metrics since counts may have changed
+      queryClient.invalidateQueries({ queryKey: ["/api/dashboard/metrics"] });
       toast({
         title: "Status updated",
         description: "Prescription has been updated successfully.",

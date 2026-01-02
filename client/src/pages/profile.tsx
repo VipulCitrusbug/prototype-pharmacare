@@ -1,18 +1,88 @@
-import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useEffect } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import { UserAvatar, PageLoader } from "@/components/common";
-import { Camera, Mail, Phone, Building, Calendar, Shield } from "lucide-react";
+import { Mail, Phone, Building, Calendar, Shield, Bell, Lock, Save, X } from "lucide-react";
 import type { User } from "@shared/schema";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ProfilePage() {
+  const { toast } = useToast();
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+  });
+
+  const [notifications, setNotifications] = useState({
+    email: true,
+    push: true,
+    prescriptionAlerts: true,
+    inventoryAlerts: true,
+    weeklyReport: false,
+  });
+
   const userQuery = useQuery<User | null>({
     queryKey: ["/api/auth/me"],
     staleTime: Infinity,
   });
+
+  useEffect(() => {
+    if (userQuery.data) {
+      setFormData({
+        firstName: userQuery.data.firstName || "",
+        lastName: userQuery.data.lastName || "",
+        email: userQuery.data.email || "",
+        phone: userQuery.data.phone || "",
+      });
+    }
+  }, [userQuery.data]);
+
+  const updateProfileMutation = useMutation({
+    mutationFn: async (data: typeof formData) => {
+      const res = await apiRequest("PATCH", "/api/auth/me", data);
+      return res.json();
+    },
+    onSuccess: (updatedUser) => {
+      queryClient.setQueryData(["/api/auth/me"], updatedUser);
+      setIsEditing(false);
+      toast({
+        title: "Profile updated",
+        description: "Your profile information has been successfully updated.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Update failed",
+        description: "Failed to update profile. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleSave = () => {
+    updateProfileMutation.mutate(formData);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    if (userQuery.data) {
+      setFormData({
+        firstName: userQuery.data.firstName || "",
+        lastName: userQuery.data.lastName || "",
+        email: userQuery.data.email || "",
+        phone: userQuery.data.phone || "",
+      });
+    }
+  };
 
   if (userQuery.isLoading) {
     return <PageLoader text="Loading profile..." />;
@@ -46,14 +116,6 @@ export default function ProfilePage() {
                 role={user.role as any}
                 size="xl"
               />
-              <Button
-                size="icon"
-                variant="secondary"
-                className="absolute bottom-0 right-0 rounded-full"
-                data-testid="button-change-avatar"
-              >
-                <Camera className="w-4 h-4" />
-              </Button>
             </div>
             <div className="text-center sm:text-left flex-1">
               <h2 className="text-xl font-bold">{displayName}</h2>
@@ -72,9 +134,22 @@ export default function ProfilePage() {
                 </span>
               </div>
             </div>
-            <Button variant="outline" data-testid="button-edit-profile">
-              Edit Profile
-            </Button>
+            {isEditing ? (
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={handleCancel} disabled={updateProfileMutation.isPending}>
+                  <X className="w-4 h-4 mr-2" />
+                  Cancel
+                </Button>
+                <Button onClick={handleSave} disabled={updateProfileMutation.isPending}>
+                  <Save className="w-4 h-4 mr-2" />
+                  {updateProfileMutation.isPending ? "Saving..." : "Save Changes"}
+                </Button>
+              </div>
+            ) : (
+              <Button variant="outline" onClick={() => setIsEditing(true)} data-testid="button-edit-profile">
+                Edit Profile
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -90,9 +165,10 @@ export default function ProfilePage() {
                 <Label htmlFor="firstName">First Name</Label>
                 <Input
                   id="firstName"
-                  value={user.firstName || ""}
-                  readOnly
-                  className="bg-muted"
+                  value={formData.firstName}
+                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                  readOnly={!isEditing}
+                  className={!isEditing ? "bg-muted" : ""}
                   data-testid="input-firstname"
                 />
               </div>
@@ -100,9 +176,10 @@ export default function ProfilePage() {
                 <Label htmlFor="lastName">Last Name</Label>
                 <Input
                   id="lastName"
-                  value={user.lastName || ""}
-                  readOnly
-                  className="bg-muted"
+                  value={formData.lastName}
+                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                  readOnly={!isEditing}
+                  className={!isEditing ? "bg-muted" : ""}
                   data-testid="input-lastname"
                 />
               </div>
@@ -141,9 +218,10 @@ export default function ProfilePage() {
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   id="email"
-                  value={user.email || ""}
-                  readOnly
-                  className="bg-muted pl-9"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  readOnly={!isEditing}
+                  className={`pl-9 ${!isEditing ? "bg-muted" : ""}`}
                   data-testid="input-email"
                 />
               </div>
@@ -154,9 +232,10 @@ export default function ProfilePage() {
                 <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   id="phone"
-                  value="(555) 123-4567"
-                  readOnly
-                  className="bg-muted pl-9"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  readOnly={!isEditing}
+                  className={`pl-9 ${!isEditing ? "bg-muted" : ""}`}
                   data-testid="input-phone"
                 />
               </div>
@@ -177,6 +256,120 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
       </div>
+
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <Lock className="w-5 h-5" />
+            <CardTitle>Security</CardTitle>
+          </div>
+          <CardDescription>Manage your account security</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="currentPassword">Current Password</Label>
+            <Input
+              id="currentPassword"
+              type="password"
+              placeholder="Enter current password"
+              data-testid="input-current-password"
+            />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="newPassword">New Password</Label>
+              <Input
+                id="newPassword"
+                type="password"
+                placeholder="Enter new password"
+                data-testid="input-new-password"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                placeholder="Confirm new password"
+                data-testid="input-confirm-password"
+              />
+            </div>
+          </div>
+
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <Bell className="w-5 h-5" />
+            <CardTitle>Notifications</CardTitle>
+          </div>
+          <CardDescription>Configure how you receive updates</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <Label htmlFor="emailNotif">Email Notifications</Label>
+              <p className="text-sm text-muted-foreground">Receive updates via email</p>
+            </div>
+            <Switch
+              id="emailNotif"
+              checked={notifications.email}
+              onCheckedChange={(checked) => setNotifications({ ...notifications, email: checked })}
+              data-testid="switch-email-notifications"
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <Label htmlFor="pushNotif">Push Notifications</Label>
+              <p className="text-sm text-muted-foreground">Receive browser notifications</p>
+            </div>
+            <Switch
+              id="pushNotif"
+              checked={notifications.push}
+              onCheckedChange={(checked) => setNotifications({ ...notifications, push: checked })}
+              data-testid="switch-push-notifications"
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <Label htmlFor="rxAlerts">Prescription Alerts</Label>
+              <p className="text-sm text-muted-foreground">Get notified about new prescriptions</p>
+            </div>
+            <Switch
+              id="rxAlerts"
+              checked={notifications.prescriptionAlerts}
+              onCheckedChange={(checked) => setNotifications({ ...notifications, prescriptionAlerts: checked })}
+              data-testid="switch-prescription-alerts"
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <Label htmlFor="invAlerts">Inventory Alerts</Label>
+              <p className="text-sm text-muted-foreground">Get notified about low stock</p>
+            </div>
+            <Switch
+              id="invAlerts"
+              checked={notifications.inventoryAlerts}
+              onCheckedChange={(checked) => setNotifications({ ...notifications, inventoryAlerts: checked })}
+              data-testid="switch-inventory-alerts"
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <Label htmlFor="weeklyReport">Weekly Summary Report</Label>
+              <p className="text-sm text-muted-foreground">Receive weekly performance summary</p>
+            </div>
+            <Switch
+              id="weeklyReport"
+              checked={notifications.weeklyReport}
+              onCheckedChange={(checked) => setNotifications({ ...notifications, weeklyReport: checked })}
+              data-testid="switch-weekly-report"
+            />
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

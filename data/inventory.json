@@ -1,0 +1,95 @@
+{
+  "inventory": [
+    {
+      "id": "inv-001",
+      "name": "Metformin 500mg",
+      "genericName": "Metformin Hydrochloride",
+      "category": "Antidiabetic",
+      "quantity": 450,
+      "minStock": 100,
+      "unit": "tablets",
+      "expiryDate": "2026-06-15",
+      "supplier": "PharmaCorp",
+      "price": 15,
+      "status": "available"
+    },
+    {
+      "id": "inv-002",
+      "name": "Lisinopril 10mg",
+      "genericName": "Lisinopril",
+      "category": "Antihypertensive",
+      "quantity": 85,
+      "minStock": 100,
+      "unit": "tablets",
+      "expiryDate": "2025-08-20",
+      "supplier": "MedSupply Inc",
+      "price": 22,
+      "status": "out_of_stock"
+    },
+    {
+      "id": "inv-003",
+      "name": "Amoxicillin 250mg",
+      "genericName": "Amoxicillin",
+      "category": "Antibiotic",
+      "quantity": 320,
+      "minStock": 150,
+      "unit": "capsules",
+      "expiryDate": "2025-03-10",
+      "supplier": "PharmaCorp",
+      "price": 18,
+      "status": "out_of_stock"
+    },
+    {
+      "id": "inv-004",
+      "name": "Omeprazole 20mg",
+      "genericName": "Omeprazole",
+      "category": "Proton Pump Inhibitor",
+      "quantity": 200,
+      "minStock": 80,
+      "unit": "capsules",
+      "expiryDate": "2026-01-25",
+      "supplier": "HealthMeds",
+      "price": 35,
+      "status": "out_of_stock"
+    },
+    {
+      "id": "inv-005",
+      "name": "Atorvastatin 20mg",
+      "genericName": "Atorvastatin Calcium",
+      "category": "Statin",
+      "quantity": 45,
+      "minStock": 100,
+      "unit": "tablets",
+      "expiryDate": "2025-11-30",
+      "supplier": "MedSupply Inc",
+      "price": 28,
+      "status": "out_of_stock"
+    },
+    {
+      "name": "fdf",
+      "genericName": "fdfs",
+      "category": "fdfs",
+      "quantity": 5,
+      "minStock": 100,
+      "unit": "tablets",
+      "expiryDate": "2027-12-25",
+      "supplier": "fdsfs",
+      "price": 90,
+      "id": "439bbea9-16e1-4594-a99c-3705a805b4e2",
+      "status": "available"
+    },
+    {
+      "name": "fdfs",
+      "genericName": "fddfsd",
+      "category": "fsdfsdfsfsd",
+      "quantity": 50,
+      "minStock": 100,
+      "unit": "tablets",
+      "expiryDate": "2028-12-25",
+      "supplier": "fdsfs",
+      "price": 1000,
+      "status": "available",
+      "id": "f7fec999-7522-434c-bd8f-b68a61a9ec13"
+    }
+  ]
+}

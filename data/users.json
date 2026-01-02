@@ -1,0 +1,126 @@
+{
+  "users": [
+    {
+      "id": "demo-pharmacist",
+      "username": "pharmacist",
+      "password": "Test@1234",
+      "email": "pharmacist@pharmacare.com",
+      "firstName": "John",
+      "lastName": "Smith",
+      "role": "pharmacist",
+      "avatar": null,
+      "createdAt": "2025-12-31T15:30:00.000Z"
+    },
+    {
+      "id": "demo-manager",
+      "username": "manager",
+      "password": "Test@1234",
+      "email": "manager@pharmacare.com",
+      "firstName": "Sarah",
+      "lastName": "Anderson",
+      "role": "manager",
+      "avatar": null,
+      "createdAt": "2025-12-31T15:30:00.000Z"
+    },
+    {
+      "id": "demo-patient",
+      "username": "patient",
+      "password": "Test@1234",
+      "email": "patient@email.com",
+      "firstName": "John",
+      "lastName": "Doe",
+      "role": "patient",
+      "avatar": null,
+      "createdAt": "2025-12-31T15:30:00.000Z"
+    },
+    {
+      "id": "demo-finance",
+      "username": "finance",
+      "password": "Test@1234",
+      "email": "finance@pharmacare.com",
+      "firstName": "Rebecca",
+      "lastName": "Taylor",
+      "role": "finance",
+      "avatar": null,
+      "createdAt": "2025-12-31T15:30:00.000Z"
+    },
+    {
+      "username": "testuser",
+      "password": "Test@1234",
+      "email": "test@example.com",
+      "firstName": "Test",
+      "lastName": "User",
+      "role": "patient",
+      "id": "74a4efdc-3a61-4d45-99c3-3b99986c3c5c",
+      "createdAt": "2025-12-31T15:38:55.128Z",
+      "avatar": null
+    },
+    {
+      "username": "debuguser",
+      "password": "Test@1234",
+      "email": "debug@test.com",
+      "firstName": "Debug",
+      "lastName": "User",
+      "role": "patient",
+      "id": "8dbae6f4-27ea-4526-9a14-503cf8f5cfae",
+      "createdAt": "2025-12-31T15:50:57.265Z",
+      "avatar": null
+    },
+    {
+      "username": "finaltest",
+      "password": "Test@1234",
+      "email": "final@test.com",
+      "firstName": "Final",
+      "lastName": "Test",
+      "role": "patient",
+      "id": "1761d8aa-7519-4cee-a22f-b742f1b7fb15",
+      "createdAt": "2025-12-31T15:52:28.562Z",
+      "avatar": null
+    },
+    {
+      "username": "vipul",
+      "password": "Test@1234",
+      "email": "vipul.citrusbug@gmail.com",
+      "firstName": "Vipul",
+      "lastName": "Citrusbug",
+      "role": "admin",
+      "id": "fc00b086-6560-422c-8ad4-c7dbc15c66b5",
+      "createdAt": "2025-12-31T15:55:25.846Z",
+      "avatar": null
+    },
+    {
+      "username": "vipul_pharmacist",
+      "password": "Test@1234",
+      "email": "vipul1@yopmail.com",
+      "firstName": "vipul",
+      "lastName": "pharmacist",
+      "role": "pharmacist",
+      "id": "93898f1f-4c16-4feb-8b62-06283516ad61",
+      "createdAt": "2025-12-31T15:58:48.625Z",
+      "avatar": null,
+      "phone": "012456789"
+    },
+    {
+      "username": "vipul_compliance",
+      "password": "Test@1234",
+      "email": "vipul5@yopmail.com",
+      "firstName": "vipul",
+      "lastName": "compliance",
+      "role": "compliance",
+      "id": "f5ea5c68-afea-40d0-8f7a-fea51dcea68a",
+      "createdAt": "2026-01-01T13:01:51.011Z",
+      "avatar": null
+    },
+    {
+      "username": "testuser_1767351779758",
+      "password": "password123",
+      "email": "testuser_1767351779758@example.com",
+      "firstName": "Test",
+      "lastName": "User",
+      "role": "patient",
+      "id": "a9c93665-c28c-4702-9554-f0c78d38ef22",
+      "createdAt": "2026-01-02T11:03:00.289Z",
+      "avatar": null
+    }
+  ]
+}

@@ -78,13 +78,7 @@ export function TopNavBar({ user, onLogout, showSidebarTrigger = true }: TopNavB
                 <User className="w-4 h-4 mr-2" />
                 Profile
               </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => setLocation("/settings")}
-                data-testid="menu-item-settings"
-              >
-                <Settings className="w-4 h-4 mr-2" />
-                Settings
-              </DropdownMenuItem>
+
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={onLogout}

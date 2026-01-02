@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -83,6 +84,23 @@ const mockInventory: InventoryItem[] = [
 ];
 
 function getStockStatus(item: InventoryItem): { label: string; variant: "default" | "secondary" | "destructive" | "outline" } {
+  // If item has a manual status set, use that with appropriate styling
+  if (item.status) {
+    switch (item.status) {
+      case "available":
+        return { label: "Available", variant: "default" };
+      case "out_of_stock":
+        return { label: "Out of Stock", variant: "destructive" };
+      case "on_order":
+        return { label: "On Order", variant: "secondary" };
+      case "discontinued":
+        return { label: "Discontinued", variant: "outline" };
+      default:
+        break;
+    }
+  }
+  
+  // Fallback to calculated stock status based on quantity
   if (item.quantity <= item.minStock * 0.5) {
     return { label: "Critical", variant: "destructive" };
   }
@@ -99,8 +117,34 @@ function isExpiringSoon(date: Date): boolean {
 }
 
 export default function InventoryPage() {
-  const lowStockCount = mockInventory.filter(i => i.quantity <= i.minStock).length;
-  const expiringSoonCount = mockInventory.filter(i => isExpiringSoon(i.expiryDate)).length;
+  const [, setLocation] = useLocation();
+  
+  const { data: inventory = [], isLoading, error } = useQuery<InventoryItem[]>({
+    queryKey: ["/api/inventory"],
+    queryFn: async () => {
+      const response = await fetch("/api/inventory");
+      if (!response.ok) {
+        throw new Error("Failed to fetch inventory");
+      }
+      const data = await response.json();
+      // Convert date strings to Date objects
+      return data.map((item: any) => ({
+        ...item,
+        expiryDate: new Date(item.expiryDate),
+      }));
+    },
+  });
+
+  const lowStockCount = inventory.filter(i => i.quantity <= i.minStock).length;
+  const expiringSoonCount = inventory.filter(i => isExpiringSoon(i.expiryDate)).length;
+
+  if (error) {
+    return <ErrorState message="Failed to load inventory data" />;
+  }
+
+  if (isLoading) {
+    return <div className="flex justify-center items-center h-64">Loading...</div>;
+  }
 
   return (
     <div className="space-y-6" data-testid="page-inventory">
@@ -109,7 +153,10 @@ export default function InventoryPage() {
           <h1 className="text-2xl font-bold text-foreground">Inventory Management</h1>
           <p className="text-muted-foreground">Track and manage medication stock levels</p>
         </div>
-        <Button data-testid="button-add-item">
+        <Button 
+          data-testid="button-add-item"
+          onClick={() => setLocation("/inventory/new")}
+        >
           <Plus className="w-4 h-4 mr-2" />
           Add Item
         </Button>
@@ -123,7 +170,7 @@ export default function InventoryPage() {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Total Items</p>
-              <p className="text-2xl font-bold">{mockInventory.length}</p>
+              <p className="text-2xl font-bold">{inventory.length}</p>
             </div>
           </CardContent>
         </Card>
@@ -179,7 +226,7 @@ export default function InventoryPage() {
                 </tr>
               </thead>
               <tbody>
-                {mockInventory.map((item) => {
+                {inventory.map((item) => {
                   const status = getStockStatus(item);
                   const expiring = isExpiringSoon(item.expiryDate);
                   return (

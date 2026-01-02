@@ -204,7 +204,10 @@ export default function DashboardPage() {
             Welcome back! Here's your pharmacy overview.
           </p>
         </div>
-        <Button data-testid="button-new-prescription">
+        <Button 
+          data-testid="button-new-prescription"
+          onClick={() => setLocation("/prescriptions/new")}
+        >
           <Plus className="w-4 h-4 mr-2" />
           New Prescription
         </Button>

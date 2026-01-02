@@ -1,0 +1,118 @@
+{
+  "patients": [
+    {
+      "id": "p-001",
+      "firstName": "Sarah",
+      "lastName": "Johnson",
+      "email": "sarah.j@email.com",
+      "phone": "(555) 123-4567",
+      "dateOfBirth": "1985-03-15T00:00:00.000Z",
+      "allergies": [
+        "Penicillin"
+      ],
+      "address": "123 Maple Ave, Springfield, IL",
+      "insuranceProvider": "Blue Cross",
+      "insurancePolicyNumber": "BC-123456789",
+      "activePrescriptions": 2,
+      "lastVisit": "2025-12-28T10:00:00.000Z",
+      "createdAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "p-002",
+      "firstName": "James",
+      "lastName": "Wilson",
+      "email": "j.wilson@email.com",
+      "phone": "(555) 234-5678",
+      "dateOfBirth": "1972-07-22T00:00:00.000Z",
+      "allergies": [],
+      "address": "456 Oak Dr, Chicago, IL",
+      "insuranceProvider": "Aetna",
+      "insurancePolicyNumber": "AE-987654321",
+      "activePrescriptions": 3,
+      "lastVisit": "2025-12-20T14:30:00.000Z",
+      "createdAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "p-003",
+      "firstName": "Maria",
+      "lastName": "Garcia",
+      "email": "m.garcia@email.com",
+      "phone": "(555) 345-6789",
+      "dateOfBirth": "1990-11-08T00:00:00.000Z",
+      "allergies": [
+        "Sulfa",
+        "Aspirin"
+      ],
+      "address": "789 Pine Ln, Springfield, IL",
+      "insuranceProvider": "UnitedHealthcare",
+      "insurancePolicyNumber": "UH-456123789",
+      "activePrescriptions": 1,
+      "lastVisit": "2026-01-01T09:15:00.000Z",
+      "createdAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "p-004",
+      "firstName": "Robert",
+      "lastName": "Brown",
+      "email": "r.brown@email.com",
+      "phone": "(555) 456-7890",
+      "dateOfBirth": "1965-01-30T00:00:00.000Z",
+      "allergies": [],
+      "address": "321 Elm St, Springfield, IL",
+      "insuranceProvider": "Cigna",
+      "insurancePolicyNumber": "CI-321654987",
+      "activePrescriptions": 4,
+      "lastVisit": "2025-12-15T11:45:00.000Z",
+      "createdAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "p-005",
+      "firstName": "Emily",
+      "lastName": "Davis",
+      "email": "e.davis@email.com",
+      "phone": "(555) 567-8901",
+      "dateOfBirth": "1998-05-12T00:00:00.000Z",
+      "allergies": [
+        "Latex"
+      ],
+      "address": "654 Birch Rd, Chicago, IL",
+      "insuranceProvider": "Blue Cross",
+      "insurancePolicyNumber": "BC-987123456",
+      "activePrescriptions": 1,
+      "lastVisit": "2026-01-02T08:00:00.000Z",
+      "createdAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "p-006",
+      "firstName": "Michael",
+      "lastName": "Chen",
+      "email": "m.chen@email.com",
+      "phone": "(555) 678-9012",
+      "dateOfBirth": "1988-09-18T00:00:00.000Z",
+      "allergies": [
+        "Dust Mites"
+      ],
+      "address": "987 Cedar Ct, Naperville, IL",
+      "insuranceProvider": "Kaiser",
+      "insurancePolicyNumber": "KA-741852963",
+      "activePrescriptions": 0,
+      "lastVisit": "2025-11-30T16:00:00.000Z",
+      "createdAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "firstName": "john",
+      "lastName": "dow",
+      "email": "testusers11@miami.edu",
+      "phone": "0123456789",
+      "dateOfBirth": "2002-10-25T00:00:00.000Z",
+      "allergies": [],
+      "id": "6fe27a69-b820-478e-97b2-4b5879e993b5",
+      "lastVisit": "2026-01-02T11:08:13.552Z",
+      "createdAt": "2026-01-02T11:08:13.552Z",
+      "activePrescriptions": 0,
+      "address": null,
+      "insuranceProvider": null,
+      "insurancePolicyNumber": null
+    }
+  ]
+}
