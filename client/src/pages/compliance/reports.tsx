@@ -150,6 +150,41 @@ export default function ComplianceReportsPage() {
     });
   };
 
+  const handleExportAll = () => {
+    // Create CSV content with all report template data
+    const headers = ["Template Name", "Description", "Category", "Frequency", "Format", "Last Generated"];
+    const rows = mockReportTemplates.map(template => [
+      template.name,
+      template.description,
+      template.category,
+      template.frequency,
+      template.format,
+      new Date(template.lastGenerated).toLocaleDateString()
+    ]);
+
+    // Convert to CSV format
+    const csvContent = [
+      headers.join(","),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(","))
+    ].join("\n");
+
+    // Create and trigger download
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `compliance-reports-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast({
+      title: "Export Complete",
+      description: "All report templates have been exported successfully.",
+    });
+  };
+
   const getCategoryConfig = (category: string) => {
     switch (category) {
       case "monitoring":
@@ -188,6 +223,14 @@ export default function ComplianceReportsPage() {
             </p>
           </div>
         </div>
+        <Button
+          onClick={handleExportAll}
+          className="bg-clinical hover:bg-clinical/90"
+          data-testid="button-export-all"
+        >
+          <Download className="w-4 h-4 mr-2" />
+          Export All
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -288,28 +331,18 @@ export default function ComplianceReportsPage() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          {template.frequency}
-                        </span>
-                        <Badge variant="outline" className="text-xs">
-                          {template.format}
-                        </Badge>
-                      </div>
-                      <Button
-                        size="sm"
-                        onClick={() => handleGenerateReport(template.id)}
-                        data-testid={`button-generate-${template.id}`}
-                      >
-                        <FilePlus className="w-4 h-4 mr-1" />
-                        Generate
-                      </Button>
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {template.frequency}
+                      </span>
+                      <Badge variant="outline" className="text-xs">
+                        {template.format}
+                      </Badge>
+                      <span className="ml-auto">
+                        Last generated: {new Date(template.lastGenerated).toLocaleDateString()}
+                      </span>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-3">
-                      Last generated: {new Date(template.lastGenerated).toLocaleDateString()}
-                    </p>
                   </CardContent>
                 </Card>
               );
@@ -388,8 +421,8 @@ export default function ComplianceReportsPage() {
                 <div>
                   <p className="text-sm font-medium text-foreground mb-1">Audit Preparation Tip</p>
                   <p className="text-xs text-muted-foreground">
-                    For external audits, we recommend generating the "Regulatory Readiness Report" along with 
-                    the "Audit Trail Export" to provide comprehensive documentation of your compliance posture 
+                    For external audits, we recommend generating the "Regulatory Readiness Report" along with
+                    the "Audit Trail Export" to provide comprehensive documentation of your compliance posture
                     and system activity.
                   </p>
                 </div>
