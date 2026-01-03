@@ -1,0 +1,1468 @@
+﻿Patient Final
+Patient User Flow – Healthcare Monitoring App (AI-Enhanced + Bevel-Inspired UX)
+________________
+
+
+1️ Entry & Onboarding Flow (First-Time User)
+1. App Launch
+* Splash screen
+* Security check (device integrity / OS version)
+* Redirect to Login / Sign Up
+* AI-powered device risk detection
+* Warm, human headline on splash (e.g., “Your health, understood daily”)
+* Soft gradient / calm color palette (non-clinical, lifestyle-first feel)
+________________
+
+
+2. Sign Up / Login
+* Email + Password
+* Phone + OTP
+* Social Login (Google / Apple)
+Mandatory:
+* HIPAA consent + Privacy Policy + Terms acceptance
+* AI-assisted consent explanation
+* Microcopy reassurance (“Your data stays private and encrypted”)
+* Progress indicator (“Step 1 of 4 – takes ~2 minutes”)
+________________
+
+
+3. Identity & Basic Profile Setup
+* Full Name
+* Date of Birth
+* Gender
+* Location / Timezone
+* Preferred language
+ Used for vitals normalization + alerts timing
+* AI-based demographic normalization
+* Conversational copy (“Help us tailor insights just for you”)
+* Inline examples instead of clinical labels
+________________
+
+
+4. Health Background (Guided, Step-by-Step)
+* Progressive form
+* Existing conditions
+* Medications
+* Allergies
+* Height & weight
+* Lifestyle questions (optional)
+Enhancements:
+* AI-guided intake
+* Auto-suggestion for conditions & medications
+* Background completeness scoring
+* Bevel-style single-question screens (one question per screen)
+* Lifestyle framing (“How active are your days?” instead of “Exercise frequency”)
+* Positive reinforcement (“Nice — this improves insight accuracy”)
+ Skippable, but flagged as “Profile Incomplete”
+________________
+
+
+5. Provider / Program Linking
+* Invite code from clinic
+* Auto-linked via EHR
+* Manual request to join a program
+Status indicators:
+* Pending approval
+* Linked to care team
+Enhancement:
+* AI-based program matching suggestion
+* Friendly status copy (“We’re setting things up — you’ll be notified”)
+________________
+
+
+6. Device Pairing Flow
+* Detect supported devices
+* Pair via Bluetooth / OAuth
+* Permission grant
+* Test sync
+Fallback:
+* Skip for now → manual entry allowed
+Enhancements:
+* AI-driven device compatibility detection
+* Smart sync validation
+* AI-based data confidence score
+* Visual success confirmation (“You’re connected ”)
+* Plain-language permission explanation (“We only read health data”)
+________________
+
+
+7. Onboarding Completion
+* Summary screen
+* First Health Dashboard
+Enhancements:
+* AI-generated onboarding summary
+* Personalized next-step recommendations
+* Bevel-style welcome message (“Here’s what we’ll focus on together”)
+* Optional lifestyle goal prompt (non-clinical, motivational)
+________________
+
+
+2️⃣ Daily Usage Flow (Core Loop)
+8. Home / Health Dashboard
+Shows:
+* Today’s vitals snapshot
+* Trend arrows
+* Alerts
+* Tasks
+* Overall Health Score
+Enhancements:
+* AI-prioritized dashboard
+* Natural-language daily summary
+* AI-driven alert suppression
+* Bevel-inspired “Daily Snapshot Card” (one primary insight at top)
+* Emotionally neutral language (“Steady”, “Improving”, “Needs attention”)
+* Lifestyle-forward framing (sleep, movement, recovery before raw vitals)
+________________
+
+
+ What the Dashboard Should Show (Bevel Reference Explained)
+Inspired by Bevel’s UX philosophy, the dashboard should answer one question first:
+“How am I doing today — in simple terms?”
+Top Section (Hero Area)
+* Daily State Card
+   * Status: Steady / Improving / Needs attention
+   * Short sentence:
+“Your vitals are stable today. Sleep quality is improving.”
+Middle Section (Insights, Not Data Dumps)
+   * 2–3 Key Insight Cards
+   * “Your BP trends lower on active days”
+   * “Sleep dropped slightly last night”
+   * No charts by default — charts open on tap
+Lower Section (Action-Oriented)
+   * Today’s tasks
+   * Medications due
+   * Care plan nudges
+Design Rules (from Bevel)
+   * No red panic screens
+   * No medical jargon first
+   * Charts are secondary, insights are primary
+   * Always explain why something matters
+________________
+
+
+9. Passive Data Ingestion
+   * Device sync
+   * Missing data detection
+   * Normalization
+Enhancements:
+   * AI anomaly detection
+   * Predictive gap detection
+   * Silent operation — no UI noise unless user action is required
+________________
+
+
+10. Active User Inputs
+   * Manual vitals
+   * Symptom logging
+   * Mood / pain
+Enhancements:
+   * AI-assisted symptom logging
+   * NLP-based interpretation
+   * Risk stratification engine
+   * Bevel-style reflective prompts (“Anything unusual today?”)
+   * Emoji / scale-based inputs instead of forms
+________________
+
+
+11. Alerts & Notifications
+   * Abnormal vitals
+   * Missed medication
+   * Care task due
+   * Device disconnected
+User actions:
+   * Acknowledge
+   * Add context
+   * Contact care team
+Enhancements:
+   * AI-based alert severity scoring
+   * Context-aware alert phrasing
+   * AI-driven provider notification logic
+   * Reassurance-first copy (“We noticed something — let’s check it together”)
+________________
+
+
+3️⃣ Care Plan & Engagement Flow
+12. Care Plan View
+   * Goals
+   * Tasks
+   * Education
+   * Progress
+Enhancements:
+   * AI-personalized task ordering
+   * Adaptive difficulty
+   * AI-generated progress insights
+   * Lifestyle framing (“Daily habits” vs “Care tasks”)
+   * Visual progress rings instead of percentages
+________________
+
+
+13. Medication Management
+   * Medication list
+   * Reminders
+   * Taken / skipped
+   * Refill alerts
+Enhancements:
+   * AI adherence detection
+   * Smart reminder timing
+   * Early non-adherence risk detection
+   * Gentle language (“Missed — want to reschedule?”)
+________________
+
+
+14. Secure Messaging
+   * Chat-style UI
+   * Attach vitals
+   * Read receipts
+Enhancements:
+   * AI-assisted message summarization
+   * AI-suggested questions
+   * Conversation starters (“Ask about trends”, “Share symptoms”)
+   * No autonomous medical responses
+________________
+
+
+4️⃣ Insights & Motivation Flow
+15. AI Health Insights
+Triggered:
+   * Daily
+   * Weekly
+   * Event-based
+Enhancements:
+   * Explainable AI correlations
+   * Confidence indicators
+   * Guardrail-controlled language
+   * Story-based insight cards (“Over the past week…”)
+   * Focus on habits, not conditions
+________________
+
+
+16. Health Score & Trends
+   * Composite score
+   * Historical view
+   * Suggestions
+Enhancements:
+   * Transparent AI breakdown
+   * What-if simulations
+   * Trend forecasting
+   * Bevel-style renaming (e.g., “Wellness Score” instead of “Risk Score”)
+________________
+
+
+5️⃣ Settings & Control Flow
+17. Profile & Preferences
+   * Personal info
+   * Notifications
+   * Language
+   * Timezone
+Enhancements:
+   * AI-recommended notification tuning
+   * Simple presets (“Minimal”, “Balanced”, “Detailed”)
+________________
+
+
+18. Device Management
+   * Connected devices
+   * Reconnect / remove
+   * Sync status
+Enhancements:
+   * AI-driven troubleshooting
+   * Predictive device failure warnings
+   * Human-readable sync messages (“Last synced 12 mins ago”)
+________________
+
+
+19. Data & Privacy
+   * Export data
+   * Consent history
+   * Data deletion request
+Enhancements:
+   * AI-generated summaries
+   * Consent-impact explanations
+   * Plain-language privacy explanations (Bevel-style transparency)
+________________
+
+
+20. Help & Support
+   * FAQs
+   * Contact support
+   * Device help
+   * Emergency guidance
+Enhancements:
+   * AI-powered help assistant
+   * Context-aware help
+   * Tone: coach-like, never clinical or robotic
+
+
+
+
+Patient Screens Final
+📱 Patient Module – Screen List (AI-Based Healthcare Monitoring App)
+✅ Total Screens (Patient Module – MVP)
+26 Screens
+(Balanced for speed, clarity, and regulatory safety)
+________________
+
+
+1️⃣ App Entry & Authentication (5 Screens)
+1. Splash Screen
+   * Brand + calm lifestyle visual
+   * AI-based device integrity & risk check (silent unless risky)
+   * Human headline (“Your health, understood daily”)
+________________
+
+
+2. Welcome / Login Selection
+   * Login / Sign Up options
+   * Bevel-style reassurance copy (“Secure. Private. Built for you”)
+   * Progress cue (“Takes ~2 minutes”)
+________________
+
+
+3. Sign Up
+   * Email / Phone / Social
+   * AI-assisted form validation
+   * Inline data privacy reassurance
+________________
+
+
+4. Login
+   * Credential entry
+   * AI-driven unusual login behavior detection
+   * MFA / biometrics
+________________
+
+
+5. OTP / Email Verification
+   * OTP input
+   * Resend logic
+   * AI-based friction reduction (auto-detect OTP, smart resend timing)
+________________
+
+
+2️⃣ Consent & Onboarding (6 Screens)
+6. HIPAA Consent & Terms Acceptance
+   * HIPAA + Privacy + Terms
+   * AI-assisted plain-language consent explanation
+   * Expandable “Why this matters” sections
+   * Hard block if not accepted
+________________
+
+
+7. Basic Profile Setup
+   * Name, DOB, Gender, Language, Timezone
+   * AI-based demographic normalization for vitals
+   * Conversational tone instead of clinical labels
+________________
+
+
+8. Health Background Setup
+   * Conditions, allergies, height, weight
+   * AI-guided adaptive questioning
+   * Auto-suggested conditions (confirmation required)
+   * Profile completeness indicator (“Improves insights by X%”)
+________________
+
+
+9. Medication Setup
+   * Medication name, dosage, frequency
+   * AI-assisted medication recognition
+   * Adherence risk baseline creation
+________________
+
+
+10. Provider / Program Linking
+   * Invite code / EHR auto-link / manual request
+   * Status: Pending / Linked
+   * AI-based program suitability suggestion (provider-approved only)
+   * Friendly status messaging (“We’re setting things up”)
+________________
+
+
+11. Device Pairing & Permissions
+   * Supported devices list
+   * Bluetooth / OAuth connection
+   * Permissions
+   * AI-driven device compatibility detection
+   * Smart sync validation
+   * AI-generated data confidence score
+   * Plain-language permission explanation
+________________
+
+
+3️⃣ Core Dashboard & Monitoring (6 Screens)
+12. Home / Health Dashboard
+   * Today’s vitals snapshot
+   * Alerts
+   * Tasks
+   * Health Score
+   * AI-prioritized “Daily Snapshot Card”
+   * Natural-language summary (“You’re steady today”)
+   * Lifestyle signals (sleep, movement, recovery before charts)
+   * Alert suppression to avoid anxiety
+________________
+
+
+13. Vitals Detail Screen
+(BP, Glucose, HR, SpO₂, etc.)
+   * Charts + values
+   * AI-annotated insights (“Higher on low-sleep days”)
+   * Explainable trend markers
+________________
+
+
+14. Trends & History
+   * Longitudinal data
+   * Filters
+   * AI-detected correlations & pattern highlights
+   * Short-term forecasting (non-clinical)
+________________
+
+
+15. Manual Data Entry
+   * Manual vitals
+   * Symptoms
+   * Mood / pain
+   * AI-assisted symptom intake (smart follow-ups)
+   * NLP → structured data conversion
+________________
+
+
+16. Alerts & Notifications
+   * Alerts list
+   * Severity indicators
+   * Actions
+   * AI-based alert severity scoring
+   * Calm, reassurance-first phrasing
+   * AI decides provider escalation vs monitoring
+________________
+
+
+17. Overall Health Score
+   * Composite score
+   * Factors breakdown
+   * Transparent AI explanation (“What changed & why”)
+   * What-if simulations
+   * Bevel-style renaming (e.g., “Wellness Score”)
+________________
+
+
+4️⃣ Care & Engagement (4 Screens)
+18. Care Plan Overview
+   * Goals
+   * Tasks
+   * Education
+   * AI-personalized task prioritization
+   * Lifestyle framing (“Daily habits”)
+   * Visual progress rings
+________________
+
+
+19. Care Task Detail
+   * Task instructions
+   * Completion / Snooze
+   * Ask question
+   * AI-generated task context (“Why this helps”)
+   * Adaptive task difficulty
+________________
+
+
+20. Medication Schedule & Adherence
+   * Medication timeline
+   * Taken / skipped
+   * Refill alerts
+   * AI adherence pattern detection
+   * Smart reminder timing optimization
+   * Gentle reschedule nudges
+________________
+
+
+21. Secure Messaging (Chat)
+   * Patient ↔ care team
+   * Attach vitals
+   * Read receipts
+   * AI-assisted message summarization
+   * AI-suggested question prompts
+   * ❌ No autonomous AI replies
+________________
+
+
+5️⃣ Insights & Reports (2 Screens)
+22. AI Health Insights
+   * Daily / weekly / event insights
+   * Explainable correlation cards
+   * Confidence indicators
+   * Story-based summaries (“Over the past week…”)
+   * Non-diagnostic, guidance-only language
+________________
+
+
+23. Reports & Health Summary
+   * Downloadable PDF / CSV
+   * Trends overview
+   * AI-generated human-readable summaries
+   * Highlights instead of raw exports
+________________
+
+
+6️⃣ Settings, Privacy & Support (3 Screens)
+24. Profile & Preferences
+   * Personal info
+   * Notifications
+   * Language
+   * Timezone
+   * AI-recommended notification presets (Minimal / Balanced / Detailed)
+________________
+
+
+25. Device & Data Management
+   * Connected devices
+   * Sync status
+   * Remove / reconnect
+   * AI-driven troubleshooting
+   * Predictive device disconnect warnings
+   * Human-readable sync timestamps
+________________
+
+
+26. Help, Support & Emergency Info
+   * FAQs
+   * Support contact
+   * Emergency guidance
+   * AI-powered help assistant (informational only)
+   * Context-aware help suggestions
+   * Coach-like, calm tone
+
+
+
+
+Doctor and Care cordinator final
+🖥️ Healthcare Provider Portal – User Flow (AI-Enhanced + Bevel-Inspired)
+________________
+
+
+1️⃣ Access & Context Setup (Common for All Providers)
+1. Login & Security
+   * Email + Password / SSO
+   * MFA (mandatory)
+   * Role resolved at login:
+   * Doctor / Nurse
+   * Care Coordinator / Health Coach
+👉 Same portal, different permissions.
+Enhancements:
+   * AI-based login anomaly detection (location, device, behavior – silent unless risky)
+   * Context-aware security prompts (only when risk detected)
+________________
+
+
+2. Organization & Program Context
+   * Auto-selected clinic / program
+   * Dropdown if multiple
+   * Shift status (optional)
+   * Today’s workload summary:
+   * Active patients
+   * Pending alerts
+   * Tasks due today
+Enhancements:
+   * AI-generated workload summary (“3 high-priority items need attention today”)
+   * Bevel-style human language instead of raw counts
+________________
+
+
+2️⃣ Primary Dashboard (Command Center)
+3. Provider Dashboard
+Single-glance view:
+   * Alert queue (prioritized)
+   * High-risk patients
+   * Tasks due today
+   * Messages awaiting response
+🩺 Doctors see:
+   * Clinical severity indicators
+   * Escalated alerts
+🧑‍⚕️ Care Coordinators see:
+   * Engagement tasks
+   * Missed check-ins
+   * Non-clinical alerts
+Enhancements:
+   * AI-prioritized dashboard ordering (what needs attention now vs later)
+   * Natural-language insight banner (“2 patients show worsening trends”)
+   * Bevel-style card-based layout (insights first, charts on click)
+   * Role-aware lens (same data, different framing per role)
+________________
+
+
+3️⃣ Patient Monitoring Flow
+4. Patient List / Registry
+Filter by:
+   * Risk level
+   * Program
+   * Condition
+   * Alert status
+   * Assigned provider / coordinator
+Enhancements:
+   * AI-based patient risk stratification (dynamic, trend-based)
+   * Smart filters (“Patients trending worse this week”)
+   * Explainable risk tags (hover to see why)
+________________
+
+
+5. Patient Profile (360° View)
+Core longitudinal record:
+   * Demographics
+   * Assigned care team
+   * Current care plan
+   * Devices & data status
+   * Alert history
+🩺 Doctors can:
+   * View all clinical data
+   * Add/edit care plans
+   * Enter clinical notes
+🧑‍⚕️ Care Coordinators can:
+   * View vitals (read-only)
+   * Track adherence & engagement
+Enhancements:
+   * AI-generated patient summary (“What’s changed since last review”)
+   * Trend highlights instead of raw data dumps
+   * Data confidence indicators (device reliability, missing data flags)
+   * Bevel-style calm visual hierarchy (signals > charts > tables)
+________________
+
+
+4️⃣ Alert Triage & Response Flow (Critical)
+6. Alert Queue
+Alerts categorized by:
+   * Severity (Critical / Moderate / Info)
+   * Type (Vitals, Device, Adherence)
+   * SLA countdown
+Enhancements:
+   * AI-based alert severity scoring (trend-aware, not single-reading)
+   * Noise suppression (duplicates grouped, false spikes de-prioritized)
+   * Clear “Why this alert surfaced” explanation
+________________
+
+
+7. Alert Detail & Action
+From an alert, provider can:
+🩺 Doctor / Nurse actions:
+   * Review vitals & trends
+   * Add clinical note
+   * Modify care plan
+   * Message patient
+   * Escalate / close alert
+🧑‍⚕️ Care Coordinator actions:
+   * Acknowledge alert
+   * Contact patient
+   * Add engagement note
+   * Escalate to doctor
+   * Close non-clinical alerts
+👉 Escalation is explicit, auditable, and role-gated.
+Enhancements:
+   * AI-generated alert summary (“Spike sustained for 3 days”)
+   * Suggested next steps (non-binding, role-aware)
+   * AI-assisted clinical note draft (editable, never auto-saved)
+   * Escalation prompts when AI detects rising risk
+________________
+
+
+5️⃣ Care Plan Management Flow
+8. Care Plan Builder (Clinical Only)
+🩺 Doctor / Nurse:
+   * Select template
+   * Define goals
+   * Assign tasks
+   * Set thresholds
+   * Publish plan
+🧑‍⚕️ Care Coordinator:
+   * View plan
+   * Track completion
+Enhancements:
+   * AI-assisted care plan drafting (template + patient context)
+   * Evidence-aligned suggestions (reference-based, not autonomous)
+   * Plain-language preview of plan as patient will see it (Bevel-style clarity)
+________________
+
+
+9. Care Plan Monitoring
+   * Task completion
+   * Missed activities
+   * Outcome metrics
+Both roles can:
+   * Add comments
+   * Flag concerns
+   * Trigger follow-ups
+Enhancements:
+   * AI-detected adherence patterns & drop-off risk
+   * Progress summaries (“Adherence dropped after week 3”)
+   * Bevel-style progress visualization (signals over percentages)
+________________
+
+
+6️⃣ Patient Communication Flow
+10. Secure Messaging
+Threaded, HIPAA-compliant chat.
+🩺 Doctor / Nurse:
+   * Clinical responses
+   * Medical clarifications
+   * Care adjustments
+🧑‍⚕️ Care Coordinator:
+   * Check-ins
+   * Reminders
+   * Education nudges
+   * Appointment coordination
+Rules:
+   * Care Coordinator cannot answer diagnoses
+   * Auto-suggest escalation when needed
+Enhancements:
+   * AI-assisted message summarization (conversation context at a glance)
+   * AI-suggested reply starters (role-appropriate)
+   * Tone guidance (“Reassuring”, “Neutral”, “Urgent”)
+   * ❌ No AI-generated medical decisions
+________________
+
+
+7️⃣ Clinical Documentation & Notes
+11. Notes & Activity Log
+🩺 Doctor / Nurse:
+   * Clinical notes
+   * Assessment summaries
+🧑‍⚕️ Care Coordinator:
+   * Engagement notes
+   * Call summaries
+Notes are:
+   * Timestamped
+   * Role-tagged
+   * Immutable after sign-off
+Enhancements:
+   * AI-assisted note structuring (SOAP-style formatting)
+   * Auto-summarized visit/activity timeline
+   * Audit-safe AI usage (all AI content clearly marked as assisted)
+________________
+
+
+8️⃣ Task & Follow-up Management
+12. Tasks & Reminders
+Tasks can be:
+   * Auto-generated
+   * Manually created
+🩺 Doctors:
+   * Clinical tasks
+🧑‍⚕️ Coordinators:
+   * Engagement tasks
+Enhancements:
+   * AI-generated follow-up task suggestions
+   * Smart due-date recommendations based on urgency & workload
+   * Task fatigue prevention (bundling low-priority tasks)
+________________
+
+
+9️⃣ Reporting & Outcomes
+13. Provider Reports
+🩺 Doctors:
+   * Patient outcome trends
+   * Alert resolution metrics
+   * Care effectiveness
+🧑‍⚕️ Care Coordinators:
+   * Engagement rates
+   * Adherence tracking
+Enhancements:
+   * AI-generated executive summaries (“What improved this month”)
+   * Trend explanations, not just charts
+   * Bevel-style insights-first reporting
+________________
+
+
+1️⃣0️⃣ Profile & Preferences
+14. Provider Settings
+   * Availability
+   * Notification rules
+   * Delegation / handoff
+   * Signature & credentials
+Enhancements:
+   * AI-recommended notification tuning (reduce alert fatigue)
+   * Smart delegation suggestions during high workload periods
+________________
+
+
+🧠 Mental Model (Reinforced with AI)
+Doctor:
+“Show me who needs my medical judgment right now — and why.”
+*AI supports prioritization, summaries, and trends — never diagnosis.
+Care Coordinator:
+“Show me who needs attention, nudging, or follow-up.”
+*AI highlights engagement risks and next actions.
+Same system.
+Same data.
+Different lenses.
+Doctor Screens Final
+🖥️ Healthcare Provider Portal – Screen Names (AI-Enhanced)
+✅ Total Screens: 16
+(Shared base + role-restricted screens remain unchanged)
+________________
+
+
+1️⃣ Authentication & Context (2 Screens)
+1. Provider Login
+   * Email + Password / SSO
+   * MFA (mandatory)
+   * AI-based login anomaly detection (device, location, behavior – silent unless risky)
+   * Smart MFA escalation only when risk is detected
+________________
+
+
+2. Organization / Program Selector
+   * Auto-selected clinic / program
+   * Dropdown if multiple
+Enhancements:
+   * AI-generated context summary (“You’re covering 18 RPM patients today”)
+   * Bevel-style human-readable workload preview
+________________
+
+
+2️⃣ Core Dashboard & Navigation (2 Screens)
+3. Provider Dashboard (Most Critical Screen)
+Single-glance command center.
+What is shown (Bevel-referenced, insight-first):
+Top – “Today at a Glance” (Hero Section)
+   * AI-generated daily summary
+“3 patients need attention. 1 shows worsening trends.”
+   * Shift status
+   * Active patient count
+Middle – Priority Insight Cards
+      * AI-prioritized alert cards
+      * “BP trending up for 3 days”
+      * “Missed vitals for 48 hrs”
+      * High-risk patient highlights (with explainable ‘why’)
+Lower – Action Areas
+      * Tasks due today
+      * Messages awaiting response
+      * Follow-ups pending
+Role-based lens (same screen):
+      * 🩺 Doctors: clinical severity & escalation cues
+      * 🧑‍⚕️ Coordinators: engagement gaps & adherence nudges
+Bevel UX principles applied:
+      * Insights before charts
+      * No raw tables on first view
+      * Calm language (“Needs review” instead of “Critical”)
+________________
+
+
+4. Alert Queue
+      * Alerts grouped by:
+      * Severity
+      * Type
+      * SLA countdown
+Enhancements:
+      * AI-based alert severity scoring (trend-aware, not single-reading)
+      * Duplicate & noise suppression
+      * “Why this alert surfaced” explanation (hover / expand)
+      * Smart sorting: “Needs action now” vs “Monitor”
+________________
+
+
+3️⃣ Patient Monitoring & Records (4 Screens)
+5. Patient Registry (Patient List)
+      * Filter by:
+      * Risk level
+      * Program
+      * Condition
+      * Alert status
+      * Assigned provider
+Enhancements:
+      * AI-driven dynamic risk stratification
+      * Smart filters (“Patients trending worse this week”)
+      * Explainable risk tags (“↑ BP variability + missed meds”)
+________________
+
+
+6. Patient Profile – Overview
+360° longitudinal view:
+      * Demographics
+      * Assigned care team
+      * Active care plans
+      * Alert history
+Enhancements:
+      * AI-generated patient summary (“What changed since last review”)
+      * Data confidence indicators (device reliability, missing data)
+      * Bevel-style visual hierarchy (signals → trends → raw data)
+________________
+
+
+7. Patient Vitals & Trends
+      * Time-series charts
+      * Historical comparisons
+Enhancements:
+      * AI-annotated trend insights
+“Glucose spikes correlate with reduced sleep”
+      * Short-term forecasting (non-clinical)
+      * Anomaly vs sustained-pattern labeling
+________________
+
+
+8. Patient Devices & Data Status
+         * Connected devices
+         * Last sync time
+         * Data gaps
+Enhancements:
+         * AI-based data reliability score
+         * Predictive device disconnect warnings
+         * Human-readable sync explanations (“No data since yesterday evening”)
+________________
+
+
+4️⃣ Alerts & Actions (2 Screens)
+9. Alert Detail & Resolution
+From an alert, providers can:
+         * Review vitals & trends
+         * Add notes
+         * Modify care plans
+         * Message patient
+         * Close / escalate
+Enhancements:
+         * AI-generated alert summary
+“Sustained elevation over 72 hrs”
+         * Suggested next actions (non-binding)
+         * AI-assisted clinical note draft (editable, never auto-saved)
+________________
+
+
+10. Escalation & Assignment Panel
+            * Assign to provider
+            * Escalate role-wise
+            * SLA tracking
+Enhancements:
+            * AI-based escalation recommendation when risk is rising
+            * Clear audit trail for all AI-assisted suggestions
+            * Explicit confirmation (no auto-escalation)
+________________
+
+
+5️⃣ Care Planning & Tasks (3 Screens)
+11. Care Plan Builder (Doctor / Nurse only)
+            * Select template
+            * Define goals
+            * Assign tasks
+            * Set thresholds
+Enhancements:
+            * AI-assisted care plan drafting (context-aware)
+            * Evidence-aligned suggestions (reference-based)
+            * Patient-view preview (plain-language, Bevel-style clarity)
+________________
+
+
+12. Care Plan Progress & Adherence
+            * Task completion
+            * Missed activities
+            * Outcomes
+Enhancements:
+            * AI-detected adherence drop-off patterns
+            * Progress summaries (“Engagement dropped after week 2”)
+            * Visual signals instead of raw percentages
+________________
+
+
+13. Tasks & Follow-Ups
+            * Auto-generated tasks
+            * Manual tasks
+Enhancements:
+            * AI-suggested follow-ups (role-aware)
+            * Smart due-date recommendations
+            * Task bundling to reduce overload
+________________
+
+
+6️⃣ Communication & Notes (2 Screens)
+14. Secure Patient Messaging
+            * Threaded HIPAA chat
+Enhancements:
+            * AI-assisted conversation summary
+“Patient reported dizziness; awaiting BP readings”
+            * Suggested reply starters (role-based)
+            * Tone guidance (Reassuring / Neutral / Urgent)
+            * ❌ No AI-generated medical advice
+________________
+
+
+15. Clinical & Engagement Notes
+               * Clinical notes (Doctor/Nurse)
+               * Engagement notes (Coordinator)
+Enhancements:
+               * AI-assisted note structuring (SOAP-style)
+               * Auto-generated timeline summary
+               * All AI content clearly labeled for audit safety
+________________
+
+
+7️⃣ Reports & Settings (1 Screen)
+16. Provider Reports & Settings
+               * Outcome metrics
+               * Engagement metrics
+               * Notification rules
+               * Availability
+Enhancements:
+               * AI-generated executive summaries
+“Alert resolution improved by 18% this month”
+               * Trend explanations, not just charts
+               * AI-recommended notification tuning (reduce fatigue)
+________________
+
+
+🧑‍⚕️ Role Visibility Breakdown (UNCHANGED)
+🩺 Doctor / Nurse
+                  * Access to all 16 screens
+                  * Create/edit care plans
+                  * Add clinical notes
+                  * Resolve & close clinical alerts
+🧑‍⚕️ Care Coordinator / Health Coach
+                  * Access to 13 screens
+                  * No access to:
+                  * Care Plan Builder
+                  * Clinical note authoring
+                  * Can:
+                  * Handle engagement alerts
+                  * Add non-clinical notes
+                  * Escalate to doctor
+
+
+
+
+Admin Final
+🛠️ Master Administrator – User Flow (AI-Enhanced + Bevel-Inspired)
+(Healthcare Monitoring Platform)
+________________
+
+
+1️⃣ Secure Access & System Context
+1. Admin Login
+                  * Email + Password / SSO
+                  * Mandatory MFA
+                  * Device trust validation
+                  * Login audit logged (IP, time, device)
+Enhancements:
+                  * AI-based login risk scoring (geo, device fingerprint, behavior patterns)
+                  * Adaptive MFA escalation (step-up only when anomaly detected)
+                  * Plain-language security message (“New device detected – please verify”)
+________________
+
+
+2. Admin Dashboard (System Command Center)
+Single-glance system health:
+                  * Total organizations / clinics
+                  * Active patients & providers
+                  * Alerts volume (24h / 7d)
+                  * Device sync health
+                  * Integration status
+                  * Compliance warnings (if any)
+👉 Entry point to all admin actions
+Enhancements (Bevel-style, insight-first):
+                  * AI-generated system health summary
+“All systems operational. 1 integration shows elevated latency.”
+                  * Trend indicators (improving / stable / degrading)
+                  * Early-warning signals (pre-compliance or scaling risks)
+                  * Human-readable language instead of raw metrics
+________________
+
+
+2️⃣ Organization & Program Lifecycle
+3. Organization / Clinic Management
+Admin can:
+                     * Create new organization / clinic
+                     * Activate / deactivate organization
+                     * Set timezone, region, billing reference
+                     * View organization health summary
+System actions:
+                     * Auto-generate org ID
+                     * Apply default policies
+                     * Initialize audit scope
+Enhancements:
+                     * AI-assisted org setup checklist (flags missing configs)
+                     * Org health score (engagement, alerts, device reliability)
+                     * Predictive scaling warnings (“Clinic nearing patient capacity”)
+________________
+
+
+4. Program & Care Model Setup
+Admin defines:
+                     * RPM programs
+                     * Enrollment criteria
+                     * Program duration
+                     * Default alert thresholds
+Used later by:
+                     * Providers (care plans)
+                     * Patients (program enrollment)
+Enhancements:
+                     * AI-assisted threshold recommendations (based on historical data)
+                     * Simulation preview (“Estimated alert volume per 100 patients”)
+                     * Explainable rationale for suggested defaults (non-autonomous)
+________________
+
+
+5. Provider Assignment & Mapping
+Admin:
+                     * Assign doctors & care coordinators to clinics
+                     * Set provider capacity limits
+                     * Map providers to programs
+Rules:
+                     * No orphan patients
+                     * All providers must belong to a clinic
+Changes are audit-logged
+Enhancements:
+                     * AI-based capacity balancing suggestions
+                     * Risk alerts for overload (“Coordinator exceeding safe caseload”)
+                     * What-if previews before applying changes
+________________
+
+
+3️⃣ User & Access Control
+6. User Management
+Admin can:
+                     * View all users (Patients, Providers)
+                     * Activate / deactivate accounts
+                     * Force logout / reset credentials
+                     * View user activity & last login
+Safety:
+                     * Soft delete only
+                     * No hard delete without compliance workflow
+Enhancements:
+                     * AI-driven anomalous activity detection (account misuse, unusual access)
+                     * User risk flags (high failed logins, dormant privileged accounts)
+                     * Plain-language explanations (“Unusual access pattern detected”)
+________________
+
+
+7. Role & Permission Configuration
+Admin:
+                     * Defines role capabilities (RBAC)
+                     * Controls access per role:
+                     * Clinical write
+                     * Alert resolution
+                     * Messaging
+                     * Data export
+Even with 1 admin, this prevents future rework.
+Enhancements:
+                     * AI-assisted permission impact preview
+“This change will affect 12 providers and 340 patients”
+                     * Misconfiguration warnings (least-privilege violations)
+                     * Bevel-style clarity (plain English summaries of permissions)
+________________
+
+
+4️⃣ Device & Integration Governance
+8. Device Catalog & Monitoring
+Admin:
+                        * Manage supported device list
+                        * View sync success/failure rates
+                        * Detect widespread device outages
+Actions:
+                        * Disable device temporarily
+                        * Trigger re-sync
+                        * Notify providers
+Enhancements:
+                        * AI-based device reliability scoring
+                        * Predictive outage detection (“Failure rate trending upward”)
+                        * Automated provider notification drafts (admin-approved)
+________________
+
+
+9. Integrations Management
+Admin manages:
+                        * EHR integrations (Epic, Cerner)
+                        * Device aggregators
+                        * Auth providers
+Controls:
+                        * Enable / disable integration
+                        * View sync logs
+                        * Test connection health
+Enhancements:
+                        * AI-driven integration health scoring
+                        * Latency & error trend analysis
+                        * Early warnings before SLA breaches
+________________
+
+
+5️⃣ Clinical Rules & Platform Configuration
+10. Alert Rules & Threshold Engine
+Admin defines:
+                        * Vital thresholds (per program)
+                        * Alert severity levels
+                        * Escalation chains
+                        * SLA timers
+System behavior:
+                        * Applies rules in real time
+                        * Routes alerts automatically
+                        * Records alert lifecycle
+Enhancements:
+                        * AI-assisted rule validation (detects conflicting thresholds)
+                        * Alert volume forecasting before publishing changes
+                        * Explainable simulations (“Expected +18% alerts”)
+________________
+
+
+11. Care Plan Templates & Content
+Admin manages:
+                        * Care plan templates
+                        * Task libraries
+                        * Educational content
+                        * Versioning & activation
+Providers:
+                        * Can only use published templates
+                        * Cannot alter system templates
+Enhancements:
+                        * AI-based content effectiveness insights (usage & completion trends)
+                        * Readability & patient-comprehension scoring (Bevel-style clarity)
+                        * Safe version-diff previews before activation
+________________
+
+
+6️⃣ Analytics, Compliance & Oversight
+12. System Analytics & KPIs
+Admin views:
+                        * Patient engagement
+                        * Provider workload
+                        * Alert resolution times
+                        * Device adoption rates
+                        * Program effectiveness
+Used for:
+                        * Ops decisions
+                        * Reporting
+                        * Stakeholder updates
+Enhancements:
+                        * AI-generated executive summaries
+“Engagement improved 12% in Diabetes RPM”
+                        * Root-cause explanations (not just charts)
+                        * Trend signals (stable / improving / at-risk)
+________________
+
+
+13. Audit Logs & Compliance
+Admin can:
+                           * View PHI access logs
+                           * Track admin actions
+                           * Export audit data
+                           * Monitor retention compliance
+Mandatory:
+                           * Immutable logs
+                           * 6-year retention
+Enhancements:
+                           * AI-assisted anomaly detection in audit logs
+                           * Proactive compliance risk alerts
+                           * Human-readable compliance summaries (“All requirements met”)
+________________
+
+
+14. Admin Settings & Security
+Admin configures:
+                           * Password policies
+                           * MFA enforcement
+                           * Session timeout
+                           * Data retention rules
+                           * System notifications
+Changes:
+                           * Require confirmation
+                           * Logged with timestamp + admin ID
+Enhancements:
+                           * AI-recommended security hardening suggestions
+                           * Configuration risk scoring (“Current posture: Strong”)
+                           * Change-impact preview before saving
+________________
+
+
+✅ Mental Model (Admin, Bevel-Aligned)
+Admin’s Core Question:
+“Is the system healthy, compliant, and scalable — and what needs attention next?”
+AI’s Role:
+                           * Surface risks early
+                           * Explain impact clearly
+                           * Reduce cognitive load
+                           * Never auto-apply changes
+
+
+
+
+Admin Screens Final
+🛠️ Administrator (Master Admin) – Screen List (AI-Enhanced + Bevel-Inspired)
+✅ Total Screens: 14
+(Single-role, full-control admin – unchanged count)
+________________
+
+
+1️⃣ Authentication & System Access (2 Screens)
+1. Admin Login
+                           * Email + Password / SSO
+                           * Mandatory MFA
+Enhancements:
+                           * AI-based login risk scoring (device, geo, behavior)
+                           * Adaptive MFA escalation (only when anomaly detected)
+                           * Plain-language security prompts (“New device detected”)
+________________
+
+
+2. Admin Dashboard (System Overview) (Most Critical Screen)
+What the Dashboard Shows (Bevel-Inspired, Insight-First)
+Top – System Health Snapshot
+                           * Total organizations / clinics
+                           * Active patients & providers
+                           * AI-labeled system state: Stable / Needs Attention / At Risk
+Middle – Priority Insight Cards
+                           * AI-generated daily system summary
+“All systems operational. One clinic shows rising alert volume.”
+                           * Alerts volume (24h / 7d) with trend arrows
+                           * Device sync health
+                           * Integration status (Epic / Cerner / Aggregators)
+Lower – Risk & Compliance Signals
+                              * Compliance warnings (if any)
+                              * AI early-warning indicators
+                              * “Alert volume trending upward”
+                              * “Device failure rate increasing”
+                              * Human-readable language instead of raw metrics
+Bevel UX Principles Applied
+                              * Insights before charts
+                              * No dense tables by default
+                              * Calm, operational tone — never alarmist
+👉 Entry point to all admin actions
+________________
+
+
+2️⃣ Organization & Program Management (3 Screens)
+3. Organizations / Clinics Management
+Create, view, activate, deactivate clinics
+Set timezone, region, billing reference
+Enhancements:
+                              * AI-generated organization health score
+(engagement, alert load, device reliability)
+                              * Setup completeness checklist
+                              * Predictive scaling warnings (“Clinic nearing capacity”)
+________________
+
+
+4. Programs & Care Models Management
+RPM programs
+Chronic care templates
+Enrollment criteria
+Default thresholds
+Enhancements:
+                                 * AI-assisted threshold recommendations (historical-data based)
+                                 * Alert volume simulation preview
+“Estimated +15% alerts per 100 patients”
+                                 * Explainable rationale for suggested defaults
+________________
+
+
+5. Provider Assignment & Mapping
+Assign doctors & coordinators
+Set capacity limits
+Map providers to programs
+Enhancements:
+                                    * AI-based capacity balancing suggestions
+                                    * Overload risk warnings (“Coordinator exceeding safe caseload”)
+                                    * What-if previews before applying changes
+________________
+
+
+3️⃣ User & Role Management (2 Screens)
+6. User Management
+Patients, Providers, Coordinators
+Activate / deactivate
+Force logout
+View last login
+Enhancements:
+                                    * AI-driven anomalous activity detection
+                                    * User risk flags (dormant privileged accounts, failed logins)
+                                    * Plain-language explanations for flagged risks
+________________
+
+
+7. Role & Permission Configuration
+RBAC rules
+Clinical write
+Alert resolution
+Messaging
+Data export
+Enhancements:
+                                    * AI-assisted permission impact preview
+“This change affects 9 providers and 280 patients”
+                                    * Least-privilege violation warnings
+                                    * Bevel-style permission summaries in plain English
+________________
+
+
+4️⃣ Device & Integration Control (2 Screens)
+8. Device Catalog & Status
+Supported devices
+Sync health
+Error monitoring
+Enhancements:
+                                       * AI-based device reliability scoring
+                                       * Predictive outage detection
+                                       * Draft system notifications (admin-approved)
+________________
+
+
+9. Integrations Management
+EHR (Epic, Cerner)
+Device aggregators
+Auth providers
+Enhancements:
+                                       * AI-generated integration health score
+                                       * Latency & failure trend analysis
+                                       * Early SLA risk warnings
+________________
+
+
+5️⃣ Clinical Rules & Configuration (2 Screens)
+10. Alert Rules & Threshold Configuration
+Vital thresholds
+Escalation rules
+SLA timers
+Enhancements:
+                                       * AI-assisted rule validation (conflict detection)
+                                       * Alert volume forecasting before publishing
+                                       * Explainable simulations (“Expected +22% alerts”)
+________________
+
+
+11. Care Plan Templates & Content
+Care plan templates
+Educational content
+Task libraries
+Enhancements:
+                                       * AI-driven content effectiveness insights
+                                       * Readability & patient comprehension scoring
+                                       * Safe version comparison before activation
+________________
+
+
+6️⃣ Analytics, Compliance & Oversight (3 Screens)
+12. System Analytics & KPIs
+Usage
+Engagement
+Alert volume
+Device adoption
+Program effectiveness
+Enhancements:
+                                       * AI-generated executive summaries
+“Engagement improved 11% in RPM programs”
+                                       * Root-cause explanations, not just charts
+                                       * Trend signals: Improving / Stable / At Risk
+________________
+
+
+13. Audit Logs & Compliance
+PHI access logs
+Admin actions
+Retention tracking
+Enhancements:
+                                          * AI-assisted anomaly detection in audit logs
+                                          * Proactive compliance risk alerts
+                                          * Human-readable compliance status summaries
+________________
+
+
+14. Admin Settings
+Security policies
+MFA enforcement
+Session timeout
+Data retention
+System-wide preferences
+Enhancements:
+                                          * AI-recommended security hardening
+                                          * Configuration risk scoring (“Posture: Strong”)
+                                          * Change-impact preview before save

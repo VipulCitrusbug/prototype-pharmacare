@@ -27,49 +27,88 @@ import {
   XCircle,
 } from "lucide-react";
 
-const mockClaimMetrics = {
-  totalClaims: 1247,
-  approvedClaims: 1175,
-  rejectedClaims: 72,
-  successRate: 94.2,
-  totalReimbursed: 847523,
-  avgProcessingDays: 2.4,
-  pendingAmount: 156780,
-};
-
-const mockRejectionReasons = [
-  { reason: "Missing Prior Authorization", count: 28, percentage: 38.9 },
-  { reason: "Invalid Member ID", count: 15, percentage: 20.8 },
-  { reason: "Service Not Covered", count: 12, percentage: 16.7 },
-  { reason: "Duplicate Claim", count: 9, percentage: 12.5 },
-  { reason: "Incorrect Drug Code", count: 8, percentage: 11.1 },
-];
-
-const mockPayerPerformance = [
-  { payer: "BlueCross BlueShield", claims: 342, successRate: 96.2, avgDays: 1.8 },
-  { payer: "Aetna", claims: 287, successRate: 94.8, avgDays: 2.1 },
-  { payer: "United Healthcare", claims: 256, successRate: 93.4, avgDays: 2.6 },
-  { payer: "Cigna", claims: 198, successRate: 95.1, avgDays: 2.3 },
-  { payer: "Humana", claims: 164, successRate: 91.5, avgDays: 3.1 },
-];
-
-const mockMonthlyTrends = [
-  { month: "Aug", claims: 198, approved: 185, rejected: 13 },
-  { month: "Sep", claims: 215, approved: 201, rejected: 14 },
-  { month: "Oct", claims: 234, approved: 220, rejected: 14 },
-  { month: "Nov", claims: 256, approved: 243, rejected: 13 },
-  { month: "Dec", claims: 289, approved: 274, rejected: 15 },
-  { month: "Jan", claims: 55, approved: 52, rejected: 3 },
-];
+import { useQuery } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
 
 export default function FinanceReportsPage() {
   const { toast } = useToast();
   const [dateRange, setDateRange] = useState("30_days");
 
-  const handleExport = (reportType: string) => {
+  const { data: reportData, isLoading } = useQuery({
+    queryKey: [`/api/finance/reports`, dateRange],
+    queryFn: async () => {
+      const res = await fetch(`/api/finance/reports?range=${dateRange}`);
+      if (!res.ok) throw new Error("Failed to fetch reports");
+      return res.json();
+    },
+  });
+
+  const metrics = reportData?.metrics || {
+    totalClaims: 0,
+    approvedClaims: 0,
+    rejectedClaims: 0,
+    successRate: 0,
+    totalReimbursed: 0,
+    avgProcessingDays: 0,
+    pendingAmount: 0,
+  };
+
+  const rejectionReasons = reportData?.rejectionReasons || [];
+  const payerPerformance = reportData?.payerPerformance || [];
+  const monthlyTrends = reportData?.monthlyTrends || [];
+
+  const handleExport = () => {
+    if (!reportData) return;
+
     toast({
       title: "Export Started",
-      description: `Generating ${reportType} report for download...`,
+      description: "Generating comprehensive report...",
+    });
+
+    const rows = [
+      ["FINANCE REPORT SUMMARY"],
+      ["Generated at", new Date().toLocaleString()],
+      ["Time Range", dateRange.replace("_", " ").toUpperCase()],
+      [],
+      ["OVERVIEW METRICS"],
+      ["Metric", "Value"],
+      ["Total Claims", metrics.totalClaims],
+      ["Approved Claims", metrics.approvedClaims],
+      ["Rejected Claims", metrics.rejectedClaims],
+      ["Success Rate", `${metrics.successRate}%`],
+      ["Total Reimbursed", `$${metrics.totalReimbursed.toLocaleString()}`],
+      ["Pending Amount", `$${metrics.pendingAmount}`],
+      ["Avg Processing Time", `${metrics.avgProcessingDays} days`],
+      [],
+      ["TOP REJECTION REASONS"],
+      ["Reason", "Count", "Percentage"],
+      ...rejectionReasons.map((r: any) => [r.reason, r.count, `${r.percentage}%`]),
+      [],
+      ["PAYER PERFORMANCE"],
+      ["Payer", "Claims Processed", "Success Rate", "Avg Days"],
+      ...payerPerformance.map((p: any) => [p.payer, p.claims, `${p.successRate}%`, p.avgDays]),
+      [],
+      ["MONTHLY TRENDS"],
+      ["Period", "Total Claims", "Approved", "Rejected"],
+      ...monthlyTrends.map((m: any) => [m.month, m.claims, m.approved, m.rejected]),
+    ];
+
+    const csvContent = rows
+      .map((row) => row.map((cell: any) => `"${cell}"`).join(","))
+      .join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `finance_report_${dateRange}_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast({
+      title: "Export Complete",
+      description: "Report downloaded successfully.",
     });
   };
 
@@ -97,8 +136,9 @@ export default function FinanceReportsPage() {
           </Select>
           <Button
             variant="outline"
-            onClick={() => handleExport("Summary")}
+            onClick={handleExport}
             data-testid="button-export"
+            disabled={isLoading}
           >
             <Download className="w-4 h-4 mr-2" />
             Export
@@ -115,7 +155,13 @@ export default function FinanceReportsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{mockClaimMetrics.totalClaims.toLocaleString()}</div>
+            <div className="text-3xl font-bold">
+              {isLoading ? (
+                <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+              ) : (
+                metrics.totalClaims.toLocaleString()
+              )}
+            </div>
             <div className="flex items-center gap-1 text-sm text-success">
               <TrendingUp className="w-4 h-4" />
               <span>+12.4% from last period</span>
@@ -131,7 +177,9 @@ export default function FinanceReportsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-success">{mockClaimMetrics.successRate}%</div>
+            <div className="text-3xl font-bold text-success">
+              {isLoading ? "-" : `${metrics.successRate}%`}
+            </div>
             <div className="flex items-center gap-1 text-sm text-success">
               <TrendingUp className="w-4 h-4" />
               <span>+2.1% improvement</span>
@@ -147,9 +195,15 @@ export default function FinanceReportsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">${(mockClaimMetrics.totalReimbursed / 1000).toFixed(0)}K</div>
+            <div className="text-3xl font-bold">
+              {isLoading ? (
+                <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+              ) : (
+                `$${(metrics.totalReimbursed / 1000).toFixed(0)}K`
+              )}
+            </div>
             <p className="text-sm text-muted-foreground">
-              ${mockClaimMetrics.pendingAmount.toLocaleString()} pending
+              ${metrics.pendingAmount.toLocaleString()} pending
             </p>
           </CardContent>
         </Card>
@@ -162,7 +216,9 @@ export default function FinanceReportsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{mockClaimMetrics.avgProcessingDays} days</div>
+            <div className="text-3xl font-bold">
+              {isLoading ? "-" : `${metrics.avgProcessingDays} days`}
+            </div>
             <div className="flex items-center gap-1 text-sm text-success">
               <TrendingDown className="w-4 h-4" />
               <span>-0.5 days faster</span>
@@ -197,20 +253,16 @@ export default function FinanceReportsPage() {
                     Common causes for claim rejections
                   </CardDescription>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleExport("Rejection Analysis")}
-                  data-testid="button-export-rejections"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Export
-                </Button>
               </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {mockRejectionReasons.map((item, idx) => (
+                {isLoading ? (
+                  <div className="flex justify-center p-8">
+                    <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                  </div>
+                ) : (
+                  rejectionReasons.map((item: any, idx: number) => (
                   <div key={idx} className="space-y-2" data-testid={`rejection-reason-${idx}`}>
                     <div className="flex items-center justify-between">
                       <span className="font-medium">{item.reason}</span>
@@ -228,7 +280,7 @@ export default function FinanceReportsPage() {
                       />
                     </div>
                   </div>
-                ))}
+                )))}
               </div>
             </CardContent>
           </Card>
@@ -247,20 +299,16 @@ export default function FinanceReportsPage() {
                     Success rates and processing times by insurance provider
                   </CardDescription>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleExport("Payer Performance")}
-                  data-testid="button-export-payers"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Export
-                </Button>
               </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {mockPayerPerformance.map((payer, idx) => (
+                {isLoading ? (
+                  <div className="flex justify-center p-8">
+                    <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                  </div>
+                ) : (
+                  payerPerformance.map((payer: any, idx: number) => (
                   <div
                     key={idx}
                     className="flex items-center justify-between p-4 rounded-lg border border-border"
@@ -293,7 +341,7 @@ export default function FinanceReportsPage() {
                       </div>
                     </div>
                   </div>
-                ))}
+                )))}
               </div>
             </CardContent>
           </Card>
@@ -312,20 +360,16 @@ export default function FinanceReportsPage() {
                     Claim volume and outcomes over time
                   </CardDescription>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleExport("Monthly Trends")}
-                  data-testid="button-export-trends"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Export
-                </Button>
               </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {mockMonthlyTrends.map((month, idx) => (
+                {isLoading ? (
+                  <div className="flex justify-center p-8">
+                    <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                  </div>
+                ) : (
+                  monthlyTrends.map((month: any, idx: number) => (
                   <div
                     key={idx}
                     className="flex items-center gap-4"
@@ -354,7 +398,7 @@ export default function FinanceReportsPage() {
                       <span className="text-danger">{month.rejected}</span>
                     </div>
                   </div>
-                ))}
+                )))}
               </div>
               <div className="flex items-center justify-center gap-6 mt-6 pt-4 border-t">
                 <div className="flex items-center gap-2">

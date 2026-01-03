@@ -399,7 +399,7 @@ export default function FinanceDocumentsPage() {
           ) : (
             <div className="space-y-2">
               {filteredDocs.map((doc) => {
-                const config = typeConfig[doc.type];
+                const config = typeConfig[doc.type] || typeConfig["other"];
                 const Icon = config.icon;
 
                 return (

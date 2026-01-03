@@ -592,6 +592,95 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/finance/reports", requireFinance, async (req, res) => {
+    try {
+      const range = req.query.range as string || "30_days";
+      await new Promise((r) => setTimeout(r, 600)); // Simulate calculation delay
+
+      // Generate localized mock data based on range
+      let multiplier = 1;
+      switch (range) {
+        case "7_days": multiplier = 0.2; break;
+        case "30_days": multiplier = 1; break;
+        case "90_days": multiplier = 2.5; break;
+        case "year": multiplier = 10; break;
+      }
+
+      // 1. Top-level Metrics
+      const totalClaims = Math.round(1247 * multiplier);
+      const approvedClaims = Math.round(totalClaims * 0.94);
+      const rejectedClaims = totalClaims - approvedClaims;
+      const successRate = 94.2 + (Math.random() * 2 - 1); // Slight variation
+      const totalReimbursed = Math.round(847523 * multiplier);
+      const pendingAmount = Math.round(totalReimbursed * 0.15);
+      const avgProcessingDays = 2.4 - (multiplier * 0.05);
+
+      const metrics = {
+        totalClaims,
+        approvedClaims,
+        rejectedClaims,
+        successRate: Number(successRate.toFixed(1)),
+        totalReimbursed,
+        avgProcessingDays: Number(avgProcessingDays.toFixed(1)),
+        pendingAmount,
+      };
+
+      // 2. Rejection Reasons (Scales counts)
+      const rejectionReasons = [
+        { reason: "Missing Prior Authorization", count: Math.round(28 * multiplier), percentage: 38.9 },
+        { reason: "Invalid Member ID", count: Math.round(15 * multiplier), percentage: 20.8 },
+        { reason: "Service Not Covered", count: Math.round(12 * multiplier), percentage: 16.7 },
+        { reason: "Duplicate Claim", count: Math.round(9 * multiplier), percentage: 12.5 },
+        { reason: "Incorrect Drug Code", count: Math.round(8 * multiplier), percentage: 11.1 },
+      ];
+
+      // 3. Payer Performance (Varies slightly randomly)
+      const payerPerformance = [
+        { payer: "BlueCross BlueShield", claims: Math.round(342 * multiplier), successRate: Number((96.2 + (Math.random() - 0.5)).toFixed(1)), avgDays: 1.8 },
+        { payer: "Aetna", claims: Math.round(287 * multiplier), successRate: Number((94.8 + (Math.random() - 0.5)).toFixed(1)), avgDays: 2.1 },
+        { payer: "United Healthcare", claims: Math.round(256 * multiplier), successRate: Number((93.4 + (Math.random() - 0.5)).toFixed(1)), avgDays: 2.6 },
+        { payer: "Cigna", claims: Math.round(198 * multiplier), successRate: Number((95.1 + (Math.random() - 0.5)).toFixed(1)), avgDays: 2.3 },
+        { payer: "Humana", claims: Math.round(164 * multiplier), successRate: Number((91.5 + (Math.random() - 0.5)).toFixed(1)), avgDays: 3.1 },
+      ];
+
+      // 4. Monthly/Period Trends
+      // If range is 7 days, we might return daily data, but for now let's keep the shape consistent 
+      // or return less months.
+      let trendData = [];
+      if (range === "7_days") {
+        trendData = [
+          { month: "Mon", claims: 45, approved: 42, rejected: 3 },
+          { month: "Tue", claims: 52, approved: 49, rejected: 3 },
+          { month: "Wed", claims: 48, approved: 45, rejected: 3 },
+          { month: "Thu", claims: 55, approved: 52, rejected: 3 },
+          { month: "Fri", claims: 60, approved: 58, rejected: 2 },
+          { month: "Sat", claims: 32, approved: 30, rejected: 2 },
+          { month: "Sun", claims: 28, approved: 26, rejected: 2 },
+        ];
+      } else {
+         trendData = [
+          { month: "Aug", claims: Math.round(198 * multiplier), approved: Math.round(185 * multiplier), rejected: Math.round(13 * multiplier) },
+          { month: "Sep", claims: Math.round(215 * multiplier), approved: Math.round(201 * multiplier), rejected: Math.round(14 * multiplier) },
+          { month: "Oct", claims: Math.round(234 * multiplier), approved: Math.round(220 * multiplier), rejected: Math.round(14 * multiplier) },
+          { month: "Nov", claims: Math.round(256 * multiplier), approved: Math.round(243 * multiplier), rejected: Math.round(13 * multiplier) },
+          { month: "Dec", claims: Math.round(289 * multiplier), approved: Math.round(274 * multiplier), rejected: Math.round(15 * multiplier) },
+          { month: "Jan", claims: Math.round(55 * multiplier), approved: Math.round(52 * multiplier), rejected: Math.round(3 * multiplier) },
+        ];
+      }
+
+      res.json({
+        metrics,
+        rejectionReasons,
+        payerPerformance,
+        monthlyTrends: trendData
+      });
+
+    } catch (error) {
+      console.error("Get finance reports error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   // Patient endpoints
   app.get("/api/patient/metrics", requirePatient, async (req, res) => {
     try {
