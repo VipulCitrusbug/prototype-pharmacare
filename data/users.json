@@ -133,6 +133,18 @@
       "createdAt": "2026-01-02T11:40:23.014Z",
       "avatar": null,
       "phone": null
+    },
+    {
+      "username": "vipul_patient",
+      "password": "Test@1234",
+      "email": "vipul3@yopmail.com",
+      "firstName": "vipul",
+      "lastName": "patient",
+      "role": "patient",
+      "id": "75ea39f8-e312-45ee-a023-9c8afa8fa3f9",
+      "createdAt": "2026-01-03T07:58:15.160Z",
+      "avatar": null,
+      "phone": "0123465798"
     }
   ]
 }

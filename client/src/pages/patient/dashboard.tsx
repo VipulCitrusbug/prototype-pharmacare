@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,7 +12,6 @@ import {
   Clock,
   Package,
   Pill,
-  RefreshCw,
   Sparkles,
   Truck,
   ArrowRight,
@@ -58,6 +58,13 @@ const mockPatientMetrics: DashboardMetric[] = [
     color: "info",
   },
 ];
+
+const metricRedirects: Record<string, string> = {
+  "active-rx": "/patient/medications",
+  "pending-refills": "/patient/medications",
+  "next-refill": "/patient/medications",
+  "orders-in-progress": "/patient/orders",
+};
 
 const mockMedications = [
   {
@@ -117,6 +124,7 @@ const mockActiveOrder = {
 
 export default function PatientDashboardPage() {
   const [, setLocation] = useLocation();
+  const [showRefillReminder, setShowRefillReminder] = useState(true);
 
   const metricsQuery = useQuery<DashboardMetric[]>({
     queryKey: ["/api/patient/metrics"],
@@ -147,15 +155,9 @@ export default function PatientDashboardPage() {
             Your medication overview at a glance
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" data-testid="button-refresh">
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Refresh
-          </Button>
-        </div>
       </div>
 
-      {refillDueMedications.length > 0 && (
+      {refillDueMedications.length > 0 && showRefillReminder && (
         <Card className="border-accent/50 bg-accent/5">
           <CardContent className="p-4">
             <div className="flex items-start gap-4">
@@ -185,7 +187,7 @@ export default function PatientDashboardPage() {
                   >
                     Request Refill Now
                   </Button>
-                  <Button variant="outline" size="sm" data-testid="button-remind-later">
+                  <Button variant="outline" size="sm" data-testid="button-remind-later" onClick={() => setShowRefillReminder(false)}>
                     Remind Me Later
                   </Button>
                 </div>
@@ -197,7 +199,14 @@ export default function PatientDashboardPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {metrics.map((metric) => (
-          <MetricCard key={metric.id} metric={metric} />
+          <MetricCard
+            key={metric.id}
+            metric={metric}
+            onClick={() => {
+              const path = metricRedirects[metric.id];
+              if (path) setLocation(path);
+            }}
+          />
         ))}
       </div>
 

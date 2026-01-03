@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { format, addDays } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -39,8 +40,8 @@ const mockOrders: Order[] = [
     quantity: "60 tablets",
     status: "processing",
     deliveryType: "delivery",
-    requestedDate: "Dec 30, 2025",
-    estimatedDate: "Jan 2, 2026",
+    requestedDate: format(new Date(), "MMM d, yyyy"),
+    estimatedDate: format(addDays(new Date(), 2), "MMM d, yyyy"),
     address: "123 Main Street, Apt 4B, San Francisco, CA 94102",
     progress: 60,
   },
@@ -51,8 +52,8 @@ const mockOrders: Order[] = [
     quantity: "30 tablets",
     status: "ready",
     deliveryType: "pickup",
-    requestedDate: "Dec 28, 2025",
-    estimatedDate: "Dec 30, 2025",
+    requestedDate: format(new Date(), "MMM d, yyyy"),
+    estimatedDate: format(addDays(new Date(), 1), "MMM d, yyyy"),
     progress: 80,
   },
   {
