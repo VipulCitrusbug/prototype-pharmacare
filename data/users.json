@@ -121,6 +121,18 @@
       "id": "a9c93665-c28c-4702-9554-f0c78d38ef22",
       "createdAt": "2026-01-02T11:03:00.289Z",
       "avatar": null
+    },
+    {
+      "username": "vipul_manager",
+      "password": "Test@1234",
+      "email": "vipul2@yopmail.com",
+      "firstName": "vipul",
+      "lastName": "manager",
+      "role": "manager",
+      "id": "cb4fe3c0-e2ae-449b-8222-e463a00aa08a",
+      "createdAt": "2026-01-02T11:40:23.014Z",
+      "avatar": null,
+      "phone": null
     }
   ]
 }

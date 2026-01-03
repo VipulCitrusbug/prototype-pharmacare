@@ -25,15 +25,42 @@ import {
   Zap,
 } from "lucide-react";
 
-const volumeTrends = [
-  { period: "Mon", prescriptions: 145, refills: 89 },
-  { period: "Tue", prescriptions: 162, refills: 95 },
-  { period: "Wed", prescriptions: 138, refills: 82 },
-  { period: "Thu", prescriptions: 171, refills: 108 },
-  { period: "Fri", prescriptions: 189, refills: 115 },
-  { period: "Sat", prescriptions: 98, refills: 52 },
-  { period: "Sun", prescriptions: 67, refills: 38 },
-];
+const getVolumeTrends = (range: string) => {
+  switch (range) {
+    case "day":
+      return [
+        { period: "9 AM", prescriptions: 12, refills: 5 },
+        { period: "11 AM", prescriptions: 24, refills: 15 },
+        { period: "1 PM", prescriptions: 18, refills: 10 },
+        { period: "3 PM", prescriptions: 32, refills: 22 },
+        { period: "5 PM", prescriptions: 28, refills: 18 },
+      ];
+    case "month":
+      return [
+        { period: "Week 1", prescriptions: 540, refills: 320 },
+        { period: "Week 2", prescriptions: 610, refills: 350 },
+        { period: "Week 3", prescriptions: 580, refills: 330 },
+        { period: "Week 4", prescriptions: 650, refills: 380 },
+      ];
+    case "quarter":
+      return [
+        { period: "Month 1", prescriptions: 2400, refills: 1350 },
+        { period: "Month 2", prescriptions: 2600, refills: 1500 },
+        { period: "Month 3", prescriptions: 2550, refills: 1450 },
+      ];
+    case "week":
+    default:
+      return [
+        { period: "Mon", prescriptions: 145, refills: 89 },
+        { period: "Tue", prescriptions: 162, refills: 95 },
+        { period: "Wed", prescriptions: 138, refills: 82 },
+        { period: "Thu", prescriptions: 171, refills: 108 },
+        { period: "Fri", prescriptions: 189, refills: 115 },
+        { period: "Sat", prescriptions: 98, refills: 52 },
+        { period: "Sun", prescriptions: 67, refills: 38 },
+      ];
+  }
+};
 
 const bottlenecks = [
   {
@@ -72,6 +99,7 @@ const turnaroundBreakdown = [
 
 export default function ManagerInsightsPage() {
   const [timeRange, setTimeRange] = useState("week");
+  const volumeTrends = getVolumeTrends(timeRange);
 
   const totalPrescriptions = volumeTrends.reduce((sum, d) => sum + d.prescriptions, 0);
   const totalRefills = volumeTrends.reduce((sum, d) => sum + d.refills, 0);

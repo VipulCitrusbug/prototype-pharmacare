@@ -27,46 +27,141 @@ import {
   Zap,
 } from "lucide-react";
 
-const workloadDistribution = [
-  { timeBlock: "6 AM - 9 AM", volume: 45, avgLoad: 65, staffCount: 2 },
-  { timeBlock: "9 AM - 12 PM", volume: 89, avgLoad: 95, staffCount: 3 },
-  { timeBlock: "12 PM - 3 PM", volume: 102, avgLoad: 88, staffCount: 4 },
-  { timeBlock: "3 PM - 6 PM", volume: 95, avgLoad: 92, staffCount: 3 },
-  { timeBlock: "6 PM - 9 PM", volume: 58, avgLoad: 72, staffCount: 2 },
-];
-
-const aggregateMetrics = {
-  speedVsAccuracy: {
-    currentSpeed: 18.2,
-    targetSpeed: 20,
-    speedTrend: "improving",
-    accuracy: 98.5,
-    targetAccuracy: 98,
-    accuracyTrend: "stable",
-  },
-  overridePatterns: {
-    weeklyCount: 23,
-    previousWeek: 28,
-    trend: "decreasing",
-    topReason: "Insurance exceptions",
-    topReasonPercent: 45,
-  },
-  capacityUtilization: {
-    current: 87,
-    optimal: 85,
-    status: "slightly-over",
-  },
+const getWorkloadDistribution = (range: string) => {
+  switch (range) {
+    case "week":
+      return [
+        { timeBlock: "Mon", volume: 145, avgLoad: 75, staffCount: 3 },
+        { timeBlock: "Tue", volume: 162, avgLoad: 85, staffCount: 3 },
+        { timeBlock: "Wed", volume: 138, avgLoad: 72, staffCount: 3 },
+        { timeBlock: "Thu", volume: 171, avgLoad: 88, staffCount: 4 },
+        { timeBlock: "Fri", volume: 189, avgLoad: 92, staffCount: 4 },
+      ];
+    case "quarter":
+      return [
+        { timeBlock: "Month 1", volume: 2400, avgLoad: 82, staffCount: 12 },
+        { timeBlock: "Month 2", volume: 2600, avgLoad: 88, staffCount: 12 },
+        { timeBlock: "Month 3", volume: 2550, avgLoad: 85, staffCount: 12 },
+      ];
+    case "month":
+    default:
+      return [
+        { timeBlock: "6 AM - 9 AM", volume: 45, avgLoad: 65, staffCount: 2 },
+        { timeBlock: "9 AM - 12 PM", volume: 89, avgLoad: 95, staffCount: 3 },
+        { timeBlock: "12 PM - 3 PM", volume: 102, avgLoad: 88, staffCount: 4 },
+        { timeBlock: "3 PM - 6 PM", volume: 95, avgLoad: 92, staffCount: 3 },
+        { timeBlock: "6 PM - 9 PM", volume: 58, avgLoad: 72, staffCount: 2 },
+      ];
+  }
 };
 
-const performanceTrends = [
-  { week: "Week 1", speed: 21.5, accuracy: 97.8 },
-  { week: "Week 2", speed: 20.2, accuracy: 98.1 },
-  { week: "Week 3", speed: 19.1, accuracy: 98.3 },
-  { week: "Week 4", speed: 18.2, accuracy: 98.5 },
-];
+const getAggregateMetrics = (range: string) => {
+  switch (range) {
+    case "week":
+      return {
+        speedVsAccuracy: {
+          currentSpeed: 16.5,
+          targetSpeed: 20,
+          speedTrend: "improving",
+          accuracy: 99.1,
+          targetAccuracy: 98,
+          accuracyTrend: "improving",
+        },
+        overridePatterns: {
+          weeklyCount: 12,
+          previousWeek: 15,
+          trend: "decreasing",
+          topReason: "Dosage Confirmation",
+          topReasonPercent: 35,
+        },
+        capacityUtilization: {
+          current: 92,
+          optimal: 85,
+          status: "over-capacity",
+        },
+      };
+    case "quarter":
+      return {
+        speedVsAccuracy: {
+          currentSpeed: 19.5,
+          targetSpeed: 20,
+          speedTrend: "stable",
+          accuracy: 98.2,
+          targetAccuracy: 98,
+          accuracyTrend: "stable",
+        },
+        overridePatterns: {
+          weeklyCount: 245,
+          previousWeek: 230,
+          trend: "increasing",
+          topReason: "Inventory Shortage",
+          topReasonPercent: 55,
+        },
+        capacityUtilization: {
+          current: 82,
+          optimal: 85,
+          status: "optimal",
+        },
+      };
+    case "month":
+    default:
+      return {
+        speedVsAccuracy: {
+          currentSpeed: 18.2,
+          targetSpeed: 20,
+          speedTrend: "improving",
+          accuracy: 98.5,
+          targetAccuracy: 98,
+          accuracyTrend: "stable",
+        },
+        overridePatterns: {
+          weeklyCount: 23,
+          previousWeek: 28,
+          trend: "decreasing",
+          topReason: "Insurance exceptions",
+          topReasonPercent: 45,
+        },
+        capacityUtilization: {
+          current: 87,
+          optimal: 85,
+          status: "slightly-over",
+        },
+      };
+  }
+};
+
+const getPerformanceTrends = (range: string) => {
+  switch (range) {
+    case "week":
+      return [
+        { week: "Day 1", speed: 22.5, accuracy: 96.8 },
+        { week: "Day 2", speed: 21.2, accuracy: 97.5 },
+        { week: "Day 3", speed: 18.1, accuracy: 98.9 },
+        { week: "Day 4", speed: 16.5, accuracy: 99.1 },
+      ];
+    case "quarter":
+      return [
+        { week: "M 1", speed: 20.5, accuracy: 97.5 },
+        { week: "M 2", speed: 19.8, accuracy: 98.0 },
+        { week: "M 3", speed: 19.5, accuracy: 98.2 },
+      ];
+    case "month":
+    default:
+      return [
+        { week: "Week 1", speed: 21.5, accuracy: 97.8 },
+        { week: "Week 2", speed: 20.2, accuracy: 98.1 },
+        { week: "Week 3", speed: 19.1, accuracy: 98.3 },
+        { week: "Week 4", speed: 18.2, accuracy: 98.5 },
+      ];
+  }
+};
 
 export default function ManagerStaffPage() {
   const [timeRange, setTimeRange] = useState("month");
+  
+  const aggregateMetrics = getAggregateMetrics(timeRange);
+  const workloadDistribution = getWorkloadDistribution(timeRange);
+  const performanceTrends = getPerformanceTrends(timeRange);
 
   return (
     <div className="space-y-6" data-testid="manager-staff-page">

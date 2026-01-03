@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
 import {
   AlertTriangle,
   ArrowDown,
@@ -130,10 +131,12 @@ const mockInventory: InventoryItem[] = [
 ];
 
 export default function ManagerInventoryPage() {
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTab, setSelectedTab] = useState("forecasts");
+  const [inventory, setInventory] = useState<InventoryItem[]>(mockInventory);
 
-  const filteredInventory = mockInventory.filter(
+  const filteredInventory = inventory.filter(
     (item) =>
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.sku.toLowerCase().includes(searchQuery.toLowerCase())
@@ -158,6 +161,41 @@ export default function ManagerInventoryPage() {
       default:
         return "outline";
     }
+  };
+
+  const handleApproveReorder = (id: string) => {
+    setInventory((prev) =>
+      prev.map((item) => {
+        if (item.id === id) {
+          const newStock = item.currentStock + item.reorderQty;
+          return {
+            ...item,
+            currentStock: newStock,
+            reorderQty: 0,
+          };
+        }
+        return item;
+      })
+    );
+
+    toast({
+      title: "Reorder Approved",
+      description: "Inventory stock has been updated successfully.",
+    });
+  };
+
+  const handleTransferStock = (id: string) => {
+    toast({
+      title: "Stock Transfer Initiated",
+      description: "Transfer request has been sent for approval.",
+    });
+  };
+
+  const handleMarkForReview = (id: string) => {
+    toast({
+      title: "Marked for Review",
+      description: "Item has been flagged for manual inspection.",
+    });
   };
 
   return (
@@ -343,7 +381,7 @@ export default function ManagerInventoryPage() {
                           </div>
                         </div>
                       </div>
-                      <Button data-testid={`button-approve-reorder-${item.id}`}>
+                      <Button onClick={() => handleApproveReorder(item.id)} data-testid={`button-approve-reorder-${item.id}`}>
                         <Check className="w-4 h-4 mr-2" />
                         Approve
                       </Button>
@@ -394,10 +432,10 @@ export default function ManagerInventoryPage() {
                         </div>
                       </div>
                       <div className="flex flex-col gap-2">
-                        <Button variant="outline" size="sm" data-testid={`button-transfer-${item.id}`}>
+                        <Button variant="outline" size="sm" onClick={() => handleTransferStock(item.id)} data-testid={`button-transfer-${item.id}`}>
                           Transfer Stock
                         </Button>
-                        <Button variant="outline" size="sm" data-testid={`button-review-${item.id}`}>
+                        <Button variant="outline" size="sm" onClick={() => handleMarkForReview(item.id)} data-testid={`button-review-${item.id}`}>
                           Mark for Review
                         </Button>
                       </div>
@@ -408,7 +446,7 @@ export default function ManagerInventoryPage() {
             )}
           </div>
         </TabsContent>
-      </Tabs>
+        </Tabs>
     </div>
   );
 }

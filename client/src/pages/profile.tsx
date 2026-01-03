@@ -371,31 +371,33 @@ export default function ProfilePage() {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Activity Summary</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-            <div className="p-4 rounded-lg bg-muted/50">
-              <p className="text-2xl font-bold text-primary">156</p>
-              <p className="text-sm text-muted-foreground">Prescriptions Processed</p>
+      {user.role === "pharmacist" && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Activity Summary</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+              <div className="p-4 rounded-lg bg-muted/50">
+                <p className="text-2xl font-bold text-primary">156</p>
+                <p className="text-sm text-muted-foreground">Prescriptions Processed</p>
+              </div>
+              <div className="p-4 rounded-lg bg-muted/50">
+                <p className="text-2xl font-bold text-success">98.2%</p>
+                <p className="text-sm text-muted-foreground">Accuracy Rate</p>
+              </div>
+              <div className="p-4 rounded-lg bg-muted/50">
+                <p className="text-2xl font-bold text-info">3.5 min</p>
+                <p className="text-sm text-muted-foreground">Avg. Processing Time</p>
+              </div>
+              <div className="p-4 rounded-lg bg-muted/50">
+                <p className="text-2xl font-bold text-accent">42</p>
+                <p className="text-sm text-muted-foreground">This Week</p>
+              </div>
             </div>
-            <div className="p-4 rounded-lg bg-muted/50">
-              <p className="text-2xl font-bold text-success">98.2%</p>
-              <p className="text-sm text-muted-foreground">Accuracy Rate</p>
-            </div>
-            <div className="p-4 rounded-lg bg-muted/50">
-              <p className="text-2xl font-bold text-info">3.5 min</p>
-              <p className="text-sm text-muted-foreground">Avg. Processing Time</p>
-            </div>
-            <div className="p-4 rounded-lg bg-muted/50">
-              <p className="text-2xl font-bold text-accent">42</p>
-              <p className="text-sm text-muted-foreground">This Week</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

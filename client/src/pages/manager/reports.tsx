@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
+
 import {
   Select,
   SelectContent,
@@ -86,21 +86,112 @@ export default function ManagerReportsPage() {
   const { toast } = useToast();
   const [selectedReport, setSelectedReport] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState("week");
-  const [format, setFormat] = useState("xlsx");
-  const [includeCharts, setIncludeCharts] = useState(true);
-  const [includeRawData, setIncludeRawData] = useState(false);
+
+
+  const downloadCSV = (content: string, filename: string) => {
+    const blob = new Blob([content], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", filename);
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
+  const generateInventoryReport = () => {
+    const headers = ["ID", "Name", "SKU", "Current Stock", "Min Stock", "Status"];
+    const rows = [
+      ["INV-001", "Amoxicillin 500mg", "AMX-500", "240", "100", "OK"],
+      ["INV-002", "Lisinopril 10mg", "LIS-10", "45", "80", "Low Stock"],
+      ["INV-003", "Metformin 1000mg", "MET-1000", "320", "150", "OK"],
+      ["INV-004", "Atorvastatin 20mg", "ATV-20", "180", "100", "OK"],
+      ["INV-005", "Omeprazole 20mg", "OMP-20", "65", "80", "Low Stock"],
+    ];
+    return [headers.join(","), ...rows.map(row => row.join(","))].join("\n");
+  };
+
+  const generateOperationalKPIsReport = () => {
+    const headers = ["Metric", "Value", "Target", "Status"];
+    const rows = [
+      ["Prescription Volume", "1450", "1200", "Exceeding"],
+      ["Avg Fill Time", "12m", "15m", "On Track"],
+      ["Error Rate", "0.2%", "0.5%", "Excellent"],
+      ["Customer Satisfaction", "4.8/5", "4.5/5", "Exceeding"],
+    ];
+    return [headers.join(","), ...rows.map(row => row.join(","))].join("\n");
+  };
+
+  const generateAlertHistoryReport = () => {
+    const headers = ["Date", "Type", "Message", "Status"];
+    const rows = [
+      ["2025-01-02", "Warning", "Low stock on key antibiotics", "Resolved"],
+      ["2025-01-01", "Info", "System maintenance scheduled", "Completed"],
+      ["2024-12-31", "Critical", "Compliance check failed", "Investigating"],
+    ];
+    return [headers.join(","), ...rows.map(row => row.join(","))].join("\n");
+  };
+
+  const generateStaffMetricsReport = () => {
+    const headers = ["Staff Member", "Role", "Tasks Completed", "Efficiency Score"];
+    const rows = [
+      ["Sarah Chen", "Pharmacist", "45", "98%"],
+      ["Mike Ross", "Tech", "52", "95%"],
+      ["David Kim", "Pharmacist", "38", "99%"],
+    ];
+    return [headers.join(","), ...rows.map(row => row.join(","))].join("\n");
+  };
 
   const handleGenerateReport = () => {
+    if (!selectedReport) {
+      toast({
+        title: "No Report Selected",
+        description: "Please select a report type to generate.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     toast({
       title: "Report Generation Started",
       description: "Your report is being generated. This may take a few moments.",
     });
+
     setTimeout(() => {
+      let content = "";
+      let filename = `report-${Date.now()}.csv`;
+
+      switch (selectedReport) {
+        case "inventory-summary":
+          content = generateInventoryReport();
+          filename = `inventory-summary-${new Date().toISOString().split('T')[0]}.csv`;
+          break;
+        case "operational-kpis":
+          content = generateOperationalKPIsReport();
+          filename = `operational-kpis-${new Date().toISOString().split('T')[0]}.csv`;
+          break;
+        case "alert-history":
+          content = generateAlertHistoryReport();
+          filename = `alert-history-${new Date().toISOString().split('T')[0]}.csv`;
+          break;
+        case "staff-metrics":
+          content = generateStaffMetricsReport();
+          filename = `staff-metrics-${new Date().toISOString().split('T')[0]}.csv`;
+          break;
+        default:
+          content = "Metric,Value\nUnknown,0";
+      }
+
+      downloadCSV(content, filename);
+
       toast({
         title: "Report Ready",
-        description: "Your report has been generated successfully.",
+        description: "Your report has been generated and downloaded successfully.",
       });
-    }, 2000);
+    }, 1500);
   };
 
   const handleDownload = (exportId: string) => {
@@ -108,6 +199,12 @@ export default function ManagerReportsPage() {
       title: "Download Started",
       description: "Your file is being downloaded.",
     });
+    
+    // Simulate download for historical items
+    setTimeout(() => {
+      const content = "Date,Export ID,Status\n2025-01-01," + exportId + ",Completed";
+      downloadCSV(content, `export-${exportId}.csv`);
+    }, 500);
   };
 
   return (
@@ -180,69 +277,20 @@ export default function ManagerReportsPage() {
                     <CardTitle>Report Configuration</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>Date Range</Label>
-                        <Select value={dateRange} onValueChange={setDateRange}>
-                          <SelectTrigger data-testid="button-select-date-range">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="day" data-testid="option-day">Today</SelectItem>
-                            <SelectItem value="week" data-testid="option-week">This Week</SelectItem>
-                            <SelectItem value="month" data-testid="option-month">This Month</SelectItem>
-                            <SelectItem value="quarter" data-testid="option-quarter">This Quarter</SelectItem>
-                            <SelectItem value="custom" data-testid="option-custom">Custom Range</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Export Format</Label>
-                        <Select value={format} onValueChange={setFormat}>
-                          <SelectTrigger data-testid="button-select-format">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="xlsx" data-testid="option-xlsx">Excel (.xlsx)</SelectItem>
-                            <SelectItem value="pdf" data-testid="option-pdf">PDF (.pdf)</SelectItem>
-                            <SelectItem value="csv" data-testid="option-csv">CSV (.csv)</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
+                    <div className="space-y-2">
+                      <Label>Date Range</Label>
+                      <Select value={dateRange} onValueChange={setDateRange}>
+                        <SelectTrigger data-testid="button-select-date-range">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="day" data-testid="option-day">Today</SelectItem>
+                          <SelectItem value="week" data-testid="option-week">This Week</SelectItem>
+                          <SelectItem value="month" data-testid="option-month">This Month</SelectItem>
+                          <SelectItem value="quarter" data-testid="option-quarter">This Quarter</SelectItem>
 
-                    <div className="space-y-4">
-                      <Label>Include in Report</Label>
-                      <div className="space-y-3">
-                        <div className="flex items-center space-x-2">
-                          <Checkbox
-                            id="charts"
-                            checked={includeCharts}
-                            onCheckedChange={(checked) => setIncludeCharts(checked as boolean)}
-                            data-testid="checkbox-charts"
-                          />
-                          <label
-                            htmlFor="charts"
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                          >
-                            Visual charts and graphs
-                          </label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Checkbox
-                            id="rawdata"
-                            checked={includeRawData}
-                            onCheckedChange={(checked) => setIncludeRawData(checked as boolean)}
-                            data-testid="checkbox-rawdata"
-                          />
-                          <label
-                            htmlFor="rawdata"
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                          >
-                            Raw data tables
-                          </label>
-                        </div>
-                      </div>
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <Button
