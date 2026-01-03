@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useParams, useLocation } from "wouter";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import {
   ArrowLeft,
   Save,
@@ -97,7 +98,7 @@ export default function AdminPricingEditorPage() {
     return errors.length === 0;
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!validateForm()) {
       toast({
         title: "Validation Error",
@@ -107,11 +108,34 @@ export default function AdminPricingEditorPage() {
       return;
     }
 
-    toast({
-      title: isNew ? "Rule Created" : "Rule Updated",
-      description: `${formData.name} has been ${isNew ? "created" : "updated"} successfully.`,
-    });
-    setLocation("/admin/pricing");
+    try {
+      const payload = {
+        ...formData,
+        value: Number(formData.value),
+        conditions,
+        createdBy: "Admin User", // TODO: Get actual user
+      };
+
+      if (isNew) {
+        await apiRequest("POST", "/api/admin/pricing", payload);
+      } else {
+        await apiRequest("PATCH", `/api/admin/pricing/${id}`, payload);
+      }
+
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/pricing"] });
+
+      toast({
+        title: isNew ? "Rule Created" : "Rule Updated",
+        description: `${formData.name} has been ${isNew ? "created" : "updated"} successfully.`,
+      });
+      setLocation("/admin/pricing");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save pricing rule.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (

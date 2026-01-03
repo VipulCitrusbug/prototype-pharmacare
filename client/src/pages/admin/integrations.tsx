@@ -3,7 +3,6 @@ import { Link } from "wouter";
 import {
   Plug,
   ArrowLeft,
-  RefreshCw,
   CheckCircle2,
   AlertTriangle,
   XCircle,
@@ -126,18 +125,6 @@ const mockIntegrations: Integration[] = [
 export default function AdminIntegrationsPage() {
   const { toast } = useToast();
   const [integrations] = useState(mockIntegrations);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-
-  const handleRefresh = () => {
-    setIsRefreshing(true);
-    setTimeout(() => {
-      setIsRefreshing(false);
-      toast({
-        title: "Status Refreshed",
-        description: "All integration statuses have been updated.",
-      });
-    }, 1500);
-  };
 
   const getStatusConfig = (status: string) => {
     switch (status) {
@@ -191,15 +178,6 @@ export default function AdminIntegrationsPage() {
             </p>
           </div>
         </div>
-        <Button
-          variant="outline"
-          onClick={handleRefresh}
-          disabled={isRefreshing}
-          data-testid="button-refresh"
-        >
-          <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`} />
-          Refresh Status
-        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

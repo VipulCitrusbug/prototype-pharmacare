@@ -16,6 +16,25 @@ export interface ClaimDocument {
   claimRef?: string;
 }
 
+export interface PricingRule {
+  id: string;
+  name: string;
+  description: string;
+  type: "discount" | "surcharge" | "override" | "tier";
+  value: number;
+  valueType: "percentage" | "fixed";
+  conditions: string[];
+  status: "active" | "inactive" | "draft";
+  priority: number;
+  validFrom: string;
+  validTo: string | null;
+  usageCount: number;
+  lastTriggered: string | null;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
@@ -41,6 +60,12 @@ export interface IStorage {
   getAllClaimDocuments(): Promise<ClaimDocument[]>;
   addClaimDocument(claimId: string, document: Omit<ClaimDocument, "id" | "uploadedAt">): Promise<ClaimDocument>;
   deleteClaimDocument(id: string): Promise<void>;
+
+  getPricingRules(): Promise<PricingRule[]>;
+  getPricingRule(id: string): Promise<PricingRule | undefined>;
+  createPricingRule(rule: Omit<PricingRule, "id" | "createdAt" | "updatedAt" | "usageCount" | "lastTriggered">): Promise<PricingRule>;
+  updatePricingRule(id: string, rule: Partial<PricingRule>): Promise<PricingRule | undefined>;
+  deletePricingRule(id: string): Promise<boolean>;
 }
 
 const DATA_DIR = path.join(process.cwd(), "data");
@@ -48,7 +73,9 @@ const USERS_FILE = path.join(DATA_DIR, "users.json");
 const PRESCRIPTIONS_FILE = path.join(DATA_DIR, "prescriptions.json");
 const INVENTORY_FILE = path.join(DATA_DIR, "inventory.json");
 const PATIENTS_FILE = path.join(DATA_DIR, "patients.json");
+
 const CLAIM_DOCUMENTS_FILE = path.join(DATA_DIR, "finance_specialist", "documents.json");
+const PRICING_RULES_FILE = path.join(DATA_DIR, "pricing", "rules.json");
 
 export class JsonStorage implements IStorage {
   constructor() {
@@ -61,6 +88,8 @@ export class JsonStorage implements IStorage {
       fs.mkdirSync(DATA_DIR, { recursive: true });
     }
   }
+
+
 
   private initializeFiles() {
     // Initialize users file if it doesn't exist
@@ -90,6 +119,126 @@ export class JsonStorage implements IStorage {
         fs.mkdirSync(dir, { recursive: true });
       }
       fs.writeFileSync(CLAIM_DOCUMENTS_FILE, JSON.stringify({ documents: [] }, null, 2), "utf-8");
+    }
+
+    // Initialize pricing rules file if it doesn't exist
+    if (!fs.existsSync(PRICING_RULES_FILE)) {
+      const dir = path.dirname(PRICING_RULES_FILE);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      // Initialize with mock data if creating for the first time
+      const initialRules = [
+        {
+          id: "rule-001",
+          name: "Senior Citizen Discount",
+          description: "10% discount for customers aged 65 and above",
+          type: "discount",
+          value: 10,
+          valueType: "percentage",
+          conditions: ["Age >= 65", "Valid ID Required"],
+          status: "active",
+          priority: 1,
+          validFrom: "2024-01-01",
+          validTo: null,
+          usageCount: 1245,
+          lastTriggered: "2025-12-31T10:30:00Z",
+          createdBy: "Admin Sarah",
+          createdAt: "2024-01-01T00:00:00Z",
+          updatedAt: "2024-06-15T14:30:00Z",
+        },
+        {
+          id: "rule-002",
+          name: "Generic Medication Discount",
+          description: "15% discount on all generic medications",
+          type: "discount",
+          value: 15,
+          valueType: "percentage",
+          conditions: ["Medication Type = Generic"],
+          status: "active",
+          priority: 2,
+          validFrom: "2024-03-01",
+          validTo: null,
+          usageCount: 3567,
+          lastTriggered: "2025-12-31T11:45:00Z",
+          createdBy: "Admin John",
+          createdAt: "2024-03-01T00:00:00Z",
+          updatedAt: "2024-03-01T00:00:00Z",
+        },
+        {
+          id: "rule-003",
+          name: "Insurance Tier A Copay",
+          description: "Fixed copay amount for Tier A insurance members",
+          type: "override",
+          value: 10,
+          valueType: "fixed",
+          conditions: ["Insurance Tier = A", "In-Network Provider"],
+          status: "active",
+          priority: 1,
+          validFrom: "2024-01-01",
+          validTo: "2025-12-31",
+          usageCount: 892,
+          lastTriggered: "2025-12-30T16:20:00Z",
+          createdBy: "Admin Sarah",
+          createdAt: "2024-01-01T00:00:00Z",
+          updatedAt: "2024-09-01T10:00:00Z",
+        },
+        {
+          id: "rule-004",
+          name: "Loyalty Gold Member",
+          description: "5% additional discount for gold loyalty members",
+          type: "discount",
+          value: 5,
+          valueType: "percentage",
+          conditions: ["Loyalty Tier = Gold", "Active Membership"],
+          status: "active",
+          priority: 3,
+          validFrom: "2024-06-01",
+          validTo: null,
+          usageCount: 456,
+          lastTriggered: "2025-12-31T09:15:00Z",
+          createdBy: "Admin John",
+          createdAt: "2024-06-01T00:00:00Z",
+          updatedAt: "2024-06-01T00:00:00Z",
+        },
+        {
+          id: "rule-005",
+          name: "Holiday Promo 2023",
+          description: "Seasonal holiday discount - expired",
+          type: "discount",
+          value: 20,
+          valueType: "percentage",
+          conditions: ["Date Range: Dec 15-31, 2023"],
+          status: "inactive",
+          priority: 1,
+          validFrom: "2023-12-15",
+          validTo: "2023-12-31",
+          usageCount: 234,
+          lastTriggered: "2023-12-31T23:45:00Z",
+          createdBy: "Admin Sarah",
+          createdAt: "2023-12-01T00:00:00Z",
+          updatedAt: "2024-01-01T00:00:00Z",
+        },
+        {
+          id: "rule-006",
+          name: "Employee Discount",
+          description: "Employee pharmacy discount program",
+          type: "discount",
+          value: 25,
+          valueType: "percentage",
+          conditions: ["Employee ID Valid", "Active Employment"],
+          status: "active",
+          priority: 1,
+          validFrom: "2024-01-01",
+          validTo: null,
+          usageCount: 89,
+          lastTriggered: "2025-12-28T14:30:00Z",
+          createdBy: "Admin John",
+          createdAt: "2024-01-01T00:00:00Z",
+          updatedAt: "2024-01-01T00:00:00Z",
+        }
+      ];
+      fs.writeFileSync(PRICING_RULES_FILE, JSON.stringify({ rules: initialRules }, null, 2), "utf-8");
     }
   }
 
@@ -445,6 +594,69 @@ export class JsonStorage implements IStorage {
     const documents = this.readClaimDocuments();
     const filtered = documents.filter(doc => doc.id !== id);
     this.writeClaimDocuments(filtered);
+  }
+
+
+  // Pricing Rules
+  private readPricingRules(): PricingRule[] {
+    try {
+      const data = fs.readFileSync(PRICING_RULES_FILE, "utf-8");
+      return JSON.parse(data).rules;
+    } catch (error) {
+      return [];
+    }
+  }
+
+  async getPricingRules(): Promise<PricingRule[]> {
+    return this.readPricingRules();
+  }
+
+  async getPricingRule(id: string): Promise<PricingRule | undefined> {
+    return this.readPricingRules().find(r => r.id === id);
+  }
+
+  async createPricingRule(rule: Omit<PricingRule, "id" | "createdAt" | "updatedAt" | "usageCount" | "lastTriggered">): Promise<PricingRule> {
+    const rules = this.readPricingRules();
+    const newRule: PricingRule = {
+      ...rule,
+      id: `rule-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      usageCount: 0,
+      lastTriggered: null
+    };
+    rules.push(newRule);
+    fs.writeFileSync(PRICING_RULES_FILE, JSON.stringify({ rules }, null, 2), "utf-8");
+    return newRule;
+  }
+
+  async updatePricingRule(id: string, updates: Partial<PricingRule>): Promise<PricingRule | undefined> {
+    const rules = this.readPricingRules();
+    const index = rules.findIndex(r => r.id === id);
+    if (index === -1) return undefined;
+    
+    const updatedRule = {
+      ...rules[index],
+      ...updates,
+      updatedAt: new Date().toISOString()
+    };
+    rules[index] = updatedRule;
+    fs.writeFileSync(PRICING_RULES_FILE, JSON.stringify({ rules }, null, 2), "utf-8");
+    return updatedRule;
+  }
+
+  async deletePricingRule(id: string): Promise<boolean> {
+    const rules = this.readPricingRules();
+    const filteredRules = rules.filter(r => r.id !== id);
+    if (filteredRules.length === rules.length) return false;
+    
+    try {
+      fs.writeFileSync(PRICING_RULES_FILE, JSON.stringify({ rules: filteredRules }, null, 2), "utf-8");
+      return true;
+    } catch (error) {
+      console.error("Error deleting pricing rule:", error);
+      throw error;
+    }
   }
 }
 

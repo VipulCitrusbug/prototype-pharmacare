@@ -743,6 +743,66 @@ export async function registerRoutes(
     }
   });
 
+  // Pricing Rules
+  app.get("/api/admin/pricing", async (_req, res) => {
+    try {
+      const rules = await storage.getPricingRules();
+      res.json(rules);
+    } catch (error) {
+      console.error("Get pricing rules error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.get("/api/admin/pricing/:id", async (req, res) => {
+    try {
+      const rule = await storage.getPricingRule(req.params.id);
+      if (!rule) {
+        return res.status(404).json({ error: "Rule not found" });
+      }
+      res.json(rule);
+    } catch (error) {
+      console.error("Get pricing rule error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.post("/api/admin/pricing", async (req, res) => {
+    try {
+      const rule = await storage.createPricingRule(req.body);
+      res.status(201).json(rule);
+    } catch (error) {
+      console.error("Create pricing rule error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.patch("/api/admin/pricing/:id", async (req, res) => {
+    try {
+      const rule = await storage.updatePricingRule(req.params.id, req.body);
+      if (!rule) {
+        return res.status(404).json({ error: "Rule not found" });
+      }
+      res.json(rule);
+    } catch (error) {
+      console.error("Update pricing rule error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.delete("/api/admin/pricing/:id", async (req, res) => {
+    try {
+      const success = await storage.deletePricingRule(req.params.id);
+      if (!success) {
+        return res.status(404).json({ error: "Rule not found" });
+      }
+      res.sendStatus(204);
+    } catch (error) {
+      console.error("Delete pricing rule error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   app.post("/api/inventory", async (req, res) => {
     try {
       await new Promise((r) => setTimeout(r, 500));

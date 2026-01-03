@@ -1,9 +1,9 @@
-import { useState } from "react";
+
 import { Link } from "wouter";
 import {
   Settings,
   Sparkles,
-  RefreshCw,
+
   ArrowRight,
   DollarSign,
   ListChecks,
@@ -121,12 +121,6 @@ const mockRecentChanges = [
 ];
 
 export default function AdminDashboardPage() {
-  const [isRefreshing, setIsRefreshing] = useState(false);
-
-  const handleRefresh = () => {
-    setIsRefreshing(true);
-    setTimeout(() => setIsRefreshing(false), 1000);
-  };
 
   const getImpactConfig = (impact: string) => {
     switch (impact) {
@@ -151,18 +145,7 @@ export default function AdminDashboardPage() {
             System configuration and governance center
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleRefresh}
-            disabled={isRefreshing}
-            data-testid="button-refresh"
-          >
-            <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`} />
-            Refresh Data
-          </Button>
-        </div>
+
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

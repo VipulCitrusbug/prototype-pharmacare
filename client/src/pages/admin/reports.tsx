@@ -14,9 +14,9 @@ import {
   DollarSign,
   Shield,
   RefreshCw,
-  Eye,
   Sparkles,
 } from "lucide-react";
+import jsPDF from "jspdf";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -206,23 +206,82 @@ export default function AdminReportsPage() {
       log.action.toLowerCase().includes(searchQuery.toLowerCase()) ||
       log.user.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesAction = actionFilter === "all" || log.targetType === actionFilter;
-    return matchesSearch && matchesAction;
+    
+    let matchesDate = true;
+    const now = new Date();
+    const logDate = new Date(log.timestamp);
+    const diffTime = Math.abs(now.getTime() - logDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (dateRange === "24h") {
+      matchesDate = diffTime <= (24 * 60 * 60 * 1000);
+    } else if (dateRange === "7d") {
+      matchesDate = diffDays <= 7;
+    } else if (dateRange === "30d") {
+      matchesDate = diffDays <= 30;
+    } else if (dateRange === "90d") {
+      matchesDate = diffDays <= 90;
+    }
+
+    return matchesSearch && matchesAction && matchesDate;
   });
 
-  const handleGenerateReport = (id: string) => {
-    const report = mockReportTemplates.find(r => r.id === id);
+  const handleGenerateReport = (template: ReportTemplate) => {
     toast({
-      title: "Report Generation Started",
-      description: `${report?.name} is being generated. You'll be notified when ready.`,
+      title: "Downloading Report",
+      description: `Generating ${template.name}...`,
     });
+
+    if (template.format === "CSV" || template.format === "Excel") {
+      // Generate CSV/Excel content
+      let content = "";
+      if (template.id === "rpt-001") { // Pricing Rule Inventory
+        content = "Rule ID,Name,Status,Discount Value,Created By\nPR-001,Generic Discount,Active,15%,Admin Sarah\nPR-002,Senior Discount,Active,10%,Admin John";
+      } else if (template.id === "rpt-005") { // Rule Usage Analytics
+        content = "Rule Name,Trigger Count,Total Savings,Last Triggered\nGeneric Discount,1450,$5200.00,2025-01-02\nSenior Discount,890,$1200.50,2025-01-03";
+      }
+      
+      const blob = new Blob([content], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${template.name.replace(/\s+/g, "_")}_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else if (template.format === "PDF") {
+      // Generate PDF content
+      const doc = new jsPDF();
+      doc.setFontSize(16);
+      doc.text(template.name, 14, 20);
+      doc.setFontSize(10);
+      doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 30);
+      
+      if (template.id === "rpt-002") { // Config Change History
+        let yPos = 40;
+        doc.text("Date | Action | Target | User", 14, yPos);
+        yPos += 10;
+        mockAuditLogs.forEach(log => {
+          const date = new Date(log.timestamp).toLocaleDateString();
+          doc.text(`${date} | ${log.action} | ${log.target} | ${log.user}`, 14, yPos);
+          yPos += 10;
+        });
+      } else if (template.id === "rpt-003") { // AI Summary
+        doc.text("AI Recommendation Impact Summary", 14, 45);
+        doc.text("1. Consolidate Senior Discounts - Implementation Success: 100%", 14, 55);
+        doc.text("2. Inventory Overstock Alert - Cost Savings: $4,500", 14, 65);
+      } else if (template.id === "rpt-004") { // System Health
+        doc.text("System Uptime Report", 14, 45);
+        doc.text("Payment Gateway: 99.99%", 14, 55);
+        doc.text("Claims Database: 99.95%", 14, 65);
+        doc.text("Reporting Engine: 100.00%", 14, 75);
+      }
+      
+      doc.save(`${template.name.replace(/\s+/g, "_")}.pdf`);
+    }
   };
 
-  const handleExportLogs = () => {
-    toast({
-      title: "Export Started",
-      description: "Audit logs are being exported to CSV.",
-    });
-  };
+
 
   return (
     <div className="space-y-6" data-testid="admin-reports-page">
@@ -328,10 +387,7 @@ export default function AdminReportsPage() {
                       <SelectItem value="90d">Last 90 Days</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Button variant="outline" onClick={handleExportLogs} data-testid="button-export-logs">
-                    <Download className="w-4 h-4 mr-2" />
-                    Export
-                  </Button>
+
                 </div>
               </div>
             </CardHeader>
@@ -446,7 +502,7 @@ export default function AdminReportsPage() {
                           </div>
                           <Button
                             size="sm"
-                            onClick={() => handleGenerateReport(template.id)}
+                            onClick={() => handleGenerateReport(template)}
                             data-testid={`button-generate-${template.id}`}
                           >
                             <Download className="w-4 h-4 mr-1" />
