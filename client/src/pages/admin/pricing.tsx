@@ -61,123 +61,25 @@ interface PricingRule {
   updatedAt: string;
 }
 
-const mockPricingRules: PricingRule[] = [
-  {
-    id: "rule-001",
-    name: "Senior Citizen Discount",
-    description: "10% discount for customers aged 65 and above",
-    type: "discount",
-    value: 10,
-    valueType: "percentage",
-    conditions: ["Age >= 65", "Valid ID Required"],
-    status: "active",
-    priority: 1,
-    validFrom: "2024-01-01",
-    validTo: null,
-    usageCount: 1245,
-    lastTriggered: "2025-12-31T10:30:00Z",
-    createdBy: "Admin Sarah",
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-06-15T14:30:00Z",
-  },
-  {
-    id: "rule-002",
-    name: "Generic Medication Discount",
-    description: "15% discount on all generic medications",
-    type: "discount",
-    value: 15,
-    valueType: "percentage",
-    conditions: ["Medication Type = Generic"],
-    status: "active",
-    priority: 2,
-    validFrom: "2024-03-01",
-    validTo: null,
-    usageCount: 3567,
-    lastTriggered: "2025-12-31T11:45:00Z",
-    createdBy: "Admin John",
-    createdAt: "2024-03-01T00:00:00Z",
-    updatedAt: "2024-03-01T00:00:00Z",
-  },
-  {
-    id: "rule-003",
-    name: "Insurance Tier A Copay",
-    description: "Fixed copay amount for Tier A insurance members",
-    type: "override",
-    value: 10,
-    valueType: "fixed",
-    conditions: ["Insurance Tier = A", "In-Network Provider"],
-    status: "active",
-    priority: 1,
-    validFrom: "2024-01-01",
-    validTo: "2025-12-31",
-    usageCount: 892,
-    lastTriggered: "2025-12-30T16:20:00Z",
-    createdBy: "Admin Sarah",
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-09-01T10:00:00Z",
-  },
-  {
-    id: "rule-004",
-    name: "Loyalty Gold Member",
-    description: "5% additional discount for gold loyalty members",
-    type: "discount",
-    value: 5,
-    valueType: "percentage",
-    conditions: ["Loyalty Tier = Gold", "Active Membership"],
-    status: "active",
-    priority: 3,
-    validFrom: "2024-06-01",
-    validTo: null,
-    usageCount: 456,
-    lastTriggered: "2025-12-31T09:15:00Z",
-    createdBy: "Admin John",
-    createdAt: "2024-06-01T00:00:00Z",
-    updatedAt: "2024-06-01T00:00:00Z",
-  },
-  {
-    id: "rule-005",
-    name: "Holiday Promo 2023",
-    description: "Seasonal holiday discount - expired",
-    type: "discount",
-    value: 20,
-    valueType: "percentage",
-    conditions: ["Date Range: Dec 15-31, 2023"],
-    status: "inactive",
-    priority: 1,
-    validFrom: "2023-12-15",
-    validTo: "2023-12-31",
-    usageCount: 234,
-    lastTriggered: "2023-12-31T23:45:00Z",
-    createdBy: "Admin Sarah",
-    createdAt: "2023-12-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z",
-  },
-  {
-    id: "rule-006",
-    name: "Employee Discount",
-    description: "Employee pharmacy discount program",
-    type: "discount",
-    value: 25,
-    valueType: "percentage",
-    conditions: ["Employee ID Valid", "Active Employment"],
-    status: "active",
-    priority: 1,
-    validFrom: "2024-01-01",
-    validTo: null,
-    usageCount: 89,
-    lastTriggered: "2025-12-28T14:30:00Z",
-    createdBy: "Admin John",
-    createdAt: "2024-01-01T00:00:00Z",
-    updatedAt: "2024-01-01T00:00:00Z",
-  },
-];
+
+
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function AdminPricingPage() {
   const { toast } = useToast();
-  const [rules, setRules] = useState(mockPricingRules);
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
+
+  const { data: rules = [], isLoading } = useQuery<PricingRule[]>({
+    queryKey: ["/api/admin/pricing"],
+  });
+
+
+
+
 
   const getStatusConfig = (status: string) => {
     switch (status) {
@@ -215,27 +117,49 @@ export default function AdminPricingPage() {
     return matchesSearch && matchesStatus && matchesType;
   });
 
-  const handleToggleStatus = (id: string) => {
-    setRules(prev => prev.map(rule => {
-      if (rule.id === id) {
-        const newStatus = rule.status === "active" ? "inactive" : "active";
-        toast({
-          title: `Rule ${newStatus === "active" ? "Enabled" : "Disabled"}`,
-          description: `${rule.name} has been ${newStatus === "active" ? "activated" : "deactivated"}.`,
-        });
-        return { ...rule, status: newStatus as "active" | "inactive" };
-      }
-      return rule;
-    }));
+  const handleToggleStatus = async (id: string) => {
+    const rule = rules.find(r => r.id === id);
+    if (!rule) return;
+    
+    const newStatus = rule.status === "active" ? "inactive" : "active";
+    try {
+      await apiRequest("PATCH", `/api/admin/pricing/${id}`, { status: newStatus });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/pricing"] });
+      toast({
+        title: `Rule ${newStatus === "active" ? "Enabled" : "Disabled"}`,
+        description: `${rule.name} has been ${newStatus === "active" ? "activated" : "deactivated"}.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update rule status.",
+        variant: "destructive"
+      });
+    }
   };
 
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await apiRequest("DELETE", `/api/admin/pricing/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/pricing"] });
+      toast({
+        title: "Rule Deleted",
+        description: "Pricing rule has been successfully deleted.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to delete pricing rule.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleDelete = (id: string) => {
-    const rule = rules.find(r => r.id === id);
-    setRules(prev => prev.filter(r => r.id !== id));
-    toast({
-      title: "Rule Deleted",
-      description: `${rule?.name} has been removed.`,
-    });
+    deleteMutation.mutate(id);
   };
 
   const activeCount = rules.filter(r => r.status === "active").length;

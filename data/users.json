@@ -169,6 +169,18 @@
       "createdAt": "2026-01-03T10:50:01.736Z",
       "avatar": null,
       "phone": null
+    },
+    {
+      "username": "vipul_admin",
+      "password": "Test@1234",
+      "email": "vipul11@yopmail.com",
+      "firstName": "vipul",
+      "lastName": "admin",
+      "role": "admin",
+      "id": "81c97d6e-0373-4178-8f35-1505cd31ebea",
+      "createdAt": "2026-01-03T11:07:01.875Z",
+      "avatar": null,
+      "phone": "0123456789"
     }
   ]
 }

@@ -1,0 +1,129 @@
+{
+  "rules": [
+    {
+      "id": "rule-001",
+      "name": "Senior Citizen Discount 2",
+      "description": "10% discount for customers aged 65 and above",
+      "type": "discount",
+      "value": 10,
+      "valueType": "percentage",
+      "conditions": [
+        "Age >= 65",
+        "Valid ID Required"
+      ],
+      "status": "active",
+      "priority": "1",
+      "validFrom": "2024-01-01",
+      "validTo": "",
+      "usageCount": 1245,
+      "lastTriggered": "2025-12-31T10:30:00Z",
+      "createdBy": "Admin User",
+      "createdAt": "2024-01-01T00:00:00Z",
+      "updatedAt": "2026-01-03T12:20:55.542Z",
+      "stackable": true
+    },
+    {
+      "id": "rule-002",
+      "name": "Generic Medication Discount",
+      "description": "15% discount on all generic medications",
+      "type": "discount",
+      "value": 15,
+      "valueType": "percentage",
+      "conditions": [
+        "Medication Type = Generic"
+      ],
+      "status": "active",
+      "priority": 2,
+      "validFrom": "2024-03-01",
+      "validTo": null,
+      "usageCount": 3567,
+      "lastTriggered": "2025-12-31T11:45:00Z",
+      "createdBy": "Admin John",
+      "createdAt": "2024-03-01T00:00:00Z",
+      "updatedAt": "2024-03-01T00:00:00Z"
+    },
+    {
+      "id": "rule-003",
+      "name": "Insurance Tier A Copay",
+      "description": "Fixed copay amount for Tier A insurance members",
+      "type": "override",
+      "value": 10,
+      "valueType": "fixed",
+      "conditions": [
+        "Insurance Tier = A",
+        "In-Network Provider"
+      ],
+      "status": "active",
+      "priority": 1,
+      "validFrom": "2024-01-01",
+      "validTo": "2025-12-31",
+      "usageCount": 892,
+      "lastTriggered": "2025-12-30T16:20:00Z",
+      "createdBy": "Admin Sarah",
+      "createdAt": "2024-01-01T00:00:00Z",
+      "updatedAt": "2024-09-01T10:00:00Z"
+    },
+    {
+      "id": "rule-004",
+      "name": "Loyalty Gold Member",
+      "description": "5% additional discount for gold loyalty members",
+      "type": "discount",
+      "value": 5,
+      "valueType": "percentage",
+      "conditions": [
+        "Loyalty Tier = Gold",
+        "Active Membership"
+      ],
+      "status": "active",
+      "priority": 3,
+      "validFrom": "2024-06-01",
+      "validTo": null,
+      "usageCount": 456,
+      "lastTriggered": "2025-12-31T09:15:00Z",
+      "createdBy": "Admin John",
+      "createdAt": "2024-06-01T00:00:00Z",
+      "updatedAt": "2024-06-01T00:00:00Z"
+    },
+    {
+      "id": "rule-005",
+      "name": "Holiday Promo 2023",
+      "description": "Seasonal holiday discount - expired",
+      "type": "discount",
+      "value": 20,
+      "valueType": "percentage",
+      "conditions": [
+        "Date Range: Dec 15-31, 2023"
+      ],
+      "status": "inactive",
+      "priority": 1,
+      "validFrom": "2023-12-15",
+      "validTo": "2023-12-31",
+      "usageCount": 234,
+      "lastTriggered": "2023-12-31T23:45:00Z",
+      "createdBy": "Admin Sarah",
+      "createdAt": "2023-12-01T00:00:00Z",
+      "updatedAt": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": "rule-006",
+      "name": "Employee Discount",
+      "description": "Employee pharmacy discount program",
+      "type": "discount",
+      "value": 25,
+      "valueType": "percentage",
+      "conditions": [
+        "Employee ID Valid",
+        "Active Employment"
+      ],
+      "status": "active",
+      "priority": 1,
+      "validFrom": "2024-01-01",
+      "validTo": null,
+      "usageCount": 89,
+      "lastTriggered": "2025-12-28T14:30:00Z",
+      "createdBy": "Admin John",
+      "createdAt": "2024-01-01T00:00:00Z",
+      "updatedAt": "2024-01-01T00:00:00Z"
+    }
+  ]
+}
