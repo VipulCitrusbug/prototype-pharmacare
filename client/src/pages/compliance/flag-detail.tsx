@@ -132,6 +132,11 @@ export default function ComplianceFlagDetailPage() {
   const [notes, setNotes] = useState("");
   const [showAllEvidence, setShowAllEvidence] = useState(false);
   const [showAllLogs, setShowAllLogs] = useState(false);
+  const [savedResolutions, setSavedResolutions] = useState<Array<{
+    decision: string;
+    notes: string;
+    timestamp: string;
+  }>>([]);
 
   const flag = mockFlagDetail;
 
@@ -171,6 +176,8 @@ export default function ComplianceFlagDetailPage() {
   const visibleLogs = showAllLogs ? flag.relatedAuditLogs : flag.relatedAuditLogs.slice(0, 3);
 
   const handleSaveDecision = () => {
+    console.log("Save Decision clicked", { decision, notes });
+
     if (!decision) {
       toast({
         title: "Decision Required",
@@ -179,6 +186,21 @@ export default function ComplianceFlagDetailPage() {
       });
       return;
     }
+
+    // Save the resolution
+    const resolution = {
+      decision,
+      notes,
+      timestamp: new Date().toISOString(),
+    };
+
+    console.log("Saving resolution:", resolution);
+    setSavedResolutions(prev => [...prev, resolution]);
+    console.log("Resolution saved to state");
+
+    // Clear the form
+    setDecision("");
+    setNotes("");
 
     toast({
       title: "Decision Saved",
@@ -477,8 +499,8 @@ export default function ComplianceFlagDetailPage() {
                   data-testid="textarea-notes"
                 />
               </div>
-              <Button 
-                className="w-full" 
+              <Button
+                className="w-full"
                 onClick={handleSaveDecision}
                 data-testid="button-save-decision"
               >
@@ -509,17 +531,42 @@ export default function ComplianceFlagDetailPage() {
                     </p>
                   </div>
                 </div>
-                <div className="flex gap-3">
-                  <div className="flex flex-col items-center">
-                    <div className="w-2 h-2 bg-muted-foreground rounded-full" />
+                {savedResolutions.length > 0 ? (
+                  savedResolutions.map((resolution, index) => (
+                    <div key={index} className="flex gap-3">
+                      <div className="flex flex-col items-center">
+                        <div className="w-2 h-2 bg-success rounded-full" />
+                        {index < savedResolutions.length - 1 && <div className="w-0.5 h-full bg-border" />}
+                      </div>
+                      <div className="pb-4">
+                        <p className="text-sm font-medium">Resolution Added</p>
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(resolution.timestamp).toLocaleString()}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Decision: {resolution.decision === "explained" ? "Explained / No Issue" : resolution.decision === "follow_up" ? "Needs Follow-Up" : "Escalate for Internal Review"}
+                        </p>
+                        {resolution.notes && (
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Notes: {resolution.notes}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="flex gap-3">
+                    <div className="flex flex-col items-center">
+                      <div className="w-2 h-2 bg-muted-foreground rounded-full" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Pending Review</p>
+                      <p className="text-xs text-muted-foreground">
+                        Awaiting compliance officer action
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Pending Review</p>
-                    <p className="text-xs text-muted-foreground">
-                      Awaiting compliance officer action
-                    </p>
-                  </div>
-                </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -531,7 +578,7 @@ export default function ComplianceFlagDetailPage() {
                 <div>
                   <p className="text-sm font-medium text-foreground mb-1">AI Guidance</p>
                   <p className="text-xs text-muted-foreground">
-                    This flag represents a statistically significant deviation. Consider reviewing 
+                    This flag represents a statistically significant deviation. Consider reviewing
                     prescriber patterns and patient profiles for the affected time period.
                   </p>
                 </div>

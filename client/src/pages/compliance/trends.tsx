@@ -170,13 +170,36 @@ export default function ComplianceTrendsPage() {
     }
   };
 
-  const filteredTrends = mockDispensingTrends.filter((item) => {
-    if (categoryFilter === "all") return true;
-    if (categoryFilter === "schedule_ii") return item.category === "Schedule II";
-    if (categoryFilter === "schedule_iii") return item.category === "Schedule III";
-    if (categoryFilter === "schedule_iv") return item.category === "Schedule IV";
-    return true;
-  });
+  // Scale data based on time period
+  const getScaleFactor = () => {
+    switch (timePeriod) {
+      case "7d":
+        return 0.25; // 7 days is ~25% of 30 days
+      case "30d":
+        return 1.0;  // baseline
+      case "90d":
+        return 3.0;  // 90 days is 3x 30 days
+      default:
+        return 1.0;
+    }
+  };
+
+  const scaleFactor = getScaleFactor();
+
+  const filteredTrends = mockDispensingTrends
+    .filter((item) => {
+      if (categoryFilter === "all") return true;
+      if (categoryFilter === "schedule_ii") return item.category === "Schedule II";
+      if (categoryFilter === "schedule_iii") return item.category === "Schedule III";
+      if (categoryFilter === "schedule_iv") return item.category === "Schedule IV";
+      return true;
+    })
+    .map((item) => ({
+      ...item,
+      currentPeriod: Math.round(item.currentPeriod * scaleFactor),
+      previousPeriod: Math.round(item.previousPeriod * scaleFactor),
+      avgDaily: Math.round(item.avgDaily * scaleFactor / (timePeriod === "7d" ? 7 : timePeriod === "30d" ? 30 : 90)),
+    }));
 
   return (
     <div className="space-y-6" data-testid="compliance-trends-page">
@@ -324,9 +347,8 @@ export default function ComplianceTrendsPage() {
                           <Badge variant="secondary" className={`text-xs ${statusConfig.bg} ${statusConfig.color}`}>
                             {statusConfig.label}
                           </Badge>
-                          <div className={`flex items-center gap-1 text-sm font-medium ${
-                            item.trend === "up" ? "text-danger" : "text-success"
-                          }`}>
+                          <div className={`flex items-center gap-1 text-sm font-medium ${item.trend === "up" ? "text-danger" : "text-success"
+                            }`}>
                             {item.trend === "up" ? (
                               <TrendingUp className="w-4 h-4" />
                             ) : (
@@ -484,8 +506,8 @@ export default function ComplianceTrendsPage() {
                   <div>
                     <p className="text-sm font-medium text-foreground mb-1">AI Insight</p>
                     <p className="text-xs text-muted-foreground">
-                      Afternoon hours show the highest concentration of controlled substance dispensing (35%). 
-                      Evening activity appears elevated compared to industry benchmarks. Consider reviewing 
+                      Afternoon hours show the highest concentration of controlled substance dispensing (35%).
+                      Evening activity appears elevated compared to industry benchmarks. Consider reviewing
                       evening shift patterns for optimization opportunities.
                     </p>
                   </div>

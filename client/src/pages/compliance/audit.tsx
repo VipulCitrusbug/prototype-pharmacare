@@ -172,7 +172,30 @@ export default function ComplianceAuditPage() {
       (log.medication && log.medication.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesAction = actionFilter === "all" || log.actionType === actionFilter;
     const matchesRole = roleFilter === "all" || log.userRole === roleFilter;
-    return matchesSearch && matchesAction && matchesRole;
+
+    // Date filtering
+    const logDate = new Date(log.timestamp);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const sevenDaysAgo = new Date(today);
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const thirtyDaysAgo = new Date(today);
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    let matchesDate = true;
+    if (dateFilter === "today") {
+      matchesDate = logDate >= today;
+    } else if (dateFilter === "yesterday") {
+      matchesDate = logDate >= yesterday && logDate < today;
+    } else if (dateFilter === "7days") {
+      matchesDate = logDate >= sevenDaysAgo;
+    } else if (dateFilter === "30days") {
+      matchesDate = logDate >= thirtyDaysAgo;
+    }
+
+    return matchesSearch && matchesAction && matchesRole && matchesDate;
   });
 
   const totalPages = Math.ceil(filteredLogs.length / logsPerPage);
@@ -186,6 +209,53 @@ export default function ComplianceAuditPage() {
     dispensed: mockAuditLogs.filter((l) => l.actionType === "dispensed").length,
     override: mockAuditLogs.filter((l) => l.actionType === "override").length,
     accessed: mockAuditLogs.filter((l) => l.actionType === "accessed").length,
+  };
+
+  const handleExportLogs = () => {
+    // Prepare CSV headers
+    const headers = [
+      "Timestamp",
+      "Action",
+      "Action Type",
+      "User",
+      "User Role",
+      "Medication",
+      "Category",
+      "Patient ID",
+      "IP Address",
+      "Details"
+    ];
+
+    // Convert filtered logs to CSV rows
+    const rows = filteredLogs.map(log => [
+      new Date(log.timestamp).toLocaleString(),
+      log.action,
+      log.actionType,
+      log.user,
+      log.userRole,
+      log.medication || "N/A",
+      log.category || "N/A",
+      log.patientId || "N/A",
+      log.ipAddress,
+      log.details
+    ]);
+
+    // Combine headers and rows
+    const csvContent = [
+      headers.join(","),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(","))
+    ].join("\n");
+
+    // Create and download the file
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `audit_logs_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -205,7 +275,7 @@ export default function ComplianceAuditPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" data-testid="button-export">
+          <Button variant="outline" size="sm" onClick={handleExportLogs} data-testid="button-export">
             <Download className="w-4 h-4 mr-2" />
             Export Logs
           </Button>
