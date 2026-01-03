@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useParams, Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,7 +16,6 @@ import {
   FileCheck,
   FileText,
   RefreshCw,
-  Send,
   Sparkles,
   Upload,
   User,
@@ -69,8 +69,73 @@ const mockClaimDetail = {
 export default function FinanceClaimDetailPage() {
   const { id } = useParams();
   const { toast } = useToast();
+
   const [isRerunning, setIsRerunning] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Fetch documents
+  const { data: documents, isLoading: isLoadingDocs, refetch: refetchDocs } = useQuery({
+    queryKey: [`/api/finance/claims/${id}/documents`],
+  });
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch(`/api/finance/claims/${id}/documents`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error("Upload failed");
+
+      await refetchDocs();
+      toast({
+        title: "Document Uploaded",
+        description: "The document has been successfully attached to this claim.",
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Upload Failed",
+        description: "There was an error uploading your document.",
+      });
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
+  const handleDownload = async (filename: string, originalName: string) => {
+    try {
+      const response = await fetch(`/api/finance/documents/${filename}`);
+      if (!response.ok) throw new Error("Download failed");
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = originalName;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+       toast({
+        variant: "destructive",
+        title: "Download Failed",
+        description: "Could not download the document.",
+      });
+    }
+  };
 
   const claim = mockClaimDetail;
 
@@ -84,15 +149,7 @@ export default function FinanceClaimDetailPage() {
     });
   };
 
-  const handleSubmitClaim = async () => {
-    setIsSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1500));
-    setIsSubmitting(false);
-    toast({
-      title: "Claim Submitted",
-      description: `Claim ${claim.claimNumber} has been submitted for processing.`,
-    });
-  };
+
 
   return (
     <div className="space-y-6" data-testid="finance-claim-detail-page">
@@ -133,14 +190,7 @@ export default function FinanceClaimDetailPage() {
             <RefreshCw className={`w-4 h-4 mr-2 ${isRerunning ? "animate-spin" : ""}`} />
             {isRerunning ? "Validating..." : "Re-run Validation"}
           </Button>
-          <Button
-            onClick={handleSubmitClaim}
-            disabled={claim.readinessScore < 80 || isSubmitting}
-            data-testid="button-submit-claim"
-          >
-            <Send className="w-4 h-4 mr-2" />
-            {isSubmitting ? "Submitting..." : "Submit Claim"}
-          </Button>
+
         </div>
       </div>
 
@@ -176,7 +226,7 @@ export default function FinanceClaimDetailPage() {
                     />
                   </div>
                 </div>
-                <AIAssistBadge confidence={claim.aiConfidence} showLabel />
+                <AIAssistBadge confidence={claim.aiConfidence} />
               </div>
 
               {claim.issues.length > 0 ? (
@@ -276,15 +326,29 @@ export default function FinanceClaimDetailPage() {
                   </CardTitle>
                   <CardDescription>Attached documents for this claim</CardDescription>
                 </div>
-                <Button variant="outline" size="sm" data-testid="button-upload-doc">
-                  <Upload className="w-4 h-4 mr-2" />
-                  Upload Document
-                </Button>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    className="hidden"
+                    onChange={handleFileUpload}
+                  />
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    data-testid="button-upload-doc"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading}
+                  >
+                    <Upload className={`w-4 h-4 mr-2 ${isUploading ? "animate-spin" : ""}`} />
+                    {isUploading ? "Uploading..." : "Upload Document"}
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {claim.documents.map((doc) => (
+                {(documents as any[] || []).map((doc: any) => (
                   <div
                     key={doc.id}
                     className="flex items-center justify-between p-3 rounded-lg border border-border"
@@ -295,12 +359,17 @@ export default function FinanceClaimDetailPage() {
                       <div>
                         <p className="font-medium text-sm">{doc.name}</p>
                         <p className="text-xs text-muted-foreground">
-                          Uploaded {doc.uploadedAt}
+                          Uploaded {new Date(doc.uploadedAt).toLocaleDateString()}
                         </p>
                       </div>
                     </div>
-                    <Button variant="ghost" size="sm" data-testid={`button-view-doc-${doc.id}`}>
-                      View
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      data-testid={`button-view-doc-${doc.id}`}
+                      onClick={() => handleDownload(doc.filename, doc.name)}
+                    >
+                      Download
                     </Button>
                   </div>
                 ))}

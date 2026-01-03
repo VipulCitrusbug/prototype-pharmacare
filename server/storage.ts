@@ -3,6 +3,19 @@ import { randomUUID } from "crypto";
 import * as fs from "fs";
 import * as path from "path";
 
+export interface ClaimDocument {
+  id: string;
+  claimId: string;
+  name: string;
+  filename: string;
+  type: string;
+  uploadedAt: string;
+  size: number;
+  path: string;
+  patientName?: string;
+  claimRef?: string;
+}
+
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
@@ -23,6 +36,11 @@ export interface IStorage {
   getPatients(): Promise<Patient[]>;
   getPatient(id: string): Promise<Patient | undefined>;
   createPatient(patient: InsertPatient): Promise<Patient>;
+
+  getClaimDocuments(claimId: string): Promise<ClaimDocument[]>;
+  getAllClaimDocuments(): Promise<ClaimDocument[]>;
+  addClaimDocument(claimId: string, document: Omit<ClaimDocument, "id" | "uploadedAt">): Promise<ClaimDocument>;
+  deleteClaimDocument(id: string): Promise<void>;
 }
 
 const DATA_DIR = path.join(process.cwd(), "data");
@@ -30,6 +48,7 @@ const USERS_FILE = path.join(DATA_DIR, "users.json");
 const PRESCRIPTIONS_FILE = path.join(DATA_DIR, "prescriptions.json");
 const INVENTORY_FILE = path.join(DATA_DIR, "inventory.json");
 const PATIENTS_FILE = path.join(DATA_DIR, "patients.json");
+const CLAIM_DOCUMENTS_FILE = path.join(DATA_DIR, "finance_specialist", "documents.json");
 
 export class JsonStorage implements IStorage {
   constructor() {
@@ -62,6 +81,15 @@ export class JsonStorage implements IStorage {
     // Initialize patients file if it doesn't exist
     if (!fs.existsSync(PATIENTS_FILE)) {
       fs.writeFileSync(PATIENTS_FILE, JSON.stringify({ patients: [] }, null, 2), "utf-8");
+    }
+
+    // Initialize claim documents file if it doesn't exist
+    if (!fs.existsSync(CLAIM_DOCUMENTS_FILE)) {
+      const dir = path.dirname(CLAIM_DOCUMENTS_FILE);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      fs.writeFileSync(CLAIM_DOCUMENTS_FILE, JSON.stringify({ documents: [] }, null, 2), "utf-8");
     }
   }
 
@@ -281,6 +309,7 @@ export class JsonStorage implements IStorage {
     const item: InventoryItem = {
       ...insertItem,
       id,
+      status: insertItem.status || "available",
     };
     inventory.push(item);
     this.writeInventory(inventory);
@@ -360,6 +389,62 @@ export class JsonStorage implements IStorage {
     patients.push(newPatient);
     this.writePatients(patients);
     return newPatient;
+  }
+
+
+  // Claim Document methods
+  private readClaimDocuments(): ClaimDocument[] {
+    try {
+      if (!fs.existsSync(CLAIM_DOCUMENTS_FILE)) return [];
+      
+      const data = fs.readFileSync(CLAIM_DOCUMENTS_FILE, "utf-8");
+      const parsed = JSON.parse(data);
+      if (parsed.documents && Array.isArray(parsed.documents)) {
+        return parsed.documents;
+      }
+      return [];
+    } catch (error) {
+      console.error("Error reading claim documents from file:", error);
+      return [];
+    }
+  }
+
+  private writeClaimDocuments(documents: ClaimDocument[]) {
+    try {
+      const data = JSON.stringify({ documents }, null, 2);
+      fs.writeFileSync(CLAIM_DOCUMENTS_FILE, data, "utf-8");
+    } catch (error) {
+      console.error("Error writing claim documents to file:", error);
+      throw error;
+    }
+  }
+
+  async getClaimDocuments(claimId: string): Promise<ClaimDocument[]> {
+    const documents = this.readClaimDocuments();
+    return documents.filter(doc => doc.claimId === claimId);
+  }
+
+  async getAllClaimDocuments(): Promise<ClaimDocument[]> {
+    return this.readClaimDocuments();
+  }
+
+  async addClaimDocument(claimId: string, document: Omit<ClaimDocument, "id" | "uploadedAt">): Promise<ClaimDocument> {
+    const documents = this.readClaimDocuments();
+    const newDoc: ClaimDocument = {
+      ...document,
+      id: randomUUID(),
+      uploadedAt: new Date().toISOString(),
+      claimId,
+    };
+    documents.push(newDoc);
+    this.writeClaimDocuments(documents);
+    return newDoc;
+  }
+
+  async deleteClaimDocument(id: string): Promise<void> {
+    const documents = this.readClaimDocuments();
+    const filtered = documents.filter(doc => doc.id !== id);
+    this.writeClaimDocuments(filtered);
   }
 }
 

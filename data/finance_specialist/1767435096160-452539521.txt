@@ -1,0 +1,14 @@
+**Lacrosse Bot - Steve**
+
+**30th December 2025 - Work Status Update**
+
+1. Cancel Subscription:
+   a. Tested the complete subscription purchase flow and verified updated credits and next billing date.  
+   b. Tested the cancel subscription flow and validated credit updates and next billing cycle changes upon expiry.  
+   c. Deployed cancel subscription changes to the server and tested the updated setup.
+
+Roadblocks:
+1. None.
+
+Next Day Task:
+1. Work on bugs if any are identified.

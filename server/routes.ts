@@ -4,6 +4,26 @@ import { storage } from "./storage";
 import { signupSchema, loginSchema, insertPrescriptionSchema, insertPatientSchema, insertInventorySchema } from "@shared/schema";
 import session from "express-session";
 import MemoryStore from "memorystore";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: function (req, file, cb) {
+      const dir = path.join(process.cwd(), "data", "finance_specialist");
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      cb(null, dir);
+    },
+    filename: function (req, file, cb) {
+      const ext = path.extname(file.originalname);
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      cb(null, uniqueSuffix + ext);
+    }
+  })
+});
 
 const SessionStore = MemoryStore(session);
 
@@ -431,7 +451,99 @@ export async function registerRoutes(
     next();
   };
 
+  app.get("/api/finance/documents", requireFinance, async (req, res) => {
+    try {
+      const documents = await storage.getAllClaimDocuments();
+      res.json(documents);
+    } catch (error) {
+      console.error("Get all documents error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.post("/api/finance/documents", requireFinance, upload.single("file"), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No file uploaded" });
+      }
+
+      const document = await storage.addClaimDocument(req.body.claimRef || "unknown", {
+        name: req.body.name || req.file.originalname,
+        filename: req.file.filename,
+        type: req.body.type || "other",
+        size: req.file.size,
+        path: req.file.path,
+        claimId: req.body.claimRef || "unknown",
+        patientName: req.body.patientName,
+        claimRef: req.body.claimRef
+      });
+
+      res.status(201).json(document);
+    } catch (error) {
+      console.error("Upload document error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.delete("/api/finance/documents/:id", requireFinance, async (req, res) => {
+    try {
+      await storage.deleteClaimDocument(req.params.id);
+      res.sendStatus(204);
+    } catch (error) {
+      console.error("Delete document error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   // Finance endpoints
+  app.post("/api/finance/claims/:id/documents", requireFinance, upload.single("file"), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No file uploaded" });
+      }
+
+      const document = await storage.addClaimDocument(req.params.id, {
+        name: req.body.name || req.file.originalname,
+        filename: req.file.filename,
+        type: "document", // You might want to get this from body or determine from file
+        size: req.file.size,
+        path: req.file.path,
+        claimId: req.params.id
+      });
+
+      res.status(201).json(document);
+    } catch (error) {
+      console.error("Upload document error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.get("/api/finance/claims/:id/documents", requireFinance, async (req, res) => {
+    try {
+      const documents = await storage.getClaimDocuments(req.params.id);
+      res.json(documents);
+    } catch (error) {
+      console.error("Get claim documents error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.get("/api/finance/documents/:filename", requireFinance, async (req, res) => {
+    try {
+      const filename = req.params.filename;
+      const filePath = path.join(process.cwd(), "data", "finance_specialist", filename);
+
+      if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ error: "File not found" });
+      }
+
+      res.download(filePath);
+    } catch (error) {
+      console.error("Download document error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   app.get("/api/finance/metrics", requireFinance, async (req, res) => {
     try {
       await new Promise((r) => setTimeout(r, 200));

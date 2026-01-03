@@ -3,6 +3,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useQuery } from "@tanstack/react-query";
 import {
   Select,
   SelectContent,
@@ -103,7 +106,38 @@ export default function FinanceDocumentsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
 
-  const filteredDocs = mockDocuments.filter((doc) => {
+  const [isUploadOpen, setIsUploadOpen] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [formData, setFormData] = useState({
+    claimRef: "",
+    patientName: "",
+    type: "",
+    file: null as File | null,
+  });
+
+  // Fetch real documents
+  const { data: realDocuments, refetch } = useQuery({
+    queryKey: ["/api/finance/documents"],
+  });
+
+  // Merge real and mock documents
+  const allDocuments = [
+    ...(realDocuments as any[] || []).map((doc: any) => ({
+      id: doc.id,
+      name: doc.name,
+      type: doc.type,
+      claimRef: doc.claimRef || doc.claimId || "Unknown",
+      patientName: doc.patientName || "Unknown",
+      size: `${Math.round(doc.size / 1024)} KB`,
+      uploadedBy: "Finance Specialist", // Default for now
+      uploadedAt: new Date(doc.uploadedAt).toISOString().split("T")[0],
+      isReal: true, // Flag to identify real docs for download
+      filename: doc.filename
+    })),
+    ...mockDocuments
+  ];
+
+  const filteredDocs = allDocuments.filter((doc) => {
     const matchesSearch =
       doc.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       doc.claimRef.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -114,11 +148,59 @@ export default function FinanceDocumentsPage() {
     return matchesSearch && matchesType;
   });
 
-  const handleUpload = () => {
-    toast({
-      title: "Upload Document",
-      description: "Document upload dialog would open here.",
-    });
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFormData({ ...formData, file: e.target.files[0] });
+    }
+  };
+
+  const handleUploadSubmit = async () => {
+    if (!formData.file || !formData.claimRef || !formData.patientName || !formData.type) {
+      toast({
+        variant: "destructive",
+        title: "Missing Fields",
+        description: "Please fill in all fields and select a file.",
+      });
+      return;
+    }
+
+    setIsUploading(true);
+    const data = new FormData();
+    data.append("file", formData.file);
+    data.append("claimRef", formData.claimRef);
+    data.append("patientName", formData.patientName);
+    data.append("type", formData.type);
+    data.append("name", formData.file.name);
+
+    try {
+      const res = await fetch("/api/finance/documents", {
+        method: "POST",
+        body: data,
+      });
+
+      if (!res.ok) throw new Error("Upload failed");
+
+      await refetch();
+      setIsUploadOpen(false);
+      setFormData({
+        claimRef: "",
+        patientName: "",
+        type: "",
+        file: null,
+      });
+      toast({
+        title: "Document Uploaded",
+        description: "The document has been successfully added.",
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Upload Failed",
+        description: "There was an error uploading your document.",
+      });
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleView = (doc: Document) => {
@@ -128,19 +210,71 @@ export default function FinanceDocumentsPage() {
     });
   };
 
-  const handleDownload = (doc: Document) => {
-    toast({
-      title: "Download Started",
-      description: `Downloading ${doc.name}...`,
-    });
+  const handleDownload = async (doc: any) => {
+    if (doc.isReal) {
+      try {
+        const response = await fetch(`/api/finance/documents/${doc.filename}`);
+        if (!response.ok) throw new Error("Download failed");
+        
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = doc.name;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+        toast({
+          title: "Download Complete",
+          description: `Downloaded ${doc.name}`,
+        });
+      } catch (error) {
+         toast({
+          variant: "destructive",
+          title: "Download Failed",
+          description: "Could not download the document.",
+        });
+      }
+    } else {
+      // Keep toast for mock docs as they don't exist on server
+      toast({
+        title: "Download Started",
+        description: `Downloading ${doc.name}... (Mock)`,
+      });
+    }
   };
 
-  const handleDelete = (doc: Document) => {
-    toast({
-      title: "Document Deleted",
-      description: `${doc.name} has been removed.`,
-      variant: "destructive",
-    });
+  const handleDelete = async (doc: any) => {
+    if (!doc.isReal) {
+      toast({
+        title: "Cannot Delete",
+        description: "Cannot delete mock documents.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/finance/documents/${doc.id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Delete failed");
+
+      await refetch();
+      toast({
+        title: "Document Deleted",
+        description: `${doc.name} has been removed.`,
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Delete Failed",
+        description: "Could not delete the document.",
+      });
+    }
   };
 
   return (
@@ -152,10 +286,73 @@ export default function FinanceDocumentsPage() {
             Upload, view, and manage claim supporting documents
           </p>
         </div>
-        <Button onClick={handleUpload} data-testid="button-upload-new">
-          <Upload className="w-4 h-4 mr-2" />
-          Upload Document
-        </Button>
+        <Dialog open={isUploadOpen} onOpenChange={setIsUploadOpen}>
+          <DialogTrigger asChild>
+            <Button data-testid="button-upload-new">
+              <Upload className="w-4 h-4 mr-2" />
+              Upload Document
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Upload Document</DialogTitle>
+              <DialogDescription>
+                Upload a new document to the system. All fields are required.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="claimRef">Claim Number</Label>
+                <Input
+                  id="claimRef"
+                  placeholder="e.g. CLM-2024-1850"
+                  value={formData.claimRef}
+                  onChange={(e) => setFormData({ ...formData, claimRef: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="patientName">Patient Name</Label>
+                <Input
+                  id="patientName"
+                  placeholder="e.g. Sarah Johnson"
+                  value={formData.patientName}
+                  onChange={(e) => setFormData({ ...formData, patientName: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="type">Document Type</Label>
+                <Select
+                  value={formData.type}
+                  onValueChange={(value) => setFormData({ ...formData, type: value })}
+                >
+                  <SelectTrigger id="type">
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="prescription">Prescription</SelectItem>
+                    <SelectItem value="insurance">Insurance</SelectItem>
+                    <SelectItem value="prior_auth">Prior Authorization</SelectItem>
+                    <SelectItem value="supporting">Supporting</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="file">File</Label>
+                <Input
+                  id="file"
+                  type="file"
+                  onChange={handleFileChange}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit" onClick={handleUploadSubmit} disabled={isUploading}>
+                {isUploading ? "Uploading..." : "Upload"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <Card>
@@ -197,7 +394,7 @@ export default function FinanceDocumentsPage() {
                   : "Upload documents to get started"
               }
               actionLabel="Upload Document"
-              onAction={handleUpload}
+              onAction={() => setIsUploadOpen(true)}
             />
           ) : (
             <div className="space-y-2">
@@ -236,14 +433,7 @@ export default function FinanceDocumentsPage() {
                       <Badge className={`text-xs ${config.color}`}>
                         {config.label}
                       </Badge>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleView(doc)}
-                        data-testid={`button-view-${doc.id}`}
-                      >
-                        <Eye className="w-4 h-4" />
-                      </Button>
+
                       <Button
                         variant="ghost"
                         size="icon"
@@ -275,7 +465,7 @@ export default function FinanceDocumentsPage() {
             <CardTitle className="text-base">Total Documents</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{mockDocuments.length}</div>
+            <div className="text-3xl font-bold">{allDocuments.length}</div>
             <p className="text-sm text-muted-foreground">Across all claims</p>
           </CardContent>
         </Card>
@@ -286,7 +476,7 @@ export default function FinanceDocumentsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">
-              {mockDocuments.filter((d) => d.type === "prior_auth").length}
+              {allDocuments.filter((d) => d.type === "prior_auth").length}
             </div>
             <p className="text-sm text-muted-foreground">On file</p>
           </CardContent>
@@ -298,7 +488,7 @@ export default function FinanceDocumentsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">
-              {mockDocuments.filter((d) => d.uploadedAt === "2024-01-15").length}
+              {allDocuments.filter((d: any) => d.uploadedAt === new Date().toISOString().split("T")[0] || d.uploadedAt === "2024-01-15").length}
             </div>
             <p className="text-sm text-muted-foreground">Today</p>
           </CardContent>

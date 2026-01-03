@@ -145,6 +145,18 @@
       "createdAt": "2026-01-03T07:58:15.160Z",
       "avatar": null,
       "phone": "0123465798"
+    },
+    {
+      "username": "vipul_finance",
+      "password": "Test@1234",
+      "email": "vipul4@yopmail.com",
+      "firstName": "vipul",
+      "lastName": "finance",
+      "role": "finance",
+      "id": "be1a2e2c-5c7b-47fc-9310-785f99a9f7c6",
+      "createdAt": "2026-01-03T09:36:49.997Z",
+      "avatar": null,
+      "phone": null
     }
   ]
 }
