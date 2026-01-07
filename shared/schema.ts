@@ -102,6 +102,30 @@ export const patients = pgTable("patients", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const claims = pgTable("claims", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  claimNumber: text("claim_number").notNull(),
+  patientName: text("patient_name").notNull(),
+  patientId: text("patient_id").notNull(),
+  dateOfBirth: text("date_of_birth").notNull(),
+  prescriptionRef: text("prescription_ref").notNull(),
+  payer: text("payer").notNull(),
+  payerId: text("payer_id").notNull(),
+  memberId: text("member_id").notNull(),
+  groupNumber: text("group_number").notNull(),
+  amount: integer("amount").notNull(), // using cents or handling as float in app, but schema is database. Let's use number for simple JSON compat if we want, but pgTable expects correct types. 'real' or 'double precision' for float, or integer for cents. The mock uses float. Let's use real for simplicity in this prototype.
+  drugName: text("drug_name").notNull(),
+  drugNdc: text("drug_ndc").notNull(),
+  quantity: integer("quantity").notNull(),
+  daysSupply: integer("days_supply").notNull(),
+  drugCoefficient: text("drug_coefficient").notNull(), // Storing as text or float? Mock has 1.25. Let's use real.
+  status: text("status").notNull().default("pending"),
+  riskLevel: text("risk_level").notNull(),
+  readinessScore: integer("readiness_score").notNull(),
+  aiConfidence: integer("ai_confidence").notNull(),
+  createdAt: text("created_at").notNull(), // Mock has string ISO
+});
+
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
@@ -127,6 +151,10 @@ export const insertPatientSchema = createInsertSchema(patients).omit({
   dateOfBirth: z.coerce.date(),
 });
 
+export const insertClaimSchema = createInsertSchema(claims).omit({
+  id: true,
+});
+
 export const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
   password: z.string().min(1, "Password is required"),
@@ -149,6 +177,8 @@ export type InsertInventory = z.infer<typeof insertInventorySchema>;
 export type InventoryItem = typeof inventory.$inferSelect;
 export type InsertPatient = z.infer<typeof insertPatientSchema>;
 export type Patient = typeof patients.$inferSelect;
+export type Claim = typeof claims.$inferSelect;
+export type InsertClaim = typeof claims.$inferInsert;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type SignupInput = z.infer<typeof signupSchema>;
 

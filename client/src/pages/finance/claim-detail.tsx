@@ -21,6 +21,7 @@ import {
   User,
   XCircle,
 } from "lucide-react";
+import type { Claim } from "@shared/schema";
 
 const mockClaimDetail = {
   id: "clm-001",
@@ -114,6 +115,11 @@ export default function FinanceClaimDetailPage() {
     }
   };
 
+  // Fetch claim details
+  const { data: claim, isLoading: isLoadingClaim } = useQuery<Claim>({
+    queryKey: [`/api/finance/claims/${id}`],
+  });
+
   const handleDownload = async (filename: string, originalName: string) => {
     try {
       const response = await fetch(`/api/finance/documents/${filename}`);
@@ -137,8 +143,6 @@ export default function FinanceClaimDetailPage() {
     }
   };
 
-  const claim = mockClaimDetail;
-
   const handleRerunValidation = async () => {
     setIsRerunning(true);
     await new Promise((r) => setTimeout(r, 2000));
@@ -147,6 +151,37 @@ export default function FinanceClaimDetailPage() {
       title: "Validation Complete",
       description: "AI readiness check has been updated.",
     });
+  };
+
+  if (isLoadingClaim) {
+    return <div className="p-6">Loading claim details...</div>;
+  }
+
+  if (!claim) {
+    return <div className="p-6">Claim not found</div>;
+  }
+  
+  // Transform or enrich claim data if needed to match UI expectations (like mock issues)
+  // For now, we'll merge with static issues since backend doesn't store them yet
+  const enrichedClaim = {
+    ...claim,
+    amount: claim.amount / 100, // Convert cents back to dollars
+    issues: [
+      {
+        id: "iss-001",
+        type: "error",
+        title: "Missing Prior Authorization",
+        description: "This medication requires prior authorization from the payer before submission.",
+        suggestion: "Upload prior authorization document or contact payer for expedited approval.",
+      },
+      {
+        id: "iss-002",
+        type: "warning",
+        title: "Drug Coefficient Mismatch",
+        description: "The applied drug coefficient (1.25) differs from payer's expected rate (1.18).",
+        suggestion: "Verify coefficient with payer fee schedule or adjust billing amount.",
+      },
+    ],
   };
 
 
@@ -162,35 +197,48 @@ export default function FinanceClaimDetailPage() {
         <div className="flex-1">
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-bold text-foreground">
-              {claim.claimNumber}
+              {enrichedClaim.claimNumber}
             </h1>
             <Badge
               className={
-                claim.riskLevel === "high"
+                enrichedClaim.riskLevel === "high"
                   ? "bg-danger/10 text-danger"
-                  : claim.riskLevel === "medium"
+                  : enrichedClaim.riskLevel === "medium"
                   ? "bg-amber-500/10 text-amber-600"
                   : "bg-success/10 text-success"
               }
             >
-              {claim.riskLevel === "high" ? "High Risk" : claim.riskLevel === "medium" ? "Medium Risk" : "Low Risk"}
+              {enrichedClaim.riskLevel === "high" ? "High Risk" : enrichedClaim.riskLevel === "medium" ? "Medium Risk" : "Low Risk"}
             </Badge>
           </div>
           <p className="text-muted-foreground">
-            Created on {new Date(claim.createdAt).toLocaleDateString()}
+            Created on {new Date(enrichedClaim.createdAt).toLocaleDateString()}
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
             onClick={handleRerunValidation}
-            disabled={isRerunning}
+            disabled={isRerunning || enrichedClaim.status === "submitted"}
             data-testid="button-rerun-validation"
           >
             <RefreshCw className={`w-4 h-4 mr-2 ${isRerunning ? "animate-spin" : ""}`} />
             {isRerunning ? "Validating..." : "Re-run Validation"}
           </Button>
-
+          <Button 
+            asChild 
+            data-testid="button-submit-claim"
+            disabled={enrichedClaim.status === "submitted"}
+            variant={enrichedClaim.status === "submitted" ? "secondary" : "default"}
+          >
+            {enrichedClaim.status === "submitted" ? (
+              <span>Submitted</span>
+            ) : (
+              <Link href={`/finance/claims/${id}/submit`}>
+                Submit Claim
+              </Link>
+            )}
+          </Button>
         </div>
       </div>
 
@@ -211,30 +259,30 @@ export default function FinanceClaimDetailPage() {
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-medium">Readiness Score</span>
-                    <span className="text-2xl font-bold">{claim.readinessScore}%</span>
+                    <span className="text-2xl font-bold">{enrichedClaim.readinessScore}%</span>
                   </div>
                   <div className="h-3 bg-muted rounded-full overflow-hidden">
                     <div
                       className={`h-full transition-all ${
-                        claim.readinessScore >= 80
+                        enrichedClaim.readinessScore >= 80
                           ? "bg-success"
-                          : claim.readinessScore >= 60
+                          : enrichedClaim.readinessScore >= 60
                           ? "bg-amber-500"
                           : "bg-danger"
                       }`}
-                      style={{ width: `${claim.readinessScore}%` }}
+                      style={{ width: `${enrichedClaim.readinessScore}%` }}
                     />
                   </div>
                 </div>
-                <AIAssistBadge confidence={claim.aiConfidence} />
+                <AIAssistBadge confidence={enrichedClaim.aiConfidence} />
               </div>
 
-              {claim.issues.length > 0 ? (
+              {enrichedClaim.issues.length > 0 ? (
                 <div className="space-y-3">
                   <h4 className="font-medium text-sm text-muted-foreground">
-                    Issues Detected ({claim.issues.length})
+                    Issues Detected ({enrichedClaim.issues.length})
                   </h4>
-                  {claim.issues.map((issue) => (
+                  {enrichedClaim.issues.map((issue) => (
                     <div
                       key={issue.id}
                       className={`p-4 rounded-lg border ${
@@ -290,27 +338,27 @@ export default function FinanceClaimDetailPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-muted-foreground">Drug Name</p>
-                  <p className="font-medium">{claim.drugName}</p>
+                  <p className="font-medium">{enrichedClaim.drugName}</p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">NDC</p>
-                  <p className="font-medium">{claim.drugNdc}</p>
+                  <p className="font-medium">{enrichedClaim.drugNdc}</p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Quantity</p>
-                  <p className="font-medium">{claim.quantity} units</p>
+                  <p className="font-medium">{enrichedClaim.quantity} units</p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Days Supply</p>
-                  <p className="font-medium">{claim.daysSupply} days</p>
+                  <p className="font-medium">{enrichedClaim.daysSupply} days</p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Drug Coefficient</p>
-                  <p className="font-medium">{claim.drugCoefficient}</p>
+                  <p className="font-medium">{enrichedClaim.drugCoefficient}</p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Claim Amount</p>
-                  <p className="font-medium text-lg">${claim.amount.toFixed(2)}</p>
+                  <p className="font-medium text-lg">${enrichedClaim.amount.toFixed(2)}</p>
                 </div>
               </div>
             </CardContent>
@@ -338,7 +386,7 @@ export default function FinanceClaimDetailPage() {
                     size="sm" 
                     data-testid="button-upload-doc"
                     onClick={() => fileInputRef.current?.click()}
-                    disabled={isUploading}
+                    disabled={isUploading || enrichedClaim.status === "submitted"}
                   >
                     <Upload className={`w-4 h-4 mr-2 ${isUploading ? "animate-spin" : ""}`} />
                     {isUploading ? "Uploading..." : "Upload Document"}
@@ -389,15 +437,15 @@ export default function FinanceClaimDetailPage() {
             <CardContent className="space-y-3">
               <div>
                 <p className="text-sm text-muted-foreground">Name</p>
-                <p className="font-medium">{claim.patientName}</p>
+                <p className="font-medium">{enrichedClaim.patientName}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Patient ID</p>
-                <p className="font-medium">{claim.patientId}</p>
+                <p className="font-medium">{enrichedClaim.patientId}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Date of Birth</p>
-                <p className="font-medium">{claim.dateOfBirth}</p>
+                <p className="font-medium">{enrichedClaim.dateOfBirth}</p>
               </div>
             </CardContent>
           </Card>
@@ -412,19 +460,19 @@ export default function FinanceClaimDetailPage() {
             <CardContent className="space-y-3">
               <div>
                 <p className="text-sm text-muted-foreground">Payer</p>
-                <p className="font-medium">{claim.payer}</p>
+                <p className="font-medium">{enrichedClaim.payer}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Payer ID</p>
-                <p className="font-medium">{claim.payerId}</p>
+                <p className="font-medium">{enrichedClaim.payerId}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Member ID</p>
-                <p className="font-medium">{claim.memberId}</p>
+                <p className="font-medium">{enrichedClaim.memberId}</p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Group Number</p>
-                <p className="font-medium">{claim.groupNumber}</p>
+                <p className="font-medium">{enrichedClaim.groupNumber}</p>
               </div>
             </CardContent>
           </Card>
@@ -443,19 +491,31 @@ export default function FinanceClaimDetailPage() {
                   <div>
                     <p className="font-medium text-sm">Claim Created</p>
                     <p className="text-xs text-muted-foreground">
-                      {new Date(claim.createdAt).toLocaleString()}
+                      {new Date(enrichedClaim.createdAt).toLocaleString()}
                     </p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 rounded-full bg-amber-500 mt-2" />
-                  <div>
-                    <p className="font-medium text-sm">Pending Review</p>
-                    <p className="text-xs text-muted-foreground">
-                      Awaiting issue resolution
-                    </p>
+                {enrichedClaim.status === "submitted" ? (
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 rounded-full bg-blue-500 mt-2" />
+                    <div>
+                      <p className="font-medium text-sm">Claim Submitted</p>
+                      <p className="text-xs text-muted-foreground">
+                        Sent to Payer
+                      </p>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 rounded-full bg-amber-500 mt-2" />
+                    <div>
+                      <p className="font-medium text-sm">Pending Review</p>
+                      <p className="text-xs text-muted-foreground">
+                        Awaiting issue resolution
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>

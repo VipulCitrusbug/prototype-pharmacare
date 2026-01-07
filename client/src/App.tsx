@@ -37,6 +37,7 @@ import PatientSettingsPage from "@/pages/patient/settings";
 import FinanceDashboardPage from "@/pages/finance/dashboard";
 import FinanceClaimsPage from "@/pages/finance/claims";
 import FinanceClaimDetailPage from "@/pages/finance/claim-detail";
+import FinanceSubmitClaimPage from "@/pages/finance/submit-claim";
 import FinanceDocumentsPage from "@/pages/finance/documents";
 import FinanceReportsPage from "@/pages/finance/reports";
 import FinanceSettingsPage from "@/pages/finance/settings";
@@ -172,7 +173,7 @@ function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <SidebarProvider style={style as React.CSSProperties}>
+    <SidebarProvider style={style as React.CSSProperties} className="h-screen overflow-hidden">
       <div className="flex h-screen w-full">
         <AppSidebar
           userRole={userRole as any}
@@ -249,6 +250,7 @@ function Router() {
         <Route path="/finance/dashboard" component={FinanceDashboardPage} />
         <Route path="/finance/claims" component={FinanceClaimsPage} />
         <Route path="/finance/claims/:id" component={FinanceClaimDetailPage} />
+        <Route path="/finance/claims/:id/submit" component={FinanceSubmitClaimPage} />
         <Route path="/finance/documents" component={FinanceDocumentsPage} />
         <Route path="/finance/reports" component={FinanceReportsPage} />
         <Route path="/finance/settings" component={FinanceSettingsPage} />

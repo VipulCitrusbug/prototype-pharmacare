@@ -1,8 +1,9 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useRoute, Link } from "wouter";
+import { useRoute, Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import {
   StatusBadge,
@@ -25,6 +26,15 @@ import {
   Pill,
   FileText,
   AlertTriangle,
+  Edit2,
+  Save,
+  X,
+  Upload,
+  Download,
+  Trash2,
+  File,
+  FileImage,
+  FileType,
 } from "lucide-react";
 import { useState } from "react";
 import type { Prescription, PrescriptionStatusType, PriorityLevelType } from "@shared/schema";
@@ -57,8 +67,43 @@ const mockPrescription: Prescription = {
 
 export default function PrescriptionDetailPage() {
   const [, params] = useRoute("/prescription/:id");
+  const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [notes, setNotes] = useState("");
+  const [isEditingNotes, setIsEditingNotes] = useState(false);
+  const [originalNotes, setOriginalNotes] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
+  const fileInputRef = useState<HTMLInputElement | null>(null)[1];
+  const [documents, setDocuments] = useState<Array<{
+    id: string;
+    fileName: string;
+    fileType: string;
+    fileSize: number;
+    fileUrl: string;
+    source: 'fax' | 'scan' | 'email' | 'upload';
+    uploadedBy: string;
+    uploadedAt: Date;
+    isSourceDocument: boolean;
+  }>>([
+    {
+      id: 'doc-001',
+      fileName: 'prescription_scan_001.pdf',
+      fileType: 'pdf',
+      fileSize: 245000,
+      fileUrl: '#',
+      source: 'fax',
+      uploadedBy: 'Dr. Michael Chen',
+      uploadedAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
+      isSourceDocument: true,
+    },
+  ]);
+  const [editForm, setEditForm] = useState({
+    drugName: "",
+    dosage: "",
+    frequency: "",
+    duration: "",
+    instructions: "",
+  });
 
   const prescriptionQuery = useQuery<Prescription>({
     queryKey: [`/api/prescriptions/${params?.id}`],
@@ -66,10 +111,10 @@ export default function PrescriptionDetailPage() {
     staleTime: 30000,
   });
 
-  const updateStatusMutation = useMutation({
-    mutationFn: async ({ status }: { status: PrescriptionStatusType }) => {
+  const updatePrescriptionMutation = useMutation({
+    mutationFn: async (updates: Partial<Prescription>) => {
       const res = await apiRequest("PATCH", `/api/prescriptions/${params?.id}`, {
-        status,
+        ...updates,
         pharmacistNotes: notes || undefined,
       });
       return res.json();
@@ -86,10 +131,12 @@ export default function PrescriptionDetailPage() {
       });
       // Also invalidate dashboard metrics since counts may have changed
       queryClient.invalidateQueries({ queryKey: ["/api/dashboard/metrics"] });
+      
       toast({
-        title: "Status updated",
-        description: "Prescription has been updated successfully.",
+        title: "Prescription updated",
+        description: "Prescription details have been updated successfully.",
       });
+      setIsEditing(false);
     },
     onError: (error: Error) => {
       toast({
@@ -100,7 +147,20 @@ export default function PrescriptionDetailPage() {
     },
   });
 
+  // Sync form data when prescription loads
   const prescription = prescriptionQuery.data || mockPrescription;
+  
+  if (prescriptionQuery.isSuccess && !isEditing && (editForm.drugName === "" || editForm.drugName !== prescription.drugName)) {
+     setEditForm({
+       drugName: prescription.drugName,
+       dosage: prescription.dosage,
+       frequency: prescription.frequency,
+       duration: prescription.duration || "",
+       instructions: prescription.instructions || "",
+     });
+  }
+
+
 
   if (prescriptionQuery.isLoading) {
     return <PageLoader text="Loading prescription details..." />;
@@ -211,35 +271,111 @@ export default function PrescriptionDetailPage() {
           </Card>
 
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="flex items-center gap-2">
                 <Pill className="w-5 h-5 text-primary" />
                 Medication Details
               </CardTitle>
+              {!isEditing ? (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => {
+                    setEditForm({
+                      drugName: prescription.drugName,
+                      dosage: prescription.dosage,
+                      frequency: prescription.frequency,
+                      duration: prescription.duration || "",
+                      instructions: prescription.instructions || "",
+                    });
+                    setIsEditing(true);
+                  }}
+                  disabled={prescription.status === "dispensed" || prescription.status === "ready"}
+                >
+                  <Edit2 className="w-4 h-4 mr-2" />
+                  Edit
+                </Button>
+              ) : (
+                <div className="flex gap-2">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => setIsEditing(false)}
+                    disabled={updatePrescriptionMutation.isPending}
+                  >
+                    <X className="w-4 h-4 mr-2" />
+                    Cancel
+                  </Button>
+                  <Button 
+                    variant="default" 
+                    size="sm" 
+                    onClick={() => updatePrescriptionMutation.mutate(editForm)}
+                    disabled={updatePrescriptionMutation.isPending}
+                  >
+                    <Save className="w-4 h-4 mr-2" />
+                    Save
+                  </Button>
+                </div>
+              )}
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-muted-foreground">Drug Name</p>
-                  <p className="font-semibold">{prescription.drugName}</p>
+                  <p className="text-sm text-muted-foreground mb-1">Drug Name</p>
+                  {isEditing ? (
+                    <Input 
+                      value={editForm.drugName}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, drugName: e.target.value }))}
+                    />
+                  ) : (
+                    <p className="font-semibold">{prescription.drugName}</p>
+                  )}
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Dosage</p>
-                  <p className="font-semibold">{prescription.dosage}</p>
+                  <p className="text-sm text-muted-foreground mb-1">Dosage</p>
+                  {isEditing ? (
+                    <Input 
+                      value={editForm.dosage}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, dosage: e.target.value }))}
+                    />
+                  ) : (
+                    <p className="font-semibold">{prescription.dosage}</p>
+                  )}
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Frequency</p>
-                  <p className="font-semibold">{prescription.frequency}</p>
+                  <p className="text-sm text-muted-foreground mb-1">Frequency</p>
+                  {isEditing ? (
+                    <Input 
+                      value={editForm.frequency}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, frequency: e.target.value }))}
+                    />
+                  ) : (
+                    <p className="font-semibold">{prescription.frequency}</p>
+                  )}
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Duration</p>
-                  <p className="font-semibold">{prescription.duration || "As needed"}</p>
+                  <p className="text-sm text-muted-foreground mb-1">Duration</p>
+                  {isEditing ? (
+                    <Input 
+                      value={editForm.duration}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, duration: e.target.value }))}
+                    />
+                  ) : (
+                    <p className="font-semibold">{prescription.duration || "As needed"}</p>
+                  )}
                 </div>
               </div>
               <Separator />
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Instructions</p>
-                <p className="text-foreground">{prescription.instructions || "No special instructions"}</p>
+                {isEditing ? (
+                  <Textarea 
+                    value={editForm.instructions}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, instructions: e.target.value }))}
+                  />
+                ) : (
+                  <p className="text-foreground">{prescription.instructions || "No special instructions"}</p>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -268,19 +404,60 @@ export default function PrescriptionDetailPage() {
           </Card>
 
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="flex items-center gap-2">
                 <FileText className="w-5 h-5 text-primary" />
                 Pharmacist Notes
               </CardTitle>
+              {!isEditingNotes ? (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => {
+                    setOriginalNotes(prescription.pharmacistNotes || "");
+                    setNotes(prescription.pharmacistNotes || "");
+                    setIsEditingNotes(true);
+                  }}
+                >
+                  <Edit2 className="w-4 h-4 mr-2" />
+                  Edit
+                </Button>
+              ) : (
+                <div className="flex gap-2">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => {
+                      setNotes(originalNotes);
+                      setIsEditingNotes(false);
+                    }}
+                  >
+                    <X className="w-4 h-4 mr-2" />
+                    Cancel
+                  </Button>
+                  <Button 
+                    variant="default" 
+                    size="sm" 
+                    onClick={() => {
+                      updatePrescriptionMutation.mutate({ pharmacistNotes: notes });
+                      setIsEditingNotes(false);
+                    }}
+                    disabled={updatePrescriptionMutation.isPending}
+                  >
+                    <Save className="w-4 h-4 mr-2" />
+                    Save
+                  </Button>
+                </div>
+              )}
             </CardHeader>
             <CardContent>
               <Textarea
                 placeholder="Add notes about this prescription..."
-                value={notes || prescription.pharmacistNotes || ""}
+                value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 className="min-h-[100px]"
                 data-testid="textarea-notes"
+                disabled={!isEditingNotes}
               />
             </CardContent>
           </Card>
@@ -341,41 +518,55 @@ export default function PrescriptionDetailPage() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Actions</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {nextStatus && actionLabel && (
-                <Button
-                  className="w-full"
-                  onClick={() => updateStatusMutation.mutate({ status: nextStatus })}
-                  disabled={updateStatusMutation.isPending}
-                  data-testid="button-next-status"
-                >
-                  {prescription.status === "preparing" ? (
-                    <Package className="w-4 h-4 mr-2" />
-                  ) : (
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                  )}
-                  {actionLabel}
-                </Button>
-              )}
-              
-              {prescription.status !== "cancelled" && prescription.status !== "delivered" && (
-                <Button
-                  variant="outline"
-                  className="w-full text-danger border-danger/50 hover:bg-danger/10"
-                  onClick={() => updateStatusMutation.mutate({ status: "cancelled" })}
-                  disabled={updateStatusMutation.isPending}
-                  data-testid="button-cancel"
-                >
-                  <XCircle className="w-4 h-4 mr-2" />
-                  Cancel Prescription
-                </Button>
-              )}
-            </CardContent>
-          </Card>
+          {(prescription.status !== "cancelled" && prescription.status !== "delivered") ? (
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg">Actions</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {nextStatus && actionLabel ? (
+                  <>
+                    <Button
+                      className="w-full"
+                      onClick={() => {
+                        if (prescription.status === "pending") {
+                          setLocation(`/prescription/${prescription.id}/review`);
+                        } else if (prescription.status === "in_review") {
+                          setLocation(`/prescription/${prescription.id}/validate`);
+                        } else {
+                          updatePrescriptionMutation.mutate({ status: nextStatus });
+                        }
+                      }}
+                      disabled={updatePrescriptionMutation.isPending}
+                      data-testid="button-next-status"
+                    >
+                      {prescription.status === "preparing" ? (
+                        <Package className="w-4 h-4 mr-2" />
+                      ) : (
+                        <CheckCircle className="w-4 h-4 mr-2" />
+                      )}
+                      {actionLabel}
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      className="w-full text-danger border-danger/50 hover:bg-danger/10"
+                      onClick={() => updatePrescriptionMutation.mutate({ status: "cancelled" })}
+                      disabled={updatePrescriptionMutation.isPending}
+                      data-testid="button-cancel"
+                    >
+                      <XCircle className="w-4 h-4 mr-2" />
+                      Cancel Prescription
+                    </Button>
+                  </>
+                ) : (
+                  <div className="p-4 text-center text-muted-foreground">
+                    <p className="text-sm">No actions available for this prescription</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ) : null}
 
           {prescription.priority === "critical" && (
             <Card className="border-danger/50 bg-danger/5">

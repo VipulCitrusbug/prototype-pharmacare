@@ -1,0 +1,20 @@
+**Lacrosse Bot - Steve**
+
+**Weekly Updates from 29-12-2025 to 02-01-2026**
+
+1. Cancel Subscription:
+   a. Moved the cancel subscription button from the payment modal details page to the payment history listing page.  
+   b. Added the `next_billing_date` field to the user model to track upcoming billing cycles and manage remaining credits.  
+   c. Updated credit management logic so that, on subscription renewal, existing user credits are replaced with the renewed plan’s usage credits.  
+   d. Implemented top-up plan handling where purchased top-up credits are added to the existing available credit balance.  
+   e. Tested the complete subscription purchase flow to validate updated credits and next billing date handling.  
+   f. Tested the cancel subscription flow and verified correct credit updates and billing cycle changes upon expiry.  
+   g. Tested the cancel subscription behavior on the expiry date as well as one day after expiry to ensure correct handling.  
+   h. Deployed cancel subscription changes to the server and validated the setup post-deployment.
+
+2. SendGrid:
+   a. Verified SendGrid configuration to confirm domain verification status.  
+   b. Shared the required domain verification details with the DevOps team for further setup.
+
+**Roadblocks:**
+1. No Roadblock.

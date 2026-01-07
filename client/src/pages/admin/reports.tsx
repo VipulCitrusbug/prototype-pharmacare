@@ -281,6 +281,44 @@ export default function AdminReportsPage() {
     }
   };
 
+  const exportAuditLogs = () => {
+    // Create CSV header
+    const headers = ['Timestamp', 'Action', 'Target', 'Type', 'User', 'Previous Value', 'New Value', 'IP Address'];
+    
+    // Create CSV rows from filtered logs
+    const rows = filteredLogs.map(log => [
+      new Date(log.timestamp).toLocaleString(),
+      log.action,
+      log.target,
+      log.targetType,
+      log.user,
+      log.previousValue || 'N/A',
+      log.newValue || 'N/A',
+      log.ipAddress
+    ]);
+    
+    // Combine headers and rows
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n');
+    
+    // Create blob and download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `audit_logs_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast({
+      title: "Export Complete",
+      description: `Exported ${filteredLogs.length} audit log entries`,
+    });
+  };
+
 
 
   return (
@@ -387,6 +425,16 @@ export default function AdminReportsPage() {
                       <SelectItem value="90d">Last 90 Days</SelectItem>
                     </SelectContent>
                   </Select>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={exportAuditLogs}
+                    disabled={filteredLogs.length === 0}
+                    data-testid="button-export-logs"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Export
+                  </Button>
 
                 </div>
               </div>
@@ -506,7 +554,7 @@ export default function AdminReportsPage() {
                             data-testid={`button-generate-${template.id}`}
                           >
                             <Download className="w-4 h-4 mr-1" />
-                            Generate
+                            Download
                           </Button>
                         </div>
                         <p className="text-xs text-muted-foreground mt-3">

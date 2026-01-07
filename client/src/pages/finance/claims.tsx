@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
+import type { Claim } from "@shared/schema";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -25,109 +27,7 @@ import {
   XCircle,
 } from "lucide-react";
 
-type ClaimStatus = "pending" | "ready" | "submitted" | "approved" | "rejected";
-type RiskLevel = "low" | "medium" | "high";
-
-interface Claim {
-  id: string;
-  claimNumber: string;
-  patientName: string;
-  prescriptionRef: string;
-  payer: string;
-  amount: number;
-  status: ClaimStatus;
-  riskLevel: RiskLevel;
-  readinessScore: number;
-  issues: string[];
-  submittedAt?: string;
-  createdAt: string;
-}
-
-const mockClaims: Claim[] = [
-  {
-    id: "clm-001",
-    claimNumber: "CLM-2024-1850",
-    patientName: "Sarah Johnson",
-    prescriptionRef: "RX-001",
-    payer: "BlueCross BlueShield",
-    amount: 1245.00,
-    status: "pending",
-    riskLevel: "high",
-    readinessScore: 62,
-    issues: ["Missing prior authorization", "Drug coefficient mismatch"],
-    createdAt: "2024-01-15",
-  },
-  {
-    id: "clm-002",
-    claimNumber: "CLM-2024-1849",
-    patientName: "James Wilson",
-    prescriptionRef: "RX-002",
-    payer: "Aetna",
-    amount: 892.50,
-    status: "pending",
-    riskLevel: "medium",
-    readinessScore: 78,
-    issues: ["Incomplete documentation"],
-    createdAt: "2024-01-15",
-  },
-  {
-    id: "clm-003",
-    claimNumber: "CLM-2024-1848",
-    patientName: "Maria Garcia",
-    prescriptionRef: "RX-003",
-    payer: "United Healthcare",
-    amount: 2156.00,
-    status: "ready",
-    riskLevel: "low",
-    readinessScore: 95,
-    issues: [],
-    createdAt: "2024-01-14",
-  },
-  {
-    id: "clm-004",
-    claimNumber: "CLM-2024-1847",
-    patientName: "Robert Brown",
-    prescriptionRef: "RX-004",
-    payer: "Cigna",
-    amount: 567.00,
-    status: "submitted",
-    riskLevel: "low",
-    readinessScore: 98,
-    issues: [],
-    submittedAt: "2024-01-14",
-    createdAt: "2024-01-13",
-  },
-  {
-    id: "clm-005",
-    claimNumber: "CLM-2024-1846",
-    patientName: "Emily Davis",
-    prescriptionRef: "RX-005",
-    payer: "Humana",
-    amount: 1234.50,
-    status: "approved",
-    riskLevel: "low",
-    readinessScore: 100,
-    issues: [],
-    submittedAt: "2024-01-12",
-    createdAt: "2024-01-11",
-  },
-  {
-    id: "clm-006",
-    claimNumber: "CLM-2024-1845",
-    patientName: "Michael Lee",
-    prescriptionRef: "RX-006",
-    payer: "Medicare",
-    amount: 789.00,
-    status: "rejected",
-    riskLevel: "high",
-    readinessScore: 45,
-    issues: ["Invalid member ID", "Service not covered"],
-    submittedAt: "2024-01-10",
-    createdAt: "2024-01-09",
-  },
-];
-
-const statusConfig: Record<ClaimStatus, { label: string; icon: typeof CheckCircle2; color: string }> = {
+const statusConfig: Record<string, { label: string; icon: typeof CheckCircle2; color: string }> = {
   pending: { label: "Pending Review", icon: Clock, color: "bg-amber-500/10 text-amber-600" },
   ready: { label: "Ready to Submit", icon: CheckCircle2, color: "bg-success/10 text-success" },
   submitted: { label: "Submitted", icon: FileText, color: "bg-info/10 text-info" },
@@ -135,7 +35,7 @@ const statusConfig: Record<ClaimStatus, { label: string; icon: typeof CheckCircl
   rejected: { label: "Rejected", icon: XCircle, color: "bg-danger/10 text-danger" },
 };
 
-const riskConfig: Record<RiskLevel, { label: string; color: string }> = {
+const riskConfig: Record<string, { label: string; color: string }> = {
   low: { label: "Low Risk", color: "bg-success/10 text-success" },
   medium: { label: "Medium Risk", color: "bg-amber-500/10 text-amber-600" },
   high: { label: "High Risk", color: "bg-danger/10 text-danger" },
@@ -147,7 +47,22 @@ export default function FinanceClaimsPage() {
   const [payerFilter, setPayerFilter] = useState("all");
   const [riskFilter, setRiskFilter] = useState("all");
 
-  const filteredClaims = mockClaims.filter((claim) => {
+  const { data: claims = [], isLoading } = useQuery<Claim[]>({
+    queryKey: ["/api/finance/claims"],
+  });
+
+  // Enrich claims with static issues for now since backend issues array is limited or needs transformation if simple string array
+  // We'll trust what's coming from backend storage if present, otherwise default to empty
+  const enrichedClaims = claims.map(c => ({
+    ...c,
+    // Ensure issues is an array. Schema defines it as string[] | null likely, but verify. 
+    // In our storage mock it's string[].
+    issues: Array.isArray(c.issues) ? c.issues : [],
+    // Convert amount to dollars
+    amountDollars: c.amount / 100,
+  }));
+
+  const filteredClaims = enrichedClaims.filter((claim) => {
     const matchesSearch =
       claim.patientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       claim.claimNumber.toLowerCase().includes(searchQuery.toLowerCase());
@@ -164,7 +79,8 @@ export default function FinanceClaimsPage() {
     return matchesSearch && matchesTab && matchesPayer && matchesRisk;
   });
 
-  const payers = [...new Set(mockClaims.map((c) => c.payer))];
+  const payers = [...new Set(enrichedClaims.map((c) => c.payer))];
+
 
   return (
     <div className="space-y-6" data-testid="finance-claims-page">
@@ -215,21 +131,23 @@ export default function FinanceClaimsPage() {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
           <TabsTrigger value="all" data-testid="tab-all">
-            All Claims ({mockClaims.length})
+            All Claims ({enrichedClaims.length})
           </TabsTrigger>
           <TabsTrigger value="pending" data-testid="tab-pending">
-            Pending ({mockClaims.filter((c) => c.status === "pending").length})
+            Pending ({enrichedClaims.filter((c) => c.status === "pending").length})
           </TabsTrigger>
           <TabsTrigger value="ready" data-testid="tab-ready">
-            Ready ({mockClaims.filter((c) => c.status === "ready").length})
+            Ready ({enrichedClaims.filter((c) => c.status === "ready").length})
           </TabsTrigger>
           <TabsTrigger value="submitted" data-testid="tab-submitted">
-            Submitted ({mockClaims.filter((c) => ["submitted", "approved", "rejected"].includes(c.status)).length})
+            Submitted ({enrichedClaims.filter((c) => ["submitted", "approved", "rejected"].includes(c.status)).length})
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value={activeTab} className="mt-6">
-          {filteredClaims.length === 0 ? (
+          {isLoading ? (
+            <div className="p-12 text-center text-muted-foreground">Loading claims...</div>
+          ) : filteredClaims.length === 0 ? (
             <EmptyState
               icon="clipboard"
               title="No Claims Found"
@@ -288,7 +206,7 @@ export default function FinanceClaimsPage() {
                         <div className="flex items-center gap-4">
                           <div className="text-right">
                             <p className="font-semibold">
-                              ${claim.amount.toFixed(2)}
+                              ${claim.amountDollars.toFixed(2)}
                             </p>
                             <div className="flex items-center gap-1">
                               <Sparkles className="w-3 h-3 text-accent" />

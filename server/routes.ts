@@ -518,6 +518,42 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/finance/claims", requireFinance, async (req, res) => {
+    try {
+      const claims = await storage.getClaims();
+      res.json(claims);
+    } catch (error) {
+      console.error("Get claims error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.get("/api/finance/claims/:id", requireFinance, async (req, res) => {
+    try {
+      const claim = await storage.getClaim(req.params.id);
+      if (!claim) {
+        return res.status(404).json({ error: "Claim not found" });
+      }
+      res.json(claim);
+    } catch (error) {
+      console.error("Get claim error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.patch("/api/finance/claims/:id", requireFinance, async (req, res) => {
+    try {
+      const claim = await storage.updateClaim(req.params.id, req.body);
+      if (!claim) {
+        return res.status(404).json({ error: "Claim not found" });
+      }
+      res.json(claim);
+    } catch (error) {
+      console.error("Update claim error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   app.get("/api/finance/claims/:id/documents", requireFinance, async (req, res) => {
     try {
       const documents = await storage.getClaimDocuments(req.params.id);

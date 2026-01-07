@@ -75,16 +75,16 @@ export default function PrescriptionReviewPage() {
     { name: "Drug Name", value: prescription.drugName, confidence: 98, editable: true },
     { name: "Dosage", value: prescription.dosage, confidence: 95, editable: true },
     { name: "Frequency", value: prescription.frequency, confidence: 88, editable: true },
-    { name: "Duration", value: prescription.duration, confidence: 92, editable: true },
+    { name: "Duration", value: prescription.duration || "", confidence: 92, editable: true },
     { name: "Instructions", value: prescription.instructions || "", confidence: 85, editable: true },
     { name: "Patient Name", value: prescription.patientName, confidence: 99, editable: false },
-    { name: "Prescriber", value: prescription.prescriberName, confidence: 97, editable: false },
+    { name: "Prescriber", value: prescription.prescriberName || "", confidence: 97, editable: false },
   ];
 
   const confirmMutation = useMutation({
     mutationFn: async () => {
       const res = await apiRequest("PATCH", `/api/prescriptions/${params.id}`, {
-        status: "validated",
+        status: "in_review",
         ...editedFields,
       });
       return res.json();
@@ -242,7 +242,7 @@ export default function PrescriptionReviewPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <AIAssistBadge confidence={prescription.aiConfidence || 0} showLabel />
+              <AIAssistBadge confidence={prescription.aiConfidence || 0} />
               <div className="mt-4 space-y-2 text-sm">
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Overall Extraction</span>

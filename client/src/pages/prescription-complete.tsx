@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PageLoader } from "@/components/common";
+import { useToast } from "@/hooks/use-toast";
 import { 
   CheckCircle2, 
   Printer, 
@@ -45,6 +46,7 @@ const mockPrescription: Prescription = {
 export default function PrescriptionCompletePage() {
   const params = useParams<{ id: string }>();
   const [, setLocation] = useLocation();
+  const { toast } = useToast();
 
   const prescriptionQuery = useQuery<Prescription>({
     queryKey: ["/api/prescriptions", params.id],
@@ -229,15 +231,68 @@ export default function PrescriptionCompletePage() {
       </Card>
 
       <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
-        <Button variant="outline" data-testid="button-print">
+        <Button 
+          variant="outline" 
+          data-testid="button-print"
+          onClick={() => {
+            // Generate and print a label with prescription details
+            const printWindow = window.open('', '_blank');
+            if (printWindow) {
+              printWindow.document.write(`
+                <html>
+                  <head>
+                    <title>Prescription Label - ${prescription.id}</title>
+                    <style>
+                      body { font-family: Arial, sans-serif; padding: 20px; }
+                      .label { border: 2px solid #000; padding: 20px; max-width: 400px; }
+                      h2 { margin-top: 0; }
+                      .field { margin: 10px 0; }
+                      .field strong { display: inline-block; width: 120px; }
+                    </style>
+                  </head>
+                  <body>
+                    <div class="label">
+                      <h2>Prescription Label</h2>
+                      <div class="field"><strong>Rx #:</strong> ${prescription.id}</div>
+                      <div class="field"><strong>Patient:</strong> ${prescription.patientName}</div>
+                      <div class="field"><strong>Drug:</strong> ${prescription.drugName}</div>
+                      <div class="field"><strong>Dosage:</strong> ${prescription.dosage}</div>
+                      <div class="field"><strong>Frequency:</strong> ${prescription.frequency}</div>
+                      <div class="field"><strong>Duration:</strong> ${prescription.duration || 'As needed'}</div>
+                      <div class="field"><strong>Instructions:</strong> ${prescription.instructions || 'None'}</div>
+                      <div class="field"><strong>Prescriber:</strong> ${prescription.prescriberName || 'N/A'}</div>
+                      <div class="field"><strong>Dispensed:</strong> ${prescription.dispensedAt ? new Date(prescription.dispensedAt).toLocaleDateString() : 'N/A'}</div>
+                    </div>
+                    <script>window.print(); window.close();</script>
+                  </body>
+                </html>
+              `);
+              printWindow.document.close();
+            }
+          }}
+        >
           <Printer className="w-4 h-4 mr-2" />
           Print Label
         </Button>
-        <Button variant="outline" data-testid="button-notify">
+        <Button 
+          variant="outline" 
+          data-testid="button-notify"
+          onClick={() => {
+            // Simulate sending a notification
+            toast({
+              title: "Notification Sent",
+              description: `${prescription.patientName} has been notified that their prescription is ${prescription.isDelivery ? 'out for delivery' : 'ready for pickup'}.`,
+            });
+          }}
+        >
           <Bell className="w-4 h-4 mr-2" />
           Send Notification
         </Button>
-        <Button variant="outline" data-testid="button-view-record">
+        <Button 
+          variant="outline" 
+          data-testid="button-view-record"
+          onClick={() => setLocation(`/prescription/${prescription.id}`)}
+        >
           <FileText className="w-4 h-4 mr-2" />
           View Full Record
         </Button>

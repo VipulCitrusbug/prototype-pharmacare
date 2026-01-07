@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type Prescription, type InsertPrescription, type InventoryItem, type InsertInventory, type Patient, type InsertPatient } from "@shared/schema";
+import { type User, type InsertUser, type Prescription, type InsertPrescription, type InventoryItem, type InsertInventory, type Patient, type InsertPatient, type Claim, type InsertClaim } from "@shared/schema";
 import { randomUUID } from "crypto";
 import * as fs from "fs";
 import * as path from "path";
@@ -61,6 +61,11 @@ export interface IStorage {
   addClaimDocument(claimId: string, document: Omit<ClaimDocument, "id" | "uploadedAt">): Promise<ClaimDocument>;
   deleteClaimDocument(id: string): Promise<void>;
 
+  getClaims(): Promise<Claim[]>;
+  getClaim(id: string): Promise<Claim | undefined>;
+  createClaim(claim: InsertClaim): Promise<Claim>;
+  updateClaim(id: string, updates: Partial<Claim>): Promise<Claim | undefined>;
+
   getPricingRules(): Promise<PricingRule[]>;
   getPricingRule(id: string): Promise<PricingRule | undefined>;
   createPricingRule(rule: Omit<PricingRule, "id" | "createdAt" | "updatedAt" | "usageCount" | "lastTriggered">): Promise<PricingRule>;
@@ -75,6 +80,7 @@ const INVENTORY_FILE = path.join(DATA_DIR, "inventory.json");
 const PATIENTS_FILE = path.join(DATA_DIR, "patients.json");
 
 const CLAIM_DOCUMENTS_FILE = path.join(DATA_DIR, "finance_specialist", "documents.json");
+const CLAIMS_FILE = path.join(DATA_DIR, "finance_specialist", "claims.json");
 const PRICING_RULES_FILE = path.join(DATA_DIR, "pricing", "rules.json");
 
 export class JsonStorage implements IStorage {
@@ -119,6 +125,155 @@ export class JsonStorage implements IStorage {
         fs.mkdirSync(dir, { recursive: true });
       }
       fs.writeFileSync(CLAIM_DOCUMENTS_FILE, JSON.stringify({ documents: [] }, null, 2), "utf-8");
+    }
+
+    // Initialize claims file if it doesn't exist
+    if (!fs.existsSync(CLAIMS_FILE)) {
+      const dir = path.dirname(CLAIMS_FILE);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      const initialClaims = [
+        {
+          id: "clm-001",
+          claimNumber: "CLM-2024-1850",
+          patientName: "Sarah Johnson",
+          patientId: "PT-12345",
+          dateOfBirth: "1985-03-15",
+          prescriptionRef: "RX-001",
+          payer: "BlueCross BlueShield",
+          payerId: "BCBS-001",
+          memberId: "XYZ123456789",
+          groupNumber: "GRP-5678",
+          amount: 124500,
+          drugName: "Metformin 500mg",
+          drugNdc: "12345-678-90",
+          quantity: 90,
+          daysSupply: 30,
+          drugCoefficient: "1.25",
+          status: "pending",
+          riskLevel: "high",
+          readinessScore: 62,
+          aiConfidence: 88,
+          createdAt: "2024-01-15T10:30:00Z",
+        },
+        {
+          id: "clm-002",
+          claimNumber: "CLM-2024-1849",
+          patientName: "James Wilson",
+          patientId: "PT-54321",
+          dateOfBirth: "1990-06-20",
+          prescriptionRef: "RX-002",
+          payer: "Aetna",
+          payerId: "AET-002",
+          memberId: "ABC987654321",
+          groupNumber: "GRP-9012",
+          amount: 89250,
+          drugName: "Lisinopril 10mg",
+          drugNdc: "54321-876-54",
+          quantity: 30,
+          daysSupply: 30,
+          drugCoefficient: "1.0",
+          status: "pending",
+          riskLevel: "medium",
+          readinessScore: 78,
+          aiConfidence: 92,
+          createdAt: "2024-01-15T09:15:00Z",
+        },
+        {
+          id: "clm-003",
+          claimNumber: "CLM-2024-1848",
+          patientName: "Maria Garcia",
+          patientId: "PT-67890",
+          dateOfBirth: "1978-11-05",
+          prescriptionRef: "RX-003",
+          payer: "United Healthcare",
+          payerId: "UHC-003",
+          memberId: "DEF456789012",
+          groupNumber: "GRP-3456",
+          amount: 215600,
+          drugName: "Atorvastatin 20mg",
+          drugNdc: "98765-432-10",
+          quantity: 90,
+          daysSupply: 90,
+          drugCoefficient: "1.1",
+          status: "ready", // Note: 'ready' is not in schema default enum but useful for UI
+          riskLevel: "low",
+          readinessScore: 95,
+          aiConfidence: 98,
+          createdAt: "2024-01-14T14:45:00Z",
+        },
+        {
+          id: "clm-004",
+          claimNumber: "CLM-2024-1847",
+          patientName: "Robert Brown",
+          patientId: "PT-13579",
+          dateOfBirth: "1965-02-28",
+          prescriptionRef: "RX-004",
+          payer: "Cigna",
+          payerId: "CIG-004",
+          memberId: "GHI789012345",
+          groupNumber: "GRP-7890",
+          amount: 56700,
+          drugName: "Amlodipine 5mg",
+          drugNdc: "13579-246-80",
+          quantity: 30,
+          daysSupply: 30,
+          drugCoefficient: "1.0",
+          status: "submitted",
+          riskLevel: "low",
+          readinessScore: 98,
+          aiConfidence: 99,
+          createdAt: "2024-01-13T11:20:00Z",
+        },
+        {
+          id: "clm-005",
+          claimNumber: "CLM-2024-1846",
+          patientName: "Emily Davis",
+          patientId: "PT-24680",
+          dateOfBirth: "1992-08-12",
+          prescriptionRef: "RX-005",
+          payer: "Humana",
+          payerId: "HUM-005",
+          memberId: "JKL012345678",
+          groupNumber: "GRP-1234",
+          amount: 123450,
+          drugName: "Levothyroxine 50mcg",
+          drugNdc: "24680-135-79",
+          quantity: 90,
+          daysSupply: 90,
+          drugCoefficient: "1.05",
+          status: "approved", // Note: mapped to 'submitted' or stored as is if flexible
+          riskLevel: "low",
+          readinessScore: 100,
+          aiConfidence: 99,
+          createdAt: "2024-01-11T16:10:00Z",
+        },
+        {
+          id: "clm-006",
+          claimNumber: "CLM-2024-1845",
+          patientName: "Michael Lee",
+          patientId: "PT-97531",
+          dateOfBirth: "1970-12-01",
+          prescriptionRef: "RX-006",
+          payer: "Medicare",
+          payerId: "MED-006",
+          memberId: "MNO345678901",
+          groupNumber: "GRP-5678",
+          amount: 78900,
+          drugName: "Omeprazole 20mg",
+          drugNdc: "97531-864-20",
+          quantity: 30,
+          daysSupply: 30,
+          drugCoefficient: "1.0",
+          status: "rejected", 
+          riskLevel: "high",
+          readinessScore: 45,
+          aiConfidence: 60,
+          createdAt: "2024-01-09T09:30:00Z",
+        }
+      ];
+      fs.writeFileSync(CLAIMS_FILE, JSON.stringify({ claims: initialClaims }, null, 2), "utf-8");
     }
 
     // Initialize pricing rules file if it doesn't exist
@@ -594,6 +749,67 @@ export class JsonStorage implements IStorage {
     const documents = this.readClaimDocuments();
     const filtered = documents.filter(doc => doc.id !== id);
     this.writeClaimDocuments(filtered);
+  }
+
+
+  // Claim methods
+  private readClaims(): Claim[] {
+    try {
+      if (!fs.existsSync(CLAIMS_FILE)) return [];
+      
+      const data = fs.readFileSync(CLAIMS_FILE, "utf-8");
+      const parsed = JSON.parse(data);
+      if (parsed.claims && Array.isArray(parsed.claims)) {
+        return parsed.claims;
+      }
+      return [];
+    } catch (error) {
+      console.error("Error reading claims from file:", error);
+      return [];
+    }
+  }
+
+  private writeClaims(claims: Claim[]) {
+    try {
+      const data = JSON.stringify({ claims }, null, 2);
+      fs.writeFileSync(CLAIMS_FILE, data, "utf-8");
+    } catch (error) {
+      console.error("Error writing claims to file:", error);
+      throw error;
+    }
+  }
+
+  async getClaims(): Promise<Claim[]> {
+    return this.readClaims();
+  }
+
+  async getClaim(id: string): Promise<Claim | undefined> {
+    const claims = this.readClaims();
+    return claims.find(c => c.id === id);
+  }
+
+  async createClaim(insertClaim: InsertClaim): Promise<Claim> {
+    const claims = this.readClaims();
+    const newClaim: Claim = {
+      ...insertClaim,
+      id: randomUUID(),
+      createdAt: new Date().toISOString(),
+      status: insertClaim.status || "pending",
+    };
+    claims.push(newClaim);
+    this.writeClaims(claims);
+    return newClaim;
+  }
+
+  async updateClaim(id: string, updates: Partial<Claim>): Promise<Claim | undefined> {
+    const claims = this.readClaims();
+    const index = claims.findIndex(c => c.id === id);
+    if (index === -1) return undefined;
+
+    const updatedClaim = { ...claims[index], ...updates };
+    claims[index] = updatedClaim;
+    this.writeClaims(claims);
+    return updatedClaim;
   }
 
 
