@@ -14,8 +14,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Save, Loader2 } from "lucide-react";
+import { ArrowLeft, Save, Loader2, Upload, FileImage, CheckCircle2, Sparkles } from "lucide-react";
 import type { InsertPrescription } from "@shared/schema";
 
 export default function NewPrescriptionPage() {
@@ -39,6 +41,12 @@ export default function NewPrescriptionPage() {
     isDelivery: false,
     pharmacistNotes: "",
   });
+
+  // AI Upload Feature States
+  const [entryMode, setEntryMode] = useState<'manual' | 'upload'>('manual');
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [showExtractedDataReview, setShowExtractedDataReview] = useState(false);
 
   const createPrescriptionMutation = useMutation({
     mutationFn: async (data: Partial<InsertPrescription>) => {
@@ -74,6 +82,88 @@ export default function NewPrescriptionPage() {
       });
     },
   });
+
+  // Mock AI Data Extraction
+  const generateMockExtractedData = (): Partial<InsertPrescription> => {
+    const medications = [
+      { name: "Lisinopril", dosage: "10mg", frequency: "Once daily" },
+      { name: "Metformin", dosage: "500mg", frequency: "Twice daily" },
+      { name: "Atorvastatin", dosage: "20mg", frequency: "Once daily at bedtime" },
+      { name: "Levothyroxine", dosage: "50mcg", frequency: "Once daily in morning" },
+      { name: "Amlodipine", dosage: "5mg", frequency: "Once daily" },
+    ];
+
+    const prescribers = [
+      "Dr. Sarah Johnson",
+      "Dr. Michael Chen",
+      "Dr. Emily Rodriguez",
+      "Dr. James Thompson",
+      "Dr. Lisa Anderson",
+    ];
+
+    const randomMed = medications[Math.floor(Math.random() * medications.length)];
+    const randomPrescriber = prescribers[Math.floor(Math.random() * prescribers.length)];
+    const randomPatientId = Math.floor(10000 + Math.random() * 90000);
+    const randomPrescriberId = Math.floor(10000 + Math.random() * 90000);
+
+    return {
+      patientName: "John Michael Doe",
+      patientId: `P-${randomPatientId}`,
+      prescriberName: randomPrescriber,
+      prescriberId: `DR-${randomPrescriberId}`,
+      drugName: randomMed.name,
+      dosage: randomMed.dosage,
+      frequency: randomMed.frequency,
+      duration: "30 days",
+      instructions: "Take with food. Do not skip doses.",
+      priority: "medium",
+      status: "pending",
+      isRefill: false,
+      isDelivery: false,
+    };
+  };
+
+  // Simulate AI Processing
+  const simulateAIProcessing = async () => {
+    setIsProcessing(true);
+    
+    // Simulate processing time (2-3 seconds)
+    await new Promise(resolve => setTimeout(resolve, 2500));
+    
+    // Generate and populate mock data
+    const extractedData = generateMockExtractedData();
+    setFormData(prev => ({ ...prev, ...extractedData }));
+    
+    setIsProcessing(false);
+    setShowExtractedDataReview(true);
+    
+    toast({
+      title: "Extraction Complete",
+      description: "Prescription details have been extracted. Please review and edit as needed.",
+    });
+  };
+
+  // Handle File Upload
+  const handleFileUpload = async (file: File) => {
+    const allowedTypes = [
+      'image/jpeg',
+      'image/png',
+      'image/jpg',
+      'application/pdf'
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+      toast({
+        title: "Invalid File Type",
+        description: "Please upload an image (JPG, PNG) or PDF file.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setUploadedFile(file);
+    await simulateAIProcessing();
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -112,12 +202,111 @@ export default function NewPrescriptionPage() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit}>
-        <div className="space-y-6">
-          {/* Patient Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Patient Information</CardTitle>
+      <Tabs value={entryMode} onValueChange={(value) => setEntryMode(value as 'manual' | 'upload')} className="space-y-6">
+        <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsTrigger value="manual">Manual Entry</TabsTrigger>
+          <TabsTrigger value="upload">
+            <Sparkles className="w-4 h-4 mr-2" />
+            Upload Prescription (AI)
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="upload" className="space-y-6">
+          {!isProcessing && !showExtractedDataReview && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Upload className="w-5 h-5" />
+                  Upload Prescription Document
+                </CardTitle>
+                <CardDescription>
+                  Upload a prescription image or PDF. Our AI will extract the details automatically.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div
+                  className="border-2 border-dashed border-border rounded-lg p-12 text-center hover:border-primary/50 transition-colors cursor-pointer"
+                  onClick={() => document.getElementById('file-upload')?.click()}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    e.currentTarget.classList.add('border-primary');
+                  }}
+                  onDragLeave={(e) => {
+                    e.currentTarget.classList.remove('border-primary');
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    e.currentTarget.classList.remove('border-primary');
+                    const file = e.dataTransfer.files[0];
+                    if (file) handleFileUpload(file);
+                  }}
+                >
+                  <input
+                    id="file-upload"
+                    type="file"
+                    accept="image/jpeg,image/png,image/jpg,application/pdf"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleFileUpload(file);
+                    }}
+                  />
+                  <FileImage className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                  <p className="text-lg font-medium mb-2">
+                    Drop your prescription here, or click to browse
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Supports JPG, PNG, and PDF files
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {isProcessing && (
+            <Card>
+              <CardContent className="py-12">
+                <div className="text-center space-y-4">
+                  <Loader2 className="w-12 h-12 mx-auto animate-spin text-primary" />
+                  <div className="space-y-2">
+                    <p className="text-lg font-medium">Analyzing prescription...</p>
+                    <p className="text-sm text-muted-foreground">
+                      Extracting patient and medication details
+                    </p>
+                  </div>
+                  {uploadedFile && (
+                    <p className="text-xs text-muted-foreground">
+                      Processing: {uploadedFile.name}
+                    </p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {showExtractedDataReview && (
+            <Alert className="border-green-200 bg-green-50 dark:bg-green-950/20">
+              <CheckCircle2 className="h-4 w-4 text-green-600" />
+              <AlertDescription className="text-green-800 dark:text-green-200">
+                <strong>Data extracted successfully!</strong> Please review and edit the prescription details below before saving.
+              </AlertDescription>
+            </Alert>
+          )}
+        </TabsContent>
+
+        <TabsContent value="manual" className="m-0">
+          {/* Manual entry content will be shown below */}
+        </TabsContent>
+      </Tabs>
+
+      {/* Form - shown for both manual and upload (after extraction) */}
+      {(entryMode === 'manual' || (entryMode === 'upload' && showExtractedDataReview)) && (
+        <form onSubmit={handleSubmit}>
+          <div className="space-y-6">
+            {/* Patient Information */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Patient Information</CardTitle>
               <CardDescription>Enter the patient's details</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -366,6 +555,7 @@ export default function NewPrescriptionPage() {
           </div>
         </div>
       </form>
+      )}
     </div>
   );
 }

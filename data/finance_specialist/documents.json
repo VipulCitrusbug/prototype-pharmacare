@@ -1,3 +1,16 @@
 {
-  "documents": []
+  "documents": [
+    {
+      "name": "q4-2024-executive-summary.txt",
+      "filename": "1767860497357-559459655.txt",
+      "type": "insurance",
+      "size": 233,
+      "path": "/home/raptor/Projects/prototypes/pharmacare/fe/data/finance_specialist/1767860497357-559459655.txt",
+      "claimId": "1212",
+      "patientName": "Sarah mason",
+      "claimRef": "1212",
+      "id": "02b8ea39-f596-416f-a56e-3b62656ac7fc",
+      "uploadedAt": "2026-01-08T08:21:37.359Z"
+    }
+  ]
 }

@@ -181,6 +181,42 @@
       "createdAt": "2026-01-03T11:07:01.875Z",
       "avatar": null,
       "phone": "0123456789"
+    },
+    {
+      "username": "admin8932",
+      "password": "12345678",
+      "email": "admin@citrusbug.com",
+      "firstName": "Ishan",
+      "lastName": "Vyas",
+      "role": "admin",
+      "id": "2ee8a435-a0d2-4333-8a5d-5fe79813ad8d",
+      "createdAt": "2026-01-08T08:18:42.378Z",
+      "avatar": null,
+      "phone": null
+    },
+    {
+      "username": "finance8932",
+      "password": "12345678",
+      "email": "finance8932@citrusbug.com",
+      "firstName": "Ishan",
+      "lastName": "Vyas",
+      "role": "finance",
+      "id": "cac23e17-4de9-482b-afe5-c9cee51601d8",
+      "createdAt": "2026-01-08T08:20:25.188Z",
+      "avatar": null,
+      "phone": null
+    },
+    {
+      "username": "pharmacist8932",
+      "password": "12345678",
+      "email": "pharmacist@citrusbug.com",
+      "firstName": "ishan",
+      "lastName": "Vyas",
+      "role": "pharmacist",
+      "id": "e763d249-0bdf-43f9-8b75-190c441cfa6a",
+      "createdAt": "2026-01-08T08:23:47.282Z",
+      "avatar": null,
+      "phone": null
     }
   ]
 }
