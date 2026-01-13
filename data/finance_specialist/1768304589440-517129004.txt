@@ -1,0 +1,15 @@
+**Lacrosse Bot - Steve**
+
+**29th December 2025 - Work Status Update**
+
+1. Cancel Subscription:
+   a. Moved the cancel subscription button from the payment modal details page to the payment history listing page.  
+   b. Added the `next_billing_date` field to the user model to track the next billing date and manage remaining credits accordingly.  
+   c. Updated credit management logic so that, on subscription renewal, user credits are replaced with the purchased plan’s usage credits instead of being added to the existing balance.  
+   d. Implemented top-up plan handling where users receive additional credits on top of their existing available credits.
+
+Roadblocks:
+1. None.
+
+Next Day Task:
+1. Work on bugs if any are identified.

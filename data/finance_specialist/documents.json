@@ -11,6 +11,16 @@
       "claimRef": "1212",
       "id": "02b8ea39-f596-416f-a56e-3b62656ac7fc",
       "uploadedAt": "2026-01-08T08:21:37.359Z"
+    },
+    {
+      "name": "29th.txt",
+      "filename": "1768304589440-517129004.txt",
+      "type": "document",
+      "size": 752,
+      "path": "/home/raptor/Projects/prototypes/pharmacare/fe/data/finance_specialist/1768304589440-517129004.txt",
+      "claimId": "clm-003",
+      "id": "6e234bb3-2460-4978-8269-af2d05585c65",
+      "uploadedAt": "2026-01-13T11:43:09.442Z"
     }
   ]
 }

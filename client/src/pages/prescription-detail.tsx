@@ -73,7 +73,8 @@ export default function PrescriptionDetailPage() {
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [originalNotes, setOriginalNotes] = useState("");
   const [isEditing, setIsEditing] = useState(false);
-  const fileInputRef = useState<HTMLInputElement | null>(null)[1];
+  const [isProcessingUpload, setIsProcessingUpload] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [documents, setDocuments] = useState<Array<{
     id: string;
     fileName: string;
@@ -104,6 +105,69 @@ export default function PrescriptionDetailPage() {
     duration: "",
     instructions: "",
   });
+
+  // Mock AI Data Extraction (similar to new.tsx)
+  const generateMockExtractedData = () => {
+    const medications = [
+      { name: "Lisinopril", dosage: "10mg", frequency: "Once daily", duration: "30 days" },
+      { name: "Metformin", dosage: "500mg", frequency: "Twice daily", duration: "60 days" },
+      { name: "Atorvastatin", dosage: "20mg", frequency: "Once daily at bedtime", duration: "90 days" },
+      { name: "Levothyroxine", dosage: "50mcg", frequency: "Once daily in morning", duration: "30 days" },
+      { name: "Amlodipine", dosage: "5mg", frequency: "Once daily", duration: "30 days" },
+    ];
+
+    const randomMed = medications[Math.floor(Math.random() * medications.length)];
+
+    return {
+      drugName: randomMed.name,
+      dosage: randomMed.dosage,
+      frequency: randomMed.frequency,
+      duration: randomMed.duration,
+      instructions: "Take with food. Do not skip doses.",
+    };
+  };
+
+  // Simulate AI Processing
+  const simulateAIProcessing = async () => {
+    setIsProcessingUpload(true);
+    
+    // Simulate processing time (2-3 seconds)
+    await new Promise(resolve => setTimeout(resolve, 2500));
+    
+    // Generate and populate mock data
+    const extractedData = generateMockExtractedData();
+    setEditForm(prev => ({ ...prev, ...extractedData }));
+    
+    setIsProcessingUpload(false);
+    setUploadedFile(null);
+    
+    toast({
+      title: "Extraction Complete",
+      description: "Medication details have been extracted. Please review and edit as needed.",
+    });
+  };
+
+  // Handle File Upload
+  const handleFileUpload = async (file: File) => {
+    const allowedTypes = [
+      'image/jpeg',
+      'image/png',
+      'image/jpg',
+      'application/pdf'
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+      toast({
+        title: "Invalid File Type",
+        description: "Please upload an image (JPG, PNG) or PDF file.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setUploadedFile(file);
+    await simulateAIProcessing();
+  };
 
   const prescriptionQuery = useQuery<Prescription>({
     queryKey: [`/api/prescriptions/${params?.id}`],
@@ -297,11 +361,43 @@ export default function PrescriptionDetailPage() {
                 </Button>
               ) : (
                 <div className="flex gap-2">
+                  <input
+                    type="file"
+                    id="document-upload"
+                    accept="image/jpeg,image/png,image/jpg,application/pdf"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleFileUpload(file);
+                    }}
+                  />
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => document.getElementById('document-upload')?.click()}
+                    disabled={updatePrescriptionMutation.isPending || isProcessingUpload}
+                  >
+                    {isProcessingUpload ? (
+                      <>
+                        <Upload className="w-4 h-4 mr-2 animate-pulse" />
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-4 h-4 mr-2" />
+                        Upload Document
+                      </>
+                    )}
+                  </Button>
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    onClick={() => setIsEditing(false)}
-                    disabled={updatePrescriptionMutation.isPending}
+                    onClick={() => {
+                      setIsEditing(false);
+                      setIsProcessingUpload(false);
+                      setUploadedFile(null);
+                    }}
+                    disabled={updatePrescriptionMutation.isPending || isProcessingUpload}
                   >
                     <X className="w-4 h-4 mr-2" />
                     Cancel
@@ -310,7 +406,7 @@ export default function PrescriptionDetailPage() {
                     variant="default" 
                     size="sm" 
                     onClick={() => updatePrescriptionMutation.mutate(editForm)}
-                    disabled={updatePrescriptionMutation.isPending}
+                    disabled={updatePrescriptionMutation.isPending || isProcessingUpload}
                   >
                     <Save className="w-4 h-4 mr-2" />
                     Save
@@ -399,6 +495,78 @@ export default function PrescriptionDetailPage() {
                     Prescriber ID: {prescription.prescriberId || "N/A"}
                   </p>
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <File className="w-5 h-5 text-primary" />
+                Prescription Documents
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {documents.length > 0 ? (
+                  documents.map((doc) => (
+                    <div 
+                      key={doc.id}
+                      className="flex items-center justify-between p-3 border rounded-lg hover:bg-accent/5 transition-colors"
+                    >
+                      <div className="flex items-center gap-3 flex-1">
+                        <div className="p-2 bg-primary/10 rounded">
+                          {doc.fileType === 'pdf' ? (
+                            <FileType className="w-5 h-5 text-primary" />
+                          ) : (
+                            <FileImage className="w-5 h-5 text-primary" />
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium text-sm">{doc.fileName}</p>
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <span className="capitalize">{doc.source}</span>
+                            <span>•</span>
+                            <span>{(doc.fileSize / 1000).toFixed(0)} KB</span>
+                            <span>•</span>
+                            <span>{new Date(doc.uploadedAt).toLocaleDateString()}</span>
+                            {doc.isSourceDocument && (
+                              <>
+                                <span>•</span>
+                                <span className="text-primary font-medium">Original</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => {
+                          // Create a temporary anchor element to trigger download
+                          const link = document.createElement('a');
+                          link.href = doc.fileUrl;
+                          link.download = doc.fileName;
+                          link.target = '_blank';
+                          document.body.appendChild(link);
+                          link.click();
+                          document.body.removeChild(link);
+                          
+                          toast({
+                            title: "Download Started",
+                            description: `Downloading ${doc.fileName}`,
+                          });
+                        }}
+                      >
+                        <Download className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground text-center py-4">
+                    No documents attached
+                  </p>
+                )}
               </div>
             </CardContent>
           </Card>
