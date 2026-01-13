@@ -17,7 +17,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Save, Loader2, Upload, FileImage, CheckCircle2, Sparkles } from "lucide-react";
+import { ArrowLeft, Save, Loader2, Upload, FileImage, CheckCircle2, Sparkles, Plus, Trash2, Pill } from "lucide-react";
 import type { InsertPrescription } from "@shared/schema";
 
 export default function NewPrescriptionPage() {
@@ -47,6 +47,24 @@ export default function NewPrescriptionPage() {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showExtractedDataReview, setShowExtractedDataReview] = useState(false);
+
+  // Multiple Medications States
+  const [medications, setMedications] = useState<Array<{
+    id: string;
+    drugName: string;
+    dosage: string;
+    frequency: string;
+    duration: string;
+    instructions: string;
+  }>>([]);
+
+  const [currentMedication, setCurrentMedication] = useState({
+    drugName: "",
+    dosage: "",
+    frequency: "",
+    duration: "",
+    instructions: "",
+  });
 
   const createPrescriptionMutation = useMutation({
     mutationFn: async (data: Partial<InsertPrescription>) => {
@@ -132,7 +150,24 @@ export default function NewPrescriptionPage() {
     
     // Generate and populate mock data
     const extractedData = generateMockExtractedData();
-    setFormData(prev => ({ ...prev, ...extractedData }));
+    
+    // Update patient/prescriber info in formData
+    setFormData(prev => ({
+      ...prev,
+      patientName: extractedData.patientName,
+      patientId: extractedData.patientId,
+      prescriberName: extractedData.prescriberName,
+      prescriberId: extractedData.prescriberId,
+    }));
+    
+    // Update medication info in currentMedication
+    setCurrentMedication({
+      drugName: extractedData.drugName || "",
+      dosage: extractedData.dosage || "",
+      frequency: extractedData.frequency || "",
+      duration: extractedData.duration || "",
+      instructions: extractedData.instructions || "",
+    });
     
     setIsProcessing(false);
     setShowExtractedDataReview(true);
@@ -169,16 +204,51 @@ export default function NewPrescriptionPage() {
     e.preventDefault();
 
     // Basic validation
-    if (!formData.patientName || !formData.drugName || !formData.dosage || !formData.frequency) {
+    if (!formData.patientName) {
       toast({
         title: "Validation Error",
-        description: "Please fill in all required fields (Patient Name, Drug, Dosage, Frequency).",
+        description: "Please fill in Patient Name.",
         variant: "destructive",
       });
       return;
     }
 
-    createPrescriptionMutation.mutate(formData);
+    if (medications.length === 0) {
+      toast({
+        title: "Validation Error",
+        description: "Please add at least one medication to the prescription.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Use first medication for the prescription (for now, backend supports single medication)
+    const firstMedication = medications[0];
+    const additionalMeds = medications.slice(1);
+    
+    // Encode additional medications in aiNotes field as JSON
+    let aiNotesValue = formData.aiNotes || "";
+    
+    if (additionalMeds.length > 0) {
+      const additionalMedsData = {
+        type: "additional_medications",
+        medications: additionalMeds.map(({ id, ...med }) => med),
+        originalAiNotes: aiNotesValue
+      };
+      aiNotesValue = JSON.stringify(additionalMedsData);
+    }
+    
+    const prescriptionData = {
+      ...formData,
+      drugName: firstMedication.drugName,
+      dosage: firstMedication.dosage,
+      frequency: firstMedication.frequency,
+      duration: firstMedication.duration,
+      instructions: firstMedication.instructions,
+      aiNotes: aiNotesValue,
+    };
+
+    createPrescriptionMutation.mutate(prescriptionData);
   };
 
   const updateField = (field: keyof InsertPrescription, value: any) => {
@@ -366,73 +436,165 @@ export default function NewPrescriptionPage() {
             </CardContent>
           </Card>
 
-          {/* Medication Details */}
+          {/* Medication Details - Multiple Medications */}
           <Card>
             <CardHeader>
-              <CardTitle>Medication Details</CardTitle>
-              <CardDescription>Enter the medication information</CardDescription>
+              <CardTitle className="flex items-center gap-2">
+                <Pill className="w-5 h-5" />
+                Medications ({medications.length})
+              </CardTitle>
+              <CardDescription>Add one or more medications to this prescription</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="drugName">
-                    Drug Name <span className="text-destructive">*</span>
-                  </Label>
-                  <Input
-                    id="drugName"
-                    value={formData.drugName}
-                    onChange={(e) => updateField("drugName", e.target.value)}
-                    placeholder="e.g., Lisinopril"
-                    required
-                  />
+            <CardContent className="space-y-6">
+              {/* Display Added Medications */}
+              {medications.length > 0 && (
+                <div className="space-y-3">
+                  <h4 className="text-sm font-semibold text-muted-foreground">Added Medications</h4>
+                  <div className="space-y-2">
+                    {medications.map((med, index) => (
+                      <div key={med.id} className="p-4 border rounded-lg bg-accent/5 border-l-4 border-l-primary">
+                        <div className="flex items-start justify-between mb-2">
+                          <div>
+                            <h5 className="font-semibold text-base">{med.drugName}</h5>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2 text-sm">
+                              <div>
+                                <span className="text-muted-foreground">Dosage:</span>
+                                <span className="ml-1 font-medium">{med.dosage}</span>
+                              </div>
+                              <div>
+                                <span className="text-muted-foreground">Frequency:</span>
+                                <span className="ml-1 font-medium">{med.frequency}</span>
+                              </div>
+                              <div>
+                                <span className="text-muted-foreground">Duration:</span>
+                                <span className="ml-1 font-medium">{med.duration || "As needed"}</span>
+                              </div>
+                            </div>
+                            {med.instructions && (
+                              <p className="text-sm text-muted-foreground mt-2">
+                                <span className="font-medium">Instructions:</span> {med.instructions}
+                              </p>
+                            )}
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setMedications(prev => prev.filter(m => m.id !== med.id));
+                              toast({
+                                title: "Medication Removed",
+                                description: `${med.drugName} has been removed.`,
+                              });
+                            }}
+                          >
+                            <Trash2 className="w-4 h-4 text-danger" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="border-t pt-4" />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="dosage">
-                    Dosage <span className="text-destructive">*</span>
-                  </Label>
-                  <Input
-                    id="dosage"
-                    value={formData.dosage}
-                    onChange={(e) => updateField("dosage", e.target.value)}
-                    placeholder="e.g., 10mg"
-                    required
-                  />
-                </div>
-              </div>
+              )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="frequency">
-                    Frequency <span className="text-destructive">*</span>
-                  </Label>
-                  <Input
-                    id="frequency"
-                    value={formData.frequency}
-                    onChange={(e) => updateField("frequency", e.target.value)}
-                    placeholder="e.g., Once daily"
-                    required
-                  />
+              {/* Add Medication Form */}
+              <div className="space-y-4">
+                <h4 className="text-sm font-semibold text-muted-foreground">
+                  {medications.length > 0 ? "Add Another Medication" : "Add Medication"}
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="currentDrugName">
+                      Drug Name <span className="text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="currentDrugName"
+                      value={currentMedication.drugName}
+                      onChange={(e) => setCurrentMedication(prev => ({ ...prev, drugName: e.target.value }))}
+                      placeholder="e.g., Lisinopril"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="currentDosage">
+                      Dosage <span className="text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="currentDosage"
+                      value={currentMedication.dosage}
+                      onChange={(e) => setCurrentMedication(prev => ({ ...prev, dosage: e.target.value }))}
+                      placeholder="e.g., 10mg"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="currentFrequency">
+                      Frequency <span className="text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="currentFrequency"
+                      value={currentMedication.frequency}
+                      onChange={(e) => setCurrentMedication(prev => ({ ...prev, frequency: e.target.value }))}
+                      placeholder="e.g., Once daily"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="currentDuration">Duration</Label>
+                    <Input
+                      id="currentDuration"
+                      value={currentMedication.duration}
+                      onChange={(e) => setCurrentMedication(prev => ({ ...prev, duration: e.target.value }))}
+                      placeholder="e.g., 30 days"
+                    />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="duration">Duration</Label>
-                  <Input
-                    id="duration"
-                    value={formData.duration || ""}
-                    onChange={(e) => updateField("duration", e.target.value)}
-                    placeholder="e.g., 30 days"
-                  />
-                </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="instructions">Instructions</Label>
-                <Textarea
-                  id="instructions"
-                  value={formData.instructions || ""}
-                  onChange={(e) => updateField("instructions", e.target.value)}
-                  placeholder="e.g., Take with food in the morning"
-                  rows={3}
-                />
+                <div className="space-y-2">
+                  <Label htmlFor="currentInstructions">Instructions</Label>
+                  <Textarea
+                    id="currentInstructions"
+                    value={currentMedication.instructions}
+                    onChange={(e) => setCurrentMedication(prev => ({ ...prev, instructions: e.target.value }))}
+                    placeholder="e.g., Take with food in the morning"
+                    rows={2}
+                  />
+                </div>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => {
+                    if (!currentMedication.drugName || !currentMedication.dosage || !currentMedication.frequency) {
+                      toast({
+                        title: "Validation Error",
+                        description: "Please fill in Drug Name, Dosage, and Frequency.",
+                        variant: "destructive",
+                      });
+                      return;
+                    }
+
+                    const newMedication = {
+                      id: `med-${Date.now()}`,
+                      ...currentMedication,
+                    };
+
+                    setMedications(prev => [...prev, newMedication]);
+                    setCurrentMedication({
+                      drugName: "",
+                      dosage: "",
+                      frequency: "",
+                      duration: "",
+                      instructions: "",
+                    });
+
+                    toast({
+                      title: "Medication Added",
+                      description: `${newMedication.drugName} has been added to the prescription.`,
+                    });
+                  }}
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Medication to List
+                </Button>
               </div>
             </CardContent>
           </Card>

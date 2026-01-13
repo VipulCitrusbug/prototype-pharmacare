@@ -35,8 +35,9 @@ import {
   File,
   FileImage,
   FileType,
+  Plus,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Prescription, PrescriptionStatusType, PriorityLevelType } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -106,6 +107,26 @@ export default function PrescriptionDetailPage() {
     instructions: "",
   });
 
+  // Add Medication States
+  const [isAddingMedication, setIsAddingMedication] = useState(false);
+  const [isProcessingAddUpload, setIsProcessingAddUpload] = useState(false);
+  const [addMedicationForm, setAddMedicationForm] = useState({
+    drugName: "",
+    dosage: "",
+    frequency: "",
+    duration: "",
+    instructions: "",
+  });
+  const [additionalMedications, setAdditionalMedications] = useState<Array<{
+    id: string;
+    drugName: string;
+    dosage: string;
+    frequency: string;
+    duration: string;
+    instructions: string;
+    addedAt: Date;
+  }>>([]);
+
   // Mock AI Data Extraction (similar to new.tsx)
   const generateMockExtractedData = () => {
     const medications = [
@@ -147,8 +168,28 @@ export default function PrescriptionDetailPage() {
     });
   };
 
+  // Simulate AI Processing for Add Medication
+  const simulateAIProcessingForAdd = async () => {
+    setIsProcessingAddUpload(true);
+    
+    // Simulate processing time (2-3 seconds)
+    await new Promise(resolve => setTimeout(resolve, 2500));
+    
+    // Generate and populate mock data for add form
+    const extractedData = generateMockExtractedData();
+    setAddMedicationForm(prev => ({ ...prev, ...extractedData }));
+    
+    setIsProcessingAddUpload(false);
+    setUploadedFile(null);
+    
+    toast({
+      title: "Extraction Complete",
+      description: "New medication details have been extracted. Please review and save.",
+    });
+  };
+
   // Handle File Upload
-  const handleFileUpload = async (file: File) => {
+  const handleFileUpload = async (file: File, isForAddMedication = false) => {
     const allowedTypes = [
       'image/jpeg',
       'image/png',
@@ -165,8 +206,30 @@ export default function PrescriptionDetailPage() {
       return;
     }
 
+    // Create document object for tracking
+    const newDocument = {
+      id: `doc-${Date.now()}`,
+      fileName: file.name,
+      fileType: file.type.includes('pdf') ? 'pdf' : 'image',
+      fileSize: file.size,
+      fileUrl: URL.createObjectURL(file), // Create blob URL for preview
+      source: 'upload' as const,
+      uploadedBy: 'Current User', // In real app, get from auth context
+      uploadedAt: new Date(),
+      isSourceDocument: false,
+    };
+
+    // Add to documents list immediately
+    setDocuments(prev => [newDocument, ...prev]);
+
     setUploadedFile(file);
-    await simulateAIProcessing();
+    
+    // Process based on context
+    if (isForAddMedication) {
+      await simulateAIProcessingForAdd();
+    } else {
+      await simulateAIProcessing();
+    }
   };
 
   const prescriptionQuery = useQuery<Prescription>({
@@ -224,6 +287,28 @@ export default function PrescriptionDetailPage() {
      });
   }
 
+  // Decode additional medications from aiNotes field
+  useEffect(() => {
+    if (prescription?.aiNotes) {
+      try {
+        const parsed = JSON.parse(prescription.aiNotes);
+        if (parsed.type === "additional_medications" && Array.isArray(parsed.medications)) {
+          const meds = parsed.medications.map((med: any, index: number) => ({
+            id: `med-loaded-${index}`,
+            drugName: med.drugName,
+            dosage: med.dosage,
+            frequency: med.frequency,
+            duration: med.duration,
+            instructions: med.instructions,
+            addedAt: prescription.createdAt,
+          }));
+          setAdditionalMedications(meds);
+        }
+      } catch (e) {
+        // aiNotes is regular text, not JSON - ignore
+      }
+    }
+  }, [prescription?.aiNotes, prescription?.createdAt]);
 
 
   if (prescriptionQuery.isLoading) {
@@ -339,6 +424,9 @@ export default function PrescriptionDetailPage() {
               <CardTitle className="flex items-center gap-2">
                 <Pill className="w-5 h-5 text-primary" />
                 Medication Details
+                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-normal">
+                  Primary
+                </span>
               </CardTitle>
               {!isEditing ? (
                 <Button 
@@ -361,34 +449,6 @@ export default function PrescriptionDetailPage() {
                 </Button>
               ) : (
                 <div className="flex gap-2">
-                  <input
-                    type="file"
-                    id="document-upload"
-                    accept="image/jpeg,image/png,image/jpg,application/pdf"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) handleFileUpload(file);
-                    }}
-                  />
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => document.getElementById('document-upload')?.click()}
-                    disabled={updatePrescriptionMutation.isPending || isProcessingUpload}
-                  >
-                    {isProcessingUpload ? (
-                      <>
-                        <Upload className="w-4 h-4 mr-2 animate-pulse" />
-                        Processing...
-                      </>
-                    ) : (
-                      <>
-                        <Upload className="w-4 h-4 mr-2" />
-                        Upload Document
-                      </>
-                    )}
-                  </Button>
                   <Button 
                     variant="ghost" 
                     size="sm" 
@@ -473,6 +533,216 @@ export default function PrescriptionDetailPage() {
                   <p className="text-foreground">{prescription.instructions || "No special instructions"}</p>
                 )}
               </div>
+
+              {/* Additional Medications within same card */}
+              {additionalMedications.length > 0 && (
+                <>
+                  <Separator className="my-6" />
+                  <div className="space-y-4">
+                    <h3 className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
+                      <Pill className="w-4 h-4" />
+                      Additional Medications ({additionalMedications.length})
+                    </h3>
+                    <div className="space-y-3">
+                      {additionalMedications.map((med) => (
+                        <div key={med.id} className="p-4 border-l-4 border-l-accent bg-accent/5 rounded-r-lg">
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex items-center gap-2">
+                              <h4 className="font-semibold text-base">{med.drugName}</h4>
+                              <span className="text-xs bg-accent/20 text-accent px-2 py-0.5 rounded-full font-medium">
+                                Additional
+                              </span>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setAdditionalMedications(prev => prev.filter(m => m.id !== med.id));
+                                toast({
+                                  title: "Medication Removed",
+                                  description: `${med.drugName} has been removed.`,
+                                });
+                              }}
+                            >
+                              <Trash2 className="w-4 h-4 text-danger" />
+                            </Button>
+                          </div>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-2">
+                            <div>
+                              <p className="text-xs text-muted-foreground">Dosage</p>
+                              <p className="text-sm font-medium">{med.dosage}</p>
+                            </div>
+                            <div>
+                              <p className="text-xs text-muted-foreground">Frequency</p>
+                              <p className="text-sm font-medium">{med.frequency}</p>
+                            </div>
+                            <div>
+                              <p className="text-xs text-muted-foreground">Duration</p>
+                              <p className="text-sm font-medium">{med.duration || "As needed"}</p>
+                            </div>
+                            <div>
+                              <p className="text-xs text-muted-foreground">Added</p>
+                              <p className="text-sm font-medium">{new Date(med.addedAt).toLocaleDateString()}</p>
+                            </div>
+                          </div>
+                          {med.instructions && (
+                            <div className="mt-2 pt-2 border-t">
+                              <p className="text-xs text-muted-foreground mb-1">Instructions</p>
+                              <p className="text-sm">{med.instructions}</p>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Add Medication Button/Form inside card */}
+              <Separator className="my-6" />
+              {!isAddingMedication ? (
+                <Button
+                  variant="outline"
+                  className="w-full border-dashed border-2 hover:border-primary hover:bg-primary/5"
+                  onClick={() => {
+                    setAddMedicationForm({
+                      drugName: "",
+                      dosage: "",
+                      frequency: "",
+                      duration: "",
+                      instructions: "",
+                    });
+                    setIsAddingMedication(true);
+                  }}
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Another Medication
+                </Button>
+              ) : (
+                <div className="border-2 border-primary/30 rounded-lg p-4 bg-primary/5">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="font-semibold flex items-center gap-2">
+                      <Plus className="w-5 h-5 text-primary" />
+                      Add New Medication
+                    </h4>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setIsAddingMedication(false);
+                        setAddMedicationForm({
+                            drugName: "",
+                            dosage: "",
+                            frequency: "",
+                            duration: "",
+                            instructions: "",
+                          });
+                        }}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Drug Name *</label>
+                        <Input
+                          value={addMedicationForm.drugName}
+                          onChange={(e) => setAddMedicationForm(prev => ({ ...prev, drugName: e.target.value }))}
+                          placeholder="e.g., Aspirin"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Dosage *</label>
+                        <Input
+                          value={addMedicationForm.dosage}
+                          onChange={(e) => setAddMedicationForm(prev => ({ ...prev, dosage: e.target.value }))}
+                          placeholder="e.g., 100mg"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Frequency *</label>
+                        <Input
+                          value={addMedicationForm.frequency}
+                          onChange={(e) => setAddMedicationForm(prev => ({ ...prev, frequency: e.target.value }))}
+                          placeholder="e.g., Once daily"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Duration</label>
+                        <Input
+                          value={addMedicationForm.duration}
+                          onChange={(e) => setAddMedicationForm(prev => ({ ...prev, duration: e.target.value }))}
+                          placeholder="e.g., 30 days"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Instructions</label>
+                      <Textarea
+                        value={addMedicationForm.instructions}
+                        onChange={(e) => setAddMedicationForm(prev => ({ ...prev, instructions: e.target.value }))}
+                        placeholder="Special instructions for this medication..."
+                        rows={2}
+                      />
+                    </div>
+                    <div className="flex justify-end gap-2 pt-2">
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setIsAddingMedication(false);
+                          setAddMedicationForm({
+                            drugName: "",
+                            dosage: "",
+                            frequency: "",
+                            duration: "",
+                            instructions: "",
+                          });
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          if (!addMedicationForm.drugName || !addMedicationForm.dosage || !addMedicationForm.frequency) {
+                            toast({
+                              title: "Validation Error",
+                              description: "Please fill in Drug Name, Dosage, and Frequency.",
+                              variant: "destructive",
+                            });
+                            return;
+                          }
+
+                          const newMedication = {
+                            id: `med-${Date.now()}`,
+                            ...addMedicationForm,
+                            addedAt: new Date(),
+                          };
+
+                          setAdditionalMedications(prev => [...prev, newMedication]);
+                          setIsAddingMedication(false);
+                          setAddMedicationForm({
+                            drugName: "",
+                            dosage: "",
+                            frequency: "",
+                            duration: "",
+                            instructions: "",
+                          });
+
+                          toast({
+                            title: "Medication Added",
+                            description: `${newMedication.drugName} has been added successfully.`,
+                          });
+                        }}
+                        disabled={isProcessingAddUpload}
+                      >
+                        <Save className="w-4 h-4 mr-2" />
+                        Save Medication
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -500,11 +770,35 @@ export default function PrescriptionDetailPage() {
           </Card>
 
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="flex items-center gap-2">
                 <File className="w-5 h-5 text-primary" />
                 Prescription Documents
               </CardTitle>
+              <div>
+                <input
+                  type="file"
+                  id="document-upload"
+                  accept="image/jpeg,image/png,image/jpg,application/pdf"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      handleFileUpload(file, false);
+                      // Reset the input so the same file can be uploaded again if needed
+                      e.target.value = '';
+                    }
+                  }}
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => document.getElementById('document-upload')?.click()}
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  Upload Document
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
